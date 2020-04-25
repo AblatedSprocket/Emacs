@@ -1,6 +1,6 @@
 ;;; init-mail.el --- Emacs configuration for gmail.
 ;;; Commentary:
-;;; Install mu4e, isync (for mbsync), and gpg2 via apt.
+;;; Install mu4e, isync (for mbsync), gpg2, and libxml2 via apt.
 ;;; Encrypt password files and place them in designated folders with designated names
 ;;; Note mbsync configuration is in this repository under mu4e/.mbsyncrc
 ;;; Requires Emacs to be compiled with libxml2 (see configure.ac in Emacs source for details)
@@ -98,6 +98,23 @@
                 (smtpmail-smtp-service . 587)
                 (smtpmail-debug-info . t)
                 (smtpmail-debug-verbose . t)))))
+
+(defun my-render-html-message ()
+  "Rendering email."
+  (let ((dom (libxml-parse-html-region (point-min) (point-max))))
+    (erase-buffer)
+    (shr-insert-document dom)
+    (goto-char (point-min))))
+
+(defun mu4e-my-show-in-browser ()
+  "Show the daggum email."
+  (interactive)
+  (mu4e-action-view-in-browser (mu4e-action-view-in-browser (mu4e-message-at-point t))))
+
+(add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+;; (setq mu4e-html2text-command "html2text -utf8")
+(setq browse-url-browser-function 'eww-browse-url)
+(setq mu4e-html2text-command 'my-render-html-message)
 
 (provide 'init-mail)
 ;;; init-mail.el ends here
