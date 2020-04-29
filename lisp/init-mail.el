@@ -1,9 +1,6 @@
 ;;; init-mail.el --- Emacs configuration for gmail.
 ;;; Commentary:
-;;; Install mu4e, isync (for mbsync), gpg2, and libxml2 via apt.
-;;; Encrypt password files and place them in designated folders with designated names
-;;; Note mbsync configuration is in this repository under mu4e/.mbsyncrc
-;;; Requires Emacs to be compiled with libxml2 (see configure.ac in Emacs source for details)
+;;; Refer to the README for dependencies and installing EMACS with support for mu4e.
 ;;; Code:
 (require 'init-elpa)
 
