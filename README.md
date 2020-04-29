@@ -3,7 +3,7 @@
 ## Installation
 
 ### Emacs
-Because this configuration uses mu4e, it's best to install from [source}(http://ftp.gnu.org/gnu/emacs/), unpacking everything using ```tar -xzvf emacs-26.3.tar.gz```. 
+Because this configuration uses mu4e, it's best to install from [source](http://ftp.gnu.org/gnu/emacs/), unpacking everything using ```tar -xzvf emacs-26.3.tar.gz```. 
 
 Emacs has a lot of dependencies: ```sudo apt install libgtk2.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev```. Before compiling, be sure to use ```./configure``` from within the Emacs directory; it will provide information on missing dependencies.
 
