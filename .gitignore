@@ -12,6 +12,7 @@ eshell
 session.*
 .lsp-session*
 *.save
+bookmarks
 transient/
 request/
 url/
