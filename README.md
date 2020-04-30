@@ -16,7 +16,7 @@ For Rust development, download latest rust-analyzer release and place in ```~/.c
 For Python development, install python language server: ```pip3 install 'python-language-server[all]'```
 
 ### Emacs Mail Client
-If you don't want this functionality, comment the line ```(require 'init-mail)``` in ```init.el```. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to Install mu4e, isync and gpg2 via apt: ```sudo apt install mu4e isync gpg2```.
+If you don't want this functionality, comment the line ```(require 'init-mail)``` in ```init.el```. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to Install mu4e, isync, html2text and gpg2 via apt: ```sudo apt install mu4e isync html2text gpg2```.
 
 Encrypt password files via gpg2: ```gpg2 -c .authinfo``` 
 
@@ -29,9 +29,24 @@ Now, mail can be synced using the config file. Since it's in an unconventional d
 The last step is to index the messages with mu: ```mu index --maildir="~/Mail"```.
 
 ## Run Emacs Daemon
-To start an Emacs server (i.e. run Emacs as a daemon), execute ```systemctl --user enable emacs```.
+When installing from source, it appears that the ```emacs.service``` file does not get created. If it does, it doesn't get put where it needs to, so starting an Emacs server (i.e. running Emacs as a daemon) by executing ```systemctl --user enable emacs``` does not work. I created my own systemd entry in ```~/.config/systemd/user/emacs.service``` as described [here](https://www.emacswiki.org/emacs/EmacsAsDaemon):
+```
+[Unit]
+Description=Emacs texteditor
+Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
 
-To run an Emacs client, either run ```emacsclient -create-frame --alternate-editor=""```, or create a Desktop entry in ```.local/share/applications```:
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/emacs --daemon
+ExecStop=/usr/local/bin/emacsclient --eval "(kill-emacs)"
+Environment=SSH_AUTH_SOCK=%t/keyring/ssh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+```
+
+To run an Emacs client, either run ```emacsclient -create-frame --alternate-editor=""```, or create a Desktop entry in ```.local/share/applications\emacsclient.desktop```:
 
 ```
 [Desktop Entry]
