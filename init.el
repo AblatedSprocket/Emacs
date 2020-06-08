@@ -7,7 +7,7 @@
 ;;; Code:
 
 ;; Uncomment this on new installation.
-;; (package-initialize)
+(package-initialize)
 
 (package-refresh-contents)
 

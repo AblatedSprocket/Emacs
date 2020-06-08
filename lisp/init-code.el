@@ -6,8 +6,11 @@
 
 (require-package 'company-lsp)
 (require-package 'lsp-mode)
+(require-package 'lsp-ui)
+(require-package 'lsp-treemacs)
 (require-package 'magit)
 (require-package 'rainbow-delimiters)
+(require-package 'treemacs-magit)
 
 (require 'company-lsp)
 (require 'init-ui)

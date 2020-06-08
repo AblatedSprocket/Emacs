@@ -1,8 +1,9 @@
 *~
-places
-\.recentf
-\.smex-items
+/.recentf
+/.smex-items
+/.cache
 ido.last
+places
 projectile-bookmarks.eld
 projectile.cache
 auto-save-list

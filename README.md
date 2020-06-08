@@ -5,7 +5,7 @@
 ### Emacs
 Because this configuration uses mu4e, it's best to install from [source](http://ftp.gnu.org/gnu/emacs/), unpacking everything using ```tar -xzvf emacs-26.3.tar.gz```. 
 
-Emacs has a lot of dependencies: ```sudo apt install libgtk2.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev```. Before compiling, be sure to use ```./configure``` from within the Emacs directory; it will provide information on missing dependencies.
+Emacs has a lot of dependencies: ```sudo apt install libgtk3.0-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev```. Before compiling, be sure to use ```./configure --with-xwidgets``` from within the Emacs directory; it will provide information on missing dependencies.
 
 ### Emacs Development
 Create repo in ```~/.emacs.d/```
@@ -18,7 +18,7 @@ For Python development, install python language server: ```pip3 install 'python-
 ### Emacs Mail Client
 If you don't want this functionality, comment the line ```(require 'init-mail)``` in ```init.el```. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to Install mu4e, isync, html2text and gpg2 via apt: ```sudo apt install mu4e isync html2text gpg2```.
 
-Encrypt password files via gpg2: ```gpg2 -c .authinfo``` 
+Create a file whose contents is your mail password and encrypt via gpg2: ```gpg2 -c .authinfo``` 
 
 Remove original files and place the encrypted ones in folders with names to match the references in ```mu4e/.mbsyncrc```.
 

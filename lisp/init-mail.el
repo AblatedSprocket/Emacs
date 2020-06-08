@@ -84,6 +84,16 @@
   (interactive)
   (mu4e-action-view-in-browser (mu4e-action-view-in-browser (mu4e-message-at-point t))))
 
+(defun mu4e-view-in-browser-webkit (msg)
+  "View the email MSG in embedded browser."
+  (let ((url (concat "file://" (mu4e~write-body-to-html msg))))
+    (xwidget-webkit-browse-url url)))
+
+(defun search-for-sender (msg)
+  "Search for MSG messages sent by the sender of the message at point."
+  (mu4e-headers-search
+    (concat "from:" (cdar (mu4e-message-field msg :from)))))
+
 (global-set-key (kbd "C-c C-o") 'org-capture)
 
 (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
@@ -97,10 +107,10 @@
 (add-hook 'mu4e-headers-mode-hook
           (defun mu4e-change-head()
             (interactive)
-            (setq mu4e-headers-fields `((:date . 25)
+            (setq mu4e-headers-fields `((:date . 22)
                                         (:flags . 6)
                                         (:from . 22)
-                                        (:thread-subject . ,(-(window-body-width) 70))
+                                        (:thread-subject . ,(- (window-body-width) 70))
                                         (:size . 7)))))
 
 (add-hook 'mu4e-compose-mode-hook
@@ -111,6 +121,8 @@
             (use-hard-newlines -1)
             (flyspell-mode)))
 
+(add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
+(add-to-list 'mu4e-view-actions '("Webkit" . mu4e-view-in-browser-webkit) t)
 (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
 (provide 'init-mail)

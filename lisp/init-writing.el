@@ -7,7 +7,6 @@
 (require-package 'org)
 (require-package 'markdown-mode)
 
-(require 'markdown-mode)
 (require 'org)
 
 (defun set-printing-font ()
@@ -15,8 +14,6 @@
   (face-remap-add-relative 'default '(:family "Gentium")))
 
 (setq truncate-lines nil)
-
-(add-hook 'text-mode-hook 'set-printing-font)
 
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 
