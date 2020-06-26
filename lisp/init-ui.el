@@ -1,4 +1,4 @@
-;;; init-ui.el --- INitializes UI configuration for Emacs. General configuration for
+;;; init-ui.el --- Initializes UI configuration for Emacs. General configuration for
 ;;; all modes is encapsulated by this file.
 ;;; Commentary:
 ;;; - Changes yes/no responses to y/n
@@ -9,6 +9,7 @@
 ;;; Code:
 (require 'init-elpa)
 (require-package 'atom-one-dark-theme)
+(require-package 'material-theme)
 (require-package 'company)
 (require-package 'flycheck)
 (require-package 'rg)
@@ -16,20 +17,22 @@
 (require 'company)
 (require 'saveplace)
 
+;; Set color theme
+;; (load-theme 'atom-one-dark t)
+(load-theme 'material-light t)
 ;; Highlight matching parentheses
 (show-paren-mode 1)
+(menu-bar-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
 
+
+(blink-cursor-mode 1)
 ;; Highlight current line
 (global-hl-line-mode 1)
-
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
-(global-set-key (kbd "M-F") 'forward-to-word)
-(global-set-key (kbd "M-f") 'forward-word)
-(global-set-key (kbd "M-b") 'backward-word)
-(global-set-key (kbd "M-B") 'backward-to-word)
+(global-eldoc-mode -1)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -45,14 +48,11 @@
 (setq-default cursor-type 'bar)
 (set-cursor-color "#cccccc")
 
+;; Load .bashrc
+(setq shell-command-switch "-ic")
 (setq company-minimum-prefix-length 1)
 
 (setq inhibit-startup-message t)
-(menu-bar-mode -1)
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
 
 (setq
  x-select-enable-clipboard t
@@ -61,8 +61,6 @@
  apropos-do-all t
  mouse-yank-at-point t)
 
-(load-theme 'atom-one-dark t)
-(blink-cursor-mode 1)
 ;; Keep track of saved places in ~/.emacs.d/places
 (setq save-place-file (concat user-emacs-directory "places"))
 ;; Emacs can automaticall create backup files. This tells Emacs to
@@ -73,8 +71,16 @@
 (setq ring-bell-function 'ignore)
 (setq company-tooltip-align-annotations t)
 
+(defun whack-whitespace (arg)
+    "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work.  It skips over to the next whitespace and then whacks it all to the next word."
+      (interactive "P")
+      (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+        (re-search-forward regexp nil t)
+        (replace-match "" nil nil)))
+
 (add-hook 'after-init-hook 'global-flycheck-mode)
-(add-hook 'after-init-hook 'company-mode)
+(add-hook 'after-init-hook 'global-company-mode)
+(add-hook 'after-init-hook 'global-visual-line-mode)
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

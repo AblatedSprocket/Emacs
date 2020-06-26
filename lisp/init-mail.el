@@ -94,15 +94,10 @@
   (mu4e-headers-search
     (concat "from:" (cdar (mu4e-message-field msg :from)))))
 
-(global-set-key (kbd "C-c C-o") 'org-capture)
 
-(add-hook 'mu4e-view-mode-hook 'visual-line-mode)
+;; TODO: Verify this is not required.
+;; (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
 ;; <tab> to navigate to links, <RET> to open them in browser
-(add-hook 'mu4e-view-mode-hook
-          (lambda()
-            (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
-            (local-set-key (kbd "<tab>") 'shr-next-link)
-            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
 
 (add-hook 'mu4e-headers-mode-hook
           (defun mu4e-change-head()

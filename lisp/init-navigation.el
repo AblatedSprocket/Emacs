@@ -43,14 +43,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq ido-auto-merge-work-directories-length -1)
 (setq ido-use-virtual-buffers t)
 
-;; Override beginning of line behavior
-(global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
-
-;; Shows a list of buffers
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
-(global-set-key (kbd "C-c C-v") 'neotree-toggle)
-
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)

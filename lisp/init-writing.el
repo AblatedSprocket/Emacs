@@ -4,10 +4,7 @@
 ;;; Code:
 (require 'init-elpa)
 
-(require-package 'org)
 (require-package 'markdown-mode)
-
-(require 'org)
 
 (defun set-printing-font ()
   "Set font to Gentium."

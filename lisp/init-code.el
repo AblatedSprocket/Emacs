@@ -6,7 +6,7 @@
 
 (require-package 'company-lsp)
 (require-package 'lsp-mode)
-(require-package 'lsp-ui)
+;; (require-package 'lsp-ui)
 (require-package 'lsp-treemacs)
 (require-package 'magit)
 (require-package 'rainbow-delimiters)
@@ -18,9 +18,6 @@
 
 (push 'company-lsp company-backends)
 
-(define-key lsp-mode-map (kbd "C-c C-e") 'lsp-describe-thing-at-point)
-(define-key lsp-mode-map (kbd "C-c C-a") 'lsp-find-references)
-
 (defun set-indentation ()
   "Set indentation style."
   (setq indent-tabs-mode nil))
@@ -30,12 +27,12 @@
   (interactive)
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 
-(global-set-key (kbd "C-;") 'toggle-comment-on-line)
-
 (setq company-idle-delay 0)
 (setq company-selection-wrap-around nil)
 (setq company-tooltip-align-annotations t)
 (setq truncate-lines nil)
+;; (setq lsp-signature-auto-activate t)
+(setq lsp-signature-doc-lines 1)
 
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook 'set-indentation)

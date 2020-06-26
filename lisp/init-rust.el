@@ -17,11 +17,16 @@
 (setq lsp-rust-server 'rust-analyzer)
 (setq lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer"))
 
+(defun cargo-build (arg)
+  "Build with input ARG."
+  (interactive "MCargo Build arguments: ")
+  (compile (concat "cargo build " arg)))
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(add-to-list 'exec-path "/home/andy/.cargo/bin/")
+
 (add-hook 'rust-mode-hook 'lsp)
-(add-hook 'rust-mode-hook 'company-mode)
-(add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
+(add-hook 'rust-mode-hook 'flycheck-rust-setup)
 
 (provide 'init-rust)
 ;;; init-rust.el ends here
