@@ -1,19 +1,29 @@
 # Emacs Configuration
 
 ## Installation
+The installation documentation is for Ubuntu and other distributions that use apt. I am pretty sure there are some differences in the libraries provided by other package managers. For Emacs to pick up the configuration provided, it must be placed in ```~/.emacs.d/``` if using Emacs 26, or ```/.config/emacs/``` if using Emacs 27 or newer. The installation process for both versions of Emacs (from source) is provided below.
 
-### Emacs
+### Emacs 26
 Because this configuration uses mu4e, it's best to install from [source](http://ftp.gnu.org/gnu/emacs/), unpacking everything using ```tar -xzvf emacs-26.3.tar.gz```. 
 
-Emacs has a lot of dependencies: ```sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev```. Before compiling, be sure to use ```./configure --with-xwidgets``` from within the Emacs directory; it will provide information on missing dependencies.
+Emacs has a lot of dependencies: ```sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev```. You will want to run a configuration script, but first execute ```./autogen.sh``` from within the Emacs directory to create the configuration script. Then run ```sudo ./configure --with-xwidgets``` to configure everything and provide information on missing dependencies. Follow this up with ```sudo make && sudo make install``` and Emacs should install.
 
-### Emacs Development
-Create repo in ```~/.emacs.d/```
-On first install, uncomment the line ```(package-initialize)``` in the ```init.el``` file. This line can be commented out again once Emacs successfully runs.
+### Emacs 27
+The process used here to install Emacs 27 is slightly different. For one, I've abandoned using xwidgets in conjunction with mu4e, which removed a dependency. Note that my actual dependencies match the list for Emacs 26 provided above. That said, the install packages might need revising on a new installation. Here goes. First install the dependencies: ```sudo apt install libgtk-3-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev texinfo```. Run ```./autogen.sh``` to create the configuration script, then run that using ```sudo ./configure --with-json --with-modules --without-pop``` to use the new native JSON parsing and better terminal support with vterm. According to the documentation, --with-json should not be necessary, but I added it for good measure.
 
-For Rust development, download latest rust-analyzer release and place in ```~/.cargo/bin```. Add executable permissions. LISP won't necessarily provide any input until you build a project.
+### Emacs Setup
+On first install, uncomment these lines in the ```init.el``` file:
+```
+(package-refresh-contents)
+(package-initialize)
+```
+These lines can be commented out again once Emacs successfully runs.
 
-For Python development, install python language server: ```pip3 install 'python-language-server[all]'```
+The config in this repository provides a basic writing environment, as well as development support for Rust and Python projects. Email managements is also provided, but that is covered in its own section.
+
+For Rust development, download latest rust-analyzer release and place in ```~/.cargo/bin```. Add executable permissions by executing ```sudo chmod +x rust-analyzer``` from within this directory. This configuration uses LSP-mode for intellisense and other IDE features. LSP won't necessarily provide any input until you build a project.
+
+For Python development, install python language server: ```pip3 install 'python-language-server[all]'```. Again, Emacs uses Python development features via LSP-mode.
 
 ### Emacs Mail Client
 If you don't want this functionality, comment the line ```(require 'init-mail)``` in ```init.el```. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to Install mu4e, isync, html2text and gpg2 via apt: ```sudo apt install mu4e isync html2text gpg2```.

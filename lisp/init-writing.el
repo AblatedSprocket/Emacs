@@ -5,6 +5,7 @@
 (require 'init-elpa)
 
 (require-package 'markdown-mode)
+(require-package 'olivetti)
 
 (defun set-printing-font ()
   "Set font to Gentium."

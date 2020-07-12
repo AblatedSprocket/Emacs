@@ -21,21 +21,16 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
 (global-set-key (kbd "C-c C-v") 'neotree-toggle)
+(global-set-key (kbd "C-'") 'toggle-comment-on-line)
 
-;; Programming keybindings
-(add-hook 'prog-mode-hook
-          (lambda()
-            (local-set-key (kbd "C-;") 'toggle-comment-on-line)))
+;; Flyspell keybindings
+
 
 ;; LSP keybindings
-;; (add-hook lsp-mode-hook
-          ;; (lambda()
-            ;; (local-set-key (kbd "C-c C-a") 'lsp-find-references)
-            ;; (local-set-key (kbd "C-c C-e") 'lsp-describe-thing-at-point)
-            ;; (local-set-key (kbd "C-c C-r") 'lsp-rename)))
 (define-key lsp-mode-map (kbd "C-c C-e") 'lsp-describe-thing-at-point)
 (define-key lsp-mode-map (kbd "C-c C-a") 'lsp-find-references)
 (define-key lsp-mode-map (kbd "C-c C-r") 'lsp-rename)
+
 ;; Mu4e keybindings
 (add-hook 'mu4e-view-mode-hook
           (lambda()

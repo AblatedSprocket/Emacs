@@ -5,13 +5,11 @@
 ;; You may delete these explanatory comments.
 
 ;;; Code:
-(package-refresh-contents)
-
 ;; Uncomment this on new installation.
+;; (package-refresh-contents)
 ;; (package-initialize)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-;; (add-to-list 'custom-theme-load-path (expand-file-name "themes/" user-emacs-directory))
 
 (require 'init-elpa)
 (require 'init-ui)

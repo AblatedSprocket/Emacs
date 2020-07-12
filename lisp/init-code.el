@@ -38,6 +38,6 @@
 (add-hook 'prog-mode-hook 'set-indentation)
 (add-hook 'prog-mode-hook 'linum-mode)
 (add-hook 'prog-mode-hook 'toggle-truncate-lines)
-
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (provide 'init-code)
 ;;; init-code.el ends here

@@ -48,8 +48,8 @@
 (setq-default cursor-type 'bar)
 (set-cursor-color "#cccccc")
 
-;; Load .bashrc
-(setq shell-command-switch "-ic")
+;; Load .brick
+(setq shell-command-switch "-c")
 (setq company-minimum-prefix-length 1)
 
 (setq inhibit-startup-message t)
