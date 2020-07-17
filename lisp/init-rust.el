@@ -15,7 +15,11 @@
 (require 'lsp-mode)
 
 (setq lsp-rust-server 'rust-analyzer)
-(setq lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer"))
+
+(setq lsp-rust-analyzer-server-command '("~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-analyzer"))
+
+(setenv "PATH" (concat "/home/andy/.cargo/bin:" (getenv "PATH")))
+(add-to-list 'exec-path "/home/andy/.cargo/bin")
 
 (defun cargo-build (arg)
   "Build with input ARG."
@@ -23,7 +27,6 @@
   (compile (concat "cargo build " arg)))
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-(add-to-list 'exec-path "/home/andy/.cargo/bin/")
 
 (add-hook 'rust-mode-hook 'lsp)
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)

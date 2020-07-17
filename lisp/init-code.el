@@ -30,6 +30,7 @@
 (setq company-idle-delay 0)
 (setq company-selection-wrap-around nil)
 (setq company-tooltip-align-annotations t)
+(setq electric-pair-mode 1)
 (setq truncate-lines nil)
 ;; (setq lsp-signature-auto-activate t)
 (setq lsp-signature-doc-lines 1)
