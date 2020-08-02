@@ -18,6 +18,7 @@
       ("Contractor" "`/.config/emacs/icons/tools.svg" nil nil :ascent center)
       ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
       ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
+      ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
       ("todo" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
       ("Organization" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
       ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
@@ -31,7 +32,7 @@
 (setq org-journal-enable-agenda-integration t)
 (setq org-journal-skip-carryover-drawers t)
 (setq org-agenda-files '("~/org/todo.org" "~/org/life.org"))
-;; (add-to-list 'org-agenda-files org-journal-dir)
+(add-to-list 'org-agenda-files org-journal-dir)
 (setq org-mu4e-convert-to-html t)
 (setq org-mu4e-link-query-in-headers-mode nil)
 (setq org-capture-templates

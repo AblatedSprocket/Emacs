@@ -9,7 +9,7 @@ Because this configuration uses mu4e, it's best to install from [source](http://
 Emacs has a lot of dependencies: ```sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev```. You will want to run a configuration script, but first execute ```./autogen.sh``` from within the Emacs directory to create the configuration script. Then run ```sudo ./configure --with-xwidgets``` to configure everything and provide information on missing dependencies. Follow this up with ```sudo make && sudo make install``` and Emacs should install.
 
 ### Emacs 27
-The process used here to install Emacs 27 is slightly different. Again, download the [source code](http://git.savannah.gnu.org/cgit/emacs.git). That said, the install packages might need revising on a new installation. Here goes. First install the dependencies: ```sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev texinfo```. Run ```./autogen.sh``` to create the configuration script, then run that using ```sudo ./configure --with-json --with-modules --with-xwidgets --without-pop``` to use the new native JSON parsing and better terminal support with vterm. According to the documentation, --with-json should not be necessary, but I added it for good measure. Once complete, run ```sudo make && sudo make install``` to get everything installed.
+The process used here to install Emacs 27 is slightly different. Again, download the [source code](http://git.savannah.gnu.org/cgit/emacs.git). That said, the install packages might need revising on a new installation. Here goes. First install the dependencies: ```sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev libtiff-dev libgnutls28-dev libncurses5-dev texinfo auctex```. Most of the dependencies I can remember my motivation for installing: ```libgtk-3-dev```, and ```libwebkit2gtk-4.o-dev``` are for xwidget support that I wanted for viewing email in a web browser. It doesn't work particularly well, but xwidget support might also be useful for previewing LaTeX documents. I think libncurses5-dev is also for xwebkit support. Everything referencing a file extension just provides support for Emacs GUI to render that file type. Run ```./autogen.sh``` to create the configuration script, then run that using ```sudo ./configure --with-json --with-modules --with-xwidgets --without-pop``` to use the new native JSON parsing and better terminal support with vterm. According to the documentation, --with-json should not be necessary, but I added it for good measure. Once complete, run ```sudo make && sudo make install``` to get everything installed.
 
 ### Emacs Setup
 On first install, uncomment these lines in the ```init.el``` file:
@@ -71,3 +71,14 @@ Terminal=false
 Categories=Development;TextEditor;Utility;
 StartupWMClass=Emacs
 ```
+
+## Usage
+
+### Python
+There is not much to my Python development scheme. Current linting is a bit over the top, I need to adjust some configuration to tone it down a notch and make things a bit more manageable.
+
+### Rust
+Like Python, development for Rust is pretty low-level at this point. There are some key bindings adding behavior I wanted. Look at ```init-bindings.el``` for details. At some point I'll add a section about developing Rust for embedded systems.
+
+### LaTeX
+LaTeX support is provided by AUCTex, listed in the installation section. I'm mainly including this section because I forget how to render a preview of LaTeX documents.
