@@ -12,6 +12,7 @@
 ;;; Code:
 (require 'init-elpa)
 
+(require-package 'multiple-cursors)
 (require-package 'projectile)
 (require-package 'smex)
 (require-package 'treemacs)
@@ -46,9 +47,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
+;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 (projectile-global-mode)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 ;; Enable move point from window to window using Shift and the arrow keys
 (windmove-default-keybindings)

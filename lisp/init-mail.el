@@ -6,10 +6,7 @@
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
 
-(require-package 'org-mime)
-
 (require 'mu4e)
-(require 'org-mu4e)
 (require 'smtpmail)
 
 (when (fboundp 'imagemagick-register-types)
@@ -72,13 +69,6 @@
 (setq mu4e-context-policy 'pick-first)
 (setq mu4e-compose-context-policy 'always-ask)
 
-(setq org-mu4e-convert-to-html t)
-(setq org-mu4e-link-query-in-headers-mode nil)
-
-(setq org-capture-templates
-      '(("t" "todo" entry (file+headline "~/Documents/todo.org" "Tasks")
-         "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
-
 (defun mu4e-show-in-browser ()
   "Show an email in the default web browser."
   (interactive)
@@ -111,10 +101,11 @@
 (add-hook 'mu4e-compose-mode-hook
           (defun compose-mail ()
             "Settings for mail composition."
-            (visual-line-mode)
-            (org-mu4e-compose-org-mode)
-            (use-hard-newlines -1)
-            (flyspell-mode)))
+            (use-hard-newlines -1)))
+
+(add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
+(add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
+(add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
 
 (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
 (add-to-list 'mu4e-view-actions '("Webkit" . mu4e-view-in-browser-webkit) t)

@@ -27,6 +27,11 @@
   (interactive)
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 
+(setq sql-postgres-login-params
+      '((user :default "postgres")
+        (database :default "diagnostics")
+        (server :default "localhost")        
+        (port :default 5432)))
 (setq company-idle-delay 0)
 (setq company-selection-wrap-around nil)
 (setq company-tooltip-align-annotations t)

@@ -15,9 +15,6 @@
 
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 
-(add-hook 'org-mode-hook 'set-printing-font)
-(add-hook 'org-mode-hook 'flyspell-mode)
-(add-hook 'org-mode-hook 'toggle-truncate-lines)
 
 (provide 'init-writing)
 ;;; init-writing.el ends here

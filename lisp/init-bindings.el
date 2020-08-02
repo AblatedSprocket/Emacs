@@ -2,9 +2,11 @@
 ;;; Commentary:
 ;;; - All keybindings belong in this file for easy tracking and conflict resolution.
 ;;; Code:
-(require 'init-ui)
+
 (require 'init-code)
+(require 'init-navigation)
 (require 'init-rust)
+(require 'init-ui)
 
 ;; Vanilla keybindings for any mode
 (global-set-key (kbd "C-c C-<up>") 'toggle-frame-maximized)
@@ -22,7 +24,8 @@
 (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
 (global-set-key (kbd "C-c C-v") 'neotree-toggle)
 (global-set-key (kbd "C-'") 'toggle-comment-on-line)
-
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-x k") 'kill-buffer-and-window)
 ;; Flyspell keybindings
 
 
@@ -38,8 +41,14 @@
             (local-set-key (kbd "<tab>") 'shr-next-link)
             (local-set-key (kbd "<backtab>") 'shr-previous-link)))
 
+;; Multiple cursors keybindings
+(global-set-key (kbd "C-c C-m") 'mc/edit-lines)
+
 ;; Org keybindings
 (global-set-key (kbd "C-c C-o") 'org-capture)
+
+;; Projectile keybindings
+
 
 ;; Python keybindings
 (add-hook 'python-mode-hook
@@ -52,6 +61,10 @@
     (interactive)
     (compile "cargo check")))
 (define-key rust-mode-map (kbd "C-c C-c b") 'cargo-build)
+(define-key rust-mode-map (kbd "C-c C-c k")
+  (lambda ()
+    (interactive)
+    (compile "cargo check")))
 (define-key rust-mode-map (kbd "C-c C-c t")
   (lambda ()
     (interactive)
