@@ -2,10 +2,16 @@
 ;;; Commentary:
 ;;; - Enable thesaurus
 ;;; Code:
-(require 'init-elpa)
-
+(require-package 'auctex)
+(require-package 'company-auctex)
 (require-package 'markdown-mode)
 (require-package 'olivetti)
+
+(require 'init-elpa)
+(require 'init-ui)
+(require 'company-auctex)
+
+(latex-preview-pane-enable)
 
 (defun set-printing-font ()
   "Set font to Gentium."
@@ -13,8 +19,8 @@
 
 (setq truncate-lines nil)
 
-(add-hook 'markdown-mode-hook 'flyspell-mode)
-
+;; TODO: Verify that this is unnecessary.
+;; (add-hook 'markdown-mode-hook 'flyspell-mode)
 
 (provide 'init-writing)
 ;;; init-writing.el ends here

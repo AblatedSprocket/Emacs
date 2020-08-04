@@ -8,7 +8,7 @@
 
 ;;; Code:
 (require 'init-elpa)
-(require-package 'auctex)
+
 (require-package 'latex-preview-pane)
 (require-package 'atom-one-dark-theme)
 (require-package 'company)
@@ -19,6 +19,9 @@
 (require 'company)
 (require 'saveplace)
 
+(require-package 'auctex)
+(require-package 'company-auctex)
+(require 'company-auctex)
 (latex-preview-pane-enable)
 
 ;; Set color theme
@@ -35,10 +38,11 @@
 (blink-cursor-mode 1)
 ;; Highlight current line
 (global-hl-line-mode 1)
+(global-linum-mode 1)
 (global-eldoc-mode -1)
 
 (fset 'yes-or-no-p 'y-or-n-p)
-
+;; (company-auctex-init)
 ;; No need for ~ files when editing
 (setq create-lockfiles nil)
 

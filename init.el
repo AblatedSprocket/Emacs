@@ -33,7 +33,7 @@
  '(custom-safe-themes
    '("d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" default))
  '(package-selected-packages
-   '(paredit org-mime smtpmail-multi cargo-outdated pyvenv-mode)))
+   '(fic-mode auctex paredit org-mime smtpmail-multi cargo-outdated pyvenv-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

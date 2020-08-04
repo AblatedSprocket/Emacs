@@ -81,4 +81,14 @@ There is not much to my Python development scheme. Current linting is a bit over
 Like Python, development for Rust is pretty low-level at this point. There are some key bindings adding behavior I wanted. Look at ```init-bindings.el``` for details. At some point I'll add a section about developing Rust for embedded systems.
 
 ### LaTeX
-LaTeX support is provided by AUCTex, listed in the installation section. I'm mainly including this section because I forget how to render a preview of LaTeX documents.
+LaTeX support is provided by AUCTeX, listed in the installation section. I'm mainly including this section because I forget how to render a preview of LaTeX documents. The command to preview is ```latex-preview-pane-mode```. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
+
+### Org
+Org-mode is incredibly complex, so I will just document the components that I'm currently using here. When referencing a key binding, ```C``` indicates the control key, ```M``` corresponds to alt, and ```S``` refers to shift. The keybindings here are kind of hard to remember, but when you use the functions within an org file, the minibuffer will more often than not tell you what the kybinding for a function is after it executes.
+
+#### General Org Stuff
+In an org file, a todo can be created to manage tasks. Todos are created using ```C-S-<ENTER>``` or ```M-S-<ENTER>```.
+Headings are created by inserting an asterisk at the start of a line. The asterisk can be demoted a level by typing ```M-<RIGHT>``` and promoted a level by hitting ```M-<LEFT>```. A property can be added to a heading by typing ```C-c C-x p```. A TODO item can be archived by typing ```C-c C-x a```.
+
+#### Org Habit
+Org habit is useful for recurring todos. The main component to habits is that they be scheduled ideally using the ```org-schedule``` command (```C-c C-s```), and within that schedule date, before the closing angle bracket, set a reminder interval and an optional due date interval separated by a slash: ```.+2d``` or ```.+2d/4d```.

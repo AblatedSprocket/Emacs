@@ -5,6 +5,7 @@
 (require 'init-elpa)
 
 (require-package 'company-lsp)
+(require-package 'fic-mode)
 (require-package 'lsp-mode)
 ;; (require-package 'lsp-ui)
 (require-package 'lsp-treemacs)
@@ -13,6 +14,7 @@
 (require-package 'treemacs-magit)
 
 (require 'company-lsp)
+(require 'fic-mode)
 (require 'init-ui)
 (require 'lsp-mode)
 
@@ -45,5 +47,7 @@
 (add-hook 'prog-mode-hook 'linum-mode)
 (add-hook 'prog-mode-hook 'toggle-truncate-lines)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+(add-hook 'prog-mode-hook 'fic-mode)
+(add-hook 'elisp-mode-hook 'fic-mode)
 (provide 'init-code)
 ;;; init-code.el ends here
