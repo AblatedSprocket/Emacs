@@ -13,16 +13,18 @@
 (require 'org-mu4e)
 
 ;; Stuff for icons
-(setq org-agenda-category-icon-alist '(("journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
-      ("Appointment" "~/.config/emacs/icons/bell.svg" nil nil :ascent center)
-      ("Contractor" "`/.config/emacs/icons/tools.svg" nil nil :ascent center)
-      ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
-      ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
-      ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
-      ("todo" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
-      ("Organization" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
-      ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
-      ("Repair" "~/.config/emacs/icons/wrench.svg" nil nil :ascent center)))
+(setq org-agenda-category-icon-alist '(("Appointment" "~/.config/emacs/icons/bell.svg" nil nil :ascent center)
+                                       ("Cleaning" "~/.config/emacs/icons/flower.svg" nil nil :ascent center)
+                                       ("Contractor" "~/.config/emacs/icons/tools.svg" nil nil :ascent center)
+                                       ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
+                                       ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
+                                       ("Learning" "~/.config/emacs/icons/flask.svg" nil nil :ascent center)
+                                       ("life" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
+                                       ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
+                                       ("Organization" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
+                                       ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
+                                       ("Repair" "~/.config/emacs/icons/wrench.svg" nil nil :ascent center)
+                                       ("todo" "~/.config/emacs/icons/gears.svg" nil nil :ascent center)))
 (add-to-list 'org-agenda-custom-commands
              '("x" "Testing tags for negating DONE" tags "-TODO=\"DONE\"" nil nil ))
 

@@ -4,8 +4,6 @@
 ;;; - Changes yes/no responses to y/n
 ;;; - Lock files are no longer generated
 ;;; - Installs ripgrep utilities (requires installation of ripgrep)
-
-
 ;;; Code:
 (require 'init-elpa)
 

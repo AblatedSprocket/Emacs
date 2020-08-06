@@ -26,7 +26,7 @@
 (global-set-key (kbd "C-'") 'toggle-comment-on-line)
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "C-x k") 'kill-buffer-and-window)
-
+(global-set-key (kbd "C-c c") 'list-colors-display)
 ;; Flyspell keybindings
 
 
