@@ -64,7 +64,7 @@
  apropos-do-all t
  mouse-yank-at-point t)
 
-;; Keep track of saved places in ~/.emacs.d/places
+;; Keep track of saved places in ~/.config/emacs/places
 (setq save-place-file (concat user-emacs-directory "places"))
 ;; Emacs can automatically create backup files. This tells Emacs to
 ;; put all backups in ~/.config/emacs/backups.

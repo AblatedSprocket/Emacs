@@ -2,7 +2,7 @@ IMAPAccount gmail
 Host imap.gmail.com
 Port 993
 User andrewwburch
-PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.emacs.d/mu4e/.mbsyncpass-gmail.gpg"
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/mu4e/.mbsyncpass-gmail.gpg"
 AuthMechs LOGIN
 SSLType IMAPS
 SSLVersions TLSv1.2

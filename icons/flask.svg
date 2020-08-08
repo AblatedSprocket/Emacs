@@ -1,15 +1,1 @@
-<?xml version="1.0"?>
-<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-
- <g class="layer">
-  <title>Layer 1</title>
-  <ellipse cx="16" cy="16" fill="#ffff00" id="svg_6" rx="15" ry="15"/>
-  <g id="svg_1">
-   <rect fill="none" height="24" id="svg_2" width="24"/>
-   <rect fill="none" height="24" id="svg_3" width="24"/>
-  </g>
-  <g id="svg_4">
-   <path d="m23.799199,22.4l-5.8,-7.73l0,-4.17l1.35,-1.69c0.26,-0.33 0.03,-0.81 -0.39,-0.81l-5.92,0c-0.42,0 -0.65,0.48 -0.39,0.81l1.35,1.69l0,4.17l-5.8,7.73c-0.49,0.66 -0.02,1.6 0.8,1.6l14,0c0.82,0 1.29,-0.94 0.8,-1.6z" id="svg_5"/>
-  </g>
- </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="15" fill="#9400d3"/><path d="m23.799199,22.4l-5.8,-7.73l0,-4.17l1.35,-1.69c0.26,-0.33 0.03,-0.81 -0.39,-0.81l-5.92,0c-0.42,0 -0.65,0.48 -0.39,0.81l1.35,1.69l0,4.17l-5.8,7.73c-0.49,0.66 -0.02,1.6 0.8,1.6l14,0c0.82,0 1.29,-0.94 0.8,-1.6z" fill="#e0ffff"/></svg>

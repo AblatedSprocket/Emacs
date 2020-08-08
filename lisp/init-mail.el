@@ -16,7 +16,7 @@
 (setq smtpmail-queue-mail nil)
 
 (setq mu4e-maildir (expand-file-name "~/Mail"))
-(setq mu4e-get-mail-command "mbsync -c ~/.emacs.d/mu4e/.mbsyncrc -a")
+(setq mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a")
 (setq mu4e-view-prefer-html t)
 (setq mu4e-update-interval 180)
 (setq mu4e-headers-auto-update t)
