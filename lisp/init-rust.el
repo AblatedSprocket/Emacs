@@ -3,9 +3,7 @@
 ;;; Mode included for Racer compatibility.
 ;;; Code:
 (require 'init-elpa)
-(require-package 'company)
 (require-package 'rust-mode)
-(require-package 'flycheck)
 (require-package 'flycheck-rust)
 
 (require 'company)
@@ -14,20 +12,41 @@
 (require 'flycheck-rust)
 (require 'lsp-mode)
 
-(setq lsp-rust-server 'rust-analyzer)
-
-(setq lsp-rust-analyzer-server-command '("~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-analyzer"))
-
-(setenv "PATH" (concat "/home/andy/.cargo/bin:" (getenv "PATH")))
-(add-to-list 'exec-path "/home/andy/.cargo/bin")
-
+;; Functions
 (defun cargo-build (arg)
   "Build with input ARG."
   (interactive "MCargo Build arguments: ")
   (compile (concat "cargo build " arg)))
 
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+;; Variables
+(setenv "PATH" (concat "/home/andy/.cargo/bin:" (getenv "PATH")))
 
+(setq lsp-rust-analyzer-server-command '("~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-analyzer"))
+(setq lsp-rust-server 'rust-analyzer)
+
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(add-to-list 'exec-path "/home/andy/.cargo/bin")
+
+;; Keybindings
+(define-key rust-mode-map (kbd "C-c C-c c")
+  (lambda ()
+    (interactive)
+    (compile "cargo check")))
+(define-key rust-mode-map (kbd "C-c b") 'cargo-build)
+(define-key rust-mode-map (kbd "C-c r")
+  (lambda ()
+    (interactive)
+    (compile "cargo run")))
+(define-key rust-mode-map (kbd "C-c k")
+  (lambda ()
+    (interactive)
+    (compile "cargo check")))
+(define-key rust-mode-map (kbd "C-c t")
+  (lambda ()
+    (interactive)
+    (compile "cargo test")))
+
+;; Hooks
 (add-hook 'rust-mode-hook 'lsp)
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)
 

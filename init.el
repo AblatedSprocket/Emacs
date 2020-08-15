@@ -13,7 +13,6 @@
 
 (require 'init-elpa)
 (require 'init-ui)
-(require 'init-navigation)
 (require 'init-writing)
 (require 'init-code)
 (require 'init-python)
@@ -21,7 +20,7 @@
 (require 'init-sql)
 (require 'init-mail)
 (require 'init-org)
-(require 'init-bindings)
+(require 'init-dnd)
 
 (provide 'init)
 

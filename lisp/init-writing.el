@@ -11,16 +11,27 @@
 (require 'init-ui)
 (require 'company-auctex)
 
-(latex-preview-pane-enable)
-
+;; Functions
 (defun set-printing-font ()
   "Set font to Gentium."
   (face-remap-add-relative 'default '(:family "Gentium")))
 
-(setq truncate-lines nil)
+;; Variables
+(setq olivetti-body-width 84)
 
-;; TODO: Verify that this is unnecessary.
-;; (add-hook 'markdown-mode-hook 'flyspell-mode)
+(add-to-list 'auto-mode-alist '("\\.txt\\'" . olivetti-mode))
+
+;; Keybindings
+(add-hook 'TeX-mode-hook
+          (lambda()
+            ;; (local-set-key (kbd "C-c r") 'latex-preview-pane-mode)))
+            (local-set-key (kbd "C-c r") 'latex-preview-pane-mode)))
+
+;; Hooks
+(add-hook 'olivetti-mode-hook
+         (lambda()
+           (setq display-line-numbers nil)))
+(add-hook 'olivetti-mode-hook 'set-printing-font)
 
 (provide 'init-writing)
 ;;; init-writing.el ends here

@@ -20,7 +20,7 @@
 
 (add-to-list 'package-archives
 	     '("gnu" . "https://elpa.gnu.org/packages/"))
-(package-initialize)
+;; (package-initialize)
 
 (provide 'init-elpa)
 ;;; init-elpa.el ends here

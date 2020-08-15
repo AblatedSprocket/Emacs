@@ -4,22 +4,24 @@
 ;;; Code:
 (require 'init-elpa)
 
+(require-package 'company-quickhelp)
 (require-package 'company-lsp)
 (require-package 'fic-mode)
 (require-package 'lsp-mode)
-;; (require-package 'lsp-ui)
+(require-package 'lsp-ui)
 (require-package 'lsp-treemacs)
 (require-package 'magit)
 (require-package 'rainbow-delimiters)
 (require-package 'treemacs-magit)
+(require-package 'yasnippet)
 
+(require 'company-box)
 (require 'company-lsp)
 (require 'fic-mode)
 (require 'init-ui)
 (require 'lsp-mode)
 
-(push 'company-lsp company-backends)
-
+;; Functions
 (defun set-indentation ()
   "Set indentation style."
   (setq indent-tabs-mode nil))
@@ -29,25 +31,36 @@
   (interactive)
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 
-(setq sql-postgres-login-params
-      '((user :default "postgres")
-        (database :default "diagnostics")
-        (server :default "localhost")        
-        (port :default 5432)))
+;; Variables
 (setq company-idle-delay 0)
+(setq company-quickhelp-delay 0)
 (setq company-selection-wrap-around nil)
 (setq company-tooltip-align-annotations t)
 (setq electric-pair-mode 1)
-(setq truncate-lines nil)
 ;; (setq lsp-signature-auto-activate t)
 (setq lsp-signature-doc-lines 1)
+(setq lsp-ui-doc-delay 0)
+(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc--inline-ov t)
 
+;; Evaluations
+(company-quickhelp-mode)
+(yas-global-mode 1)
+(push 'company-lsp company-backends)
+
+;; Keybindings
+(define-key lsp-mode-map (kbd "C-c a") 'lsp-find-references)
+(define-key lsp-mode-map (kbd "C-c e") 'lsp-describe-thing-at-point)
+(define-key lsp-mode-map (kbd "C-c r") 'lsp-rename)
+
+;; Hooks
+(add-hook 'elisp-mode-hook 'fic-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'fic-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook 'set-indentation)
-(add-hook 'prog-mode-hook 'linum-mode)
-(add-hook 'prog-mode-hook 'toggle-truncate-lines)
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
-(add-hook 'prog-mode-hook 'fic-mode)
-(add-hook 'elisp-mode-hook 'fic-mode)
+
 (provide 'init-code)
 ;;; init-code.el ends here
