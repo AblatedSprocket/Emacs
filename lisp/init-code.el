@@ -4,8 +4,8 @@
 ;;; Code:
 (require 'init-elpa)
 
-(require-package 'company-quickhelp)
 (require-package 'company-lsp)
+(require-package 'company-quickhelp)
 (require-package 'fic-mode)
 (require-package 'lsp-mode)
 (require-package 'lsp-ui)
