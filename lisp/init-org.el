@@ -5,6 +5,7 @@
 ;;; Code:
 (require-package 'org-journal)
 (require-package 'org-mime)
+(require-package 'org-roam)
 
 (require 'init-writing)
 (require 'init-mail)
@@ -47,7 +48,14 @@
 (setq org-modules '(org-habit))
 (setq org-mu4e-convert-to-html t)
 (setq org-mu4e-link-query-in-headers-mode nil)
-
+(setq org-roam-capture--file-name-default "%<%Y%m%d>")
+(setq org-roam-directory "~/org-roam")
+(setq org-roam-capture-templates
+      '(("r" "roam" plain (function org-roam--capture-get-point)
+         "%?"
+         :file-name "%<%Y%m%d>-${slug}"
+         :head "#+title: ${title}\n"
+         :unnarrowed t)))
 (eval-after-load 'org
   '(org-load-modules-maybe t))
 
@@ -57,8 +65,13 @@
 
 ;; Keybindings
 (global-set-key (kbd "C-c o") 'org-capture)
+(global-set-key (kbd "C-c C-r c") 'org-roam-capture)
+(global-set-key (kbd "C-c C-r f") 'org-roam-find-file)
+(global-set-key (kbd "C-c C-r g") 'org-roam-graph)
+(global-set-key (kbd "C-c C-r i") 'org-roam-insert)
 
 ;; Hooks
+(add-hook 'after-init-hook 'org-roam-mode)
 (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 (add-hook 'org-mode-hook 'flyspell-mode)

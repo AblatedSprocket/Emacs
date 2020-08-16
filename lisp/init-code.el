@@ -15,7 +15,6 @@
 (require-package 'treemacs-magit)
 (require-package 'yasnippet)
 
-(require 'company-box)
 (require 'company-lsp)
 (require 'fic-mode)
 (require 'init-ui)
