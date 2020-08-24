@@ -104,7 +104,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
 (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
 (global-set-key (kbd "C-c c") 'list-colors-display)
-(global-set-key (kbd "C-c f") 'treemacs)
+(global-set-key (kbd "C-c d") 'treemacs)
 (global-set-key (kbd "C-c m") 'mc/edit-lines)
 (global-set-key (kbd "C-c p") 'treemacs-display-current-project-exclusively)
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)

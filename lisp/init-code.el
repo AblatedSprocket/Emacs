@@ -45,12 +45,17 @@
 ;; Evaluations
 (company-quickhelp-mode)
 (yas-global-mode 1)
+
 (push 'company-lsp company-backends)
+(with-eval-after-load 'lsp-mode
+  (setq lsp-modeline-diagnostics-scope :project))
 
 ;; Keybindings
-(define-key lsp-mode-map (kbd "C-c a") 'lsp-find-references)
+(define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
 (define-key lsp-mode-map (kbd "C-c e") 'lsp-describe-thing-at-point)
+(define-key lsp-mode-map (kbd "C-c f") 'lsp-find-references)
 (define-key lsp-mode-map (kbd "C-c r") 'lsp-rename)
+(define-key lsp-mode-map (kbd "C-c s") 'lsp-treemacs-symbols)
 
 ;; Hooks
 (add-hook 'elisp-mode-hook 'fic-mode)
