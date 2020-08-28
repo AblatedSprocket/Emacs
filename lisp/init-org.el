@@ -33,9 +33,9 @@
                                        ("Organizing" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
                                        ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
                                        ("Todo" "~/.config/emacs/icons/gears.svg" nil nil :ascent center)))
-(setq org-agenda-files '("~/org/Todo.org" "~/org/Life.org"))
+(setq org-agenda-files '("~/org/tasks/Todo.org"))
 (setq org-capture-templates
-      '(("t" "todo" entry (file+headline "~/org/Todo.org" "Tasks")
+      '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
          "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
 (setq org-directory "~/org")
 (setq org-journal-date-format "%A, %B %d %Y")
@@ -64,7 +64,7 @@
 (add-to-list 'org-agenda-files org-journal-dir)
 
 ;; Keybindings
-(global-set-key (kbd "C-c o") 'org-capture)
+(global-set-key (kbd "C-o") 'org-capture)
 (global-set-key (kbd "C-c C-r c") 'org-roam-capture)
 (global-set-key (kbd "C-c C-r f") 'org-roam-find-file)
 (global-set-key (kbd "C-c C-r g") 'org-roam-graph)

@@ -3,6 +3,7 @@
 ;;; Mode included for Racer compatibility.
 ;;; Code:
 (require 'init-elpa)
+(require 'init-code)
 (require-package 'rust-mode)
 (require-package 'flycheck-rust)
 
@@ -28,10 +29,6 @@
 (add-to-list 'exec-path "/home/andy/.cargo/bin")
 
 ;; Keybindings
-(define-key rust-mode-map (kbd "C-c C-c c")
-  (lambda ()
-    (interactive)
-    (compile "cargo check")))
 (define-key rust-mode-map (kbd "C-c b") 'cargo-build)
 (define-key rust-mode-map (kbd "C-c r")
   (lambda ()
@@ -45,6 +42,12 @@
   (lambda ()
     (interactive)
     (compile "cargo test")))
+(define-key rust-mode-map "'" 'electric-pair)
+(define-key rust-mode-map "\"" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "[" 'electric-pair)
+(define-key rust-mode-map "{" 'electric-pair)
 
 ;; Hooks
 (add-hook 'rust-mode-hook 'lsp)

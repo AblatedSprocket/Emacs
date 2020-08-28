@@ -5,8 +5,10 @@
 (require 'init-elpa)
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
-
 (require 'mu4e)
+;; Remove if mu4e-views doesn't pan out.
+;; (add-to-list 'load-path "~/source/mu4e-views")
+;; (require 'mu4e-views)
 (require 'smtpmail)
 
 ;; Functions
@@ -77,11 +79,18 @@
 (setq mu4e-view-prefer-html t)
 (setq mu4e-view-show-images t)
 (setq mu4e-view-show-addresses 't)
+;; Remove if mu4e-views doesn't pan out
+;; (setq mu4e-views-default-view-method "html")
+;; (setq mu4e-views-next-previous-message-behaviour 'always-switch-to-headers)
 (setq smtpmail-queue-mail nil)
 
 (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
 (add-to-list 'mu4e-view-actions '("Webkit" . mu4e-view-in-browser-webkit) t)
 (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+;; Evaluations
+;; Remove if mu4e-views doesn't pan out
+;; (mu4e-views-mu4e-use-view-msg-method "html")
 
 ;; Hooks
 (add-hook 'mu4e-compose-mode-hook
@@ -103,6 +112,9 @@
             (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
             (local-set-key (kbd "<tab>") 'shr-next-link)
             (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+;; Remove if mu4e-views doesn't pan out
+;; (define-key mu4e-views-view-actions-mode-map (kbd "d") 'mu4e-headers-mark-for-delete)
+
 ;; TODO: Make sure this is not needed and remove
 ;; (add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
 ;; (add-hook 'mu4e-compose-mode-hook 'flyspell-mode)

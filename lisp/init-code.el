@@ -4,7 +4,6 @@
 ;;; Code:
 (require 'init-elpa)
 
-(require-package 'company-lsp)
 (require-package 'company-quickhelp)
 (require-package 'fic-mode)
 (require-package 'lsp-mode)
@@ -15,12 +14,18 @@
 (require-package 'treemacs-magit)
 (require-package 'yasnippet)
 
-(require 'company-lsp)
 (require 'fic-mode)
 (require 'init-ui)
 (require 'lsp-mode)
 
 ;; Functions
+
+(defun electric-pair ()
+  "If at end of line, insert character pair without surrounding spaces.
+Otherwise, just insert the typed character."
+  (interactive)
+  (if (eolp) (let (parens-require-spaces) (insert-pair)) (self-insert-command 1)))
+
 (defun set-indentation ()
   "Set indentation style."
   (setq indent-tabs-mode nil))
@@ -33,6 +38,8 @@
 ;; Variables
 (setq company-idle-delay 0)
 (setq company-quickhelp-delay 0)
+(setq company-quickhelp-color-background "#cfd8dc")
+(setq company-quickhelp-color-foreground "#607d8b")
 (setq company-selection-wrap-around nil)
 (setq company-tooltip-align-annotations t)
 (setq electric-pair-mode 1)
@@ -46,16 +53,15 @@
 (company-quickhelp-mode)
 (yas-global-mode 1)
 
-(push 'company-lsp company-backends)
 (with-eval-after-load 'lsp-mode
   (setq lsp-modeline-diagnostics-scope :project))
 
 ;; Keybindings
 (define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
-(define-key lsp-mode-map (kbd "C-c e") 'lsp-describe-thing-at-point)
-(define-key lsp-mode-map (kbd "C-c f") 'lsp-find-references)
-(define-key lsp-mode-map (kbd "C-c r") 'lsp-rename)
-(define-key lsp-mode-map (kbd "C-c s") 'lsp-treemacs-symbols)
+(define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
+(define-key lsp-mode-map (kbd "C-c s") 'lsp-find-references)
+(define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
+(define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
 
 ;; Hooks
 (add-hook 'elisp-mode-hook 'fic-mode)
@@ -65,6 +71,8 @@
 (add-hook 'prog-mode-hook 'hl-line-mode)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook 'set-indentation)
+(eval-after-load 'company
+  '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
 
 (provide 'init-code)
 ;;; init-code.el ends here
