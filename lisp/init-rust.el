@@ -29,7 +29,15 @@
 (add-to-list 'exec-path "/home/andy/.cargo/bin")
 
 ;; Keybindings
+(define-key rust-mode-map "'" 'electric-pair)
+(define-key rust-mode-map "\"" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "[" 'electric-pair)
+(define-key rust-mode-map "{" 'electric-pair)
+
 (define-key rust-mode-map (kbd "C-c b") 'cargo-build)
+(define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
 (define-key rust-mode-map (kbd "C-c r")
   (lambda ()
     (interactive)
@@ -41,13 +49,8 @@
 (define-key rust-mode-map (kbd "C-c t")
   (lambda ()
     (interactive)
-    (compile "cargo test")))
-(define-key rust-mode-map "'" 'electric-pair)
-(define-key rust-mode-map "\"" 'electric-pair)
-(define-key rust-mode-map "(" 'electric-pair)
-(define-key rust-mode-map "(" 'electric-pair)
-(define-key rust-mode-map "[" 'electric-pair)
-(define-key rust-mode-map "{" 'electric-pair)
+    (compile "cargo test -- --nocapture")))
+(define-key rust-mode-map (kbd "C-c C-f") nil)
 
 ;; Hooks
 (add-hook 'rust-mode-hook 'lsp)

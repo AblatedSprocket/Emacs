@@ -89,7 +89,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-display-line-numbers-mode 1)
 (global-eldoc-mode -1)
 (ido-mode t)
-(load-theme 'material-light t)
+(load-theme 'material t)
 (menu-bar-mode -1)
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
