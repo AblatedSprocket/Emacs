@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Create SQL buffer using sql-postgres
 ;;; Code:
-(require-package sqlup-mode)
+(require-package 'sqlup-mode)
 (require 'init-code)
 
 ;; Functions
@@ -20,7 +20,7 @@
         (port :default 5432)))
 
 ;; Hooks
-(add-hook sql-login-hook 'my-sql-login-hook)
+(add-hook 'sql-login-hook 'my-sql-login-hook)
 
 (provide 'init-sql)
 ;;; init-sql.el ends here
