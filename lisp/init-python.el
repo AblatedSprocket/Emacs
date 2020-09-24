@@ -3,6 +3,7 @@
 ;;; - Enable virtual environment support in Emacs
 ;;; Code:
 (require-package 'auto-virtualenvwrapper)
+(require-package 'py-autopep8)
 
 (require 'auto-virtualenvwrapper)
 (require 'init-code)
@@ -14,7 +15,7 @@
 
 (add-to-list 'exec-path "/home/andy/.local/bin")
 
-(setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
+(setq lsp-pyls-plugins-pycodestyle-ignore '("E501", "W293", "E225"))
 ;; Hooks
 ;; (add-hook 'python-mode-hook
           ;; (lambda ()
@@ -24,9 +25,10 @@
   (lambda()
     (interactive)
     (compile (concat "venv/bin/python3 " (buffer-name)))))
-           
+
 (add-hook 'python-mode-hook 'autovirtualenvwrapper-activate)
 (add-hook 'python-mode-hook 'lsp)
+(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
 
 (provide 'init-python)
 ;;; init-python.el ends here
