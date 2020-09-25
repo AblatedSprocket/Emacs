@@ -28,7 +28,7 @@
 
 (add-hook 'python-mode-hook 'autovirtualenvwrapper-activate)
 (add-hook 'python-mode-hook 'lsp)
-(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
 
 (provide 'init-python)
 ;;; init-python.el ends here

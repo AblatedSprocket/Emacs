@@ -70,18 +70,16 @@
                 (smtpmail-debug-verbose . t)))))
 (setq mu4e-headers-auto-update t)
 (setq mu4e-headers-date-format "%H:%M %d-%m-%Y")
-(setq mu4e-html2text-command "html2text -utf8")
+;; (setq mu4e-html2text-command "html2text -utf8")
 ;; (setq mu4e-html2text-command 'my-render-html-message)
 (setq mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a")
 (setq mu4e-maildir (expand-file-name "~/Mail"))
 (setq mu4e-sent-messages-behavior 'delete)
 (setq mu4e-update-interval 180)
-(setq mu4e-view-prefer-html t)
+(setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
+(setq mu4e-view-prefer-html nil)
 (setq mu4e-view-show-images t)
 (setq mu4e-view-show-addresses 't)
-;; Remove if mu4e-views doesn't pan out
-;; (setq mu4e-views-default-view-method "html")
-;; (setq mu4e-views-next-previous-message-behaviour 'always-switch-to-headers)
 (setq smtpmail-queue-mail nil)
 
 (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
@@ -89,8 +87,7 @@
 (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
 ;; Evaluations
-;; Remove if mu4e-views doesn't pan out
-;; (mu4e-views-mu4e-use-view-msg-method "html")
+
 
 ;; Hooks
 (add-hook 'mu4e-compose-mode-hook
@@ -112,8 +109,6 @@
             (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
             (local-set-key (kbd "<tab>") 'shr-next-link)
             (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-;; Remove if mu4e-views doesn't pan out
-;; (define-key mu4e-views-view-actions-mode-map (kbd "d") 'mu4e-headers-mark-for-delete)
 
 ;; TODO: Make sure this is not needed and remove
 ;; (add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
