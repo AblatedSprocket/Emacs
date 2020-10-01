@@ -15,7 +15,8 @@
 
 (add-to-list 'exec-path "/home/andy/.local/bin")
 
-(setq lsp-pyls-plugins-pycodestyle-ignore '("E501", "W293", "E225"))
+;; (setq lsp-pyls-plugins-pycodestyle-ignore '("E501", "W293", "E225"))
+(setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
 ;; Hooks
 ;; (add-hook 'python-mode-hook
           ;; (lambda ()

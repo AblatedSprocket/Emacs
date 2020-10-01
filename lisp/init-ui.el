@@ -23,8 +23,7 @@
 (require-package 'smex)
 (require-package 'treemacs)
 (require-package 'treemacs-projectile)
-;; Remove if mu4e-views doesn't pan out
-(require-package 'xwidgets-reuse)
+
 (require 'init-elpa)
 (require 'company)
 (require 'saveplace)
@@ -133,6 +132,6 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; Hooks
 (add-hook 'after-init-hook 'global-flycheck-mode)
 (add-hook 'after-init-hook 'global-company-mode)
-(add-hook 'after-init-hook 'global-visual-line-mode)
+
 (provide 'init-ui)
 ;;; init-ui.el ends here

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ssf
+# key: ssf
+# --
+SELECT * FROM $0;

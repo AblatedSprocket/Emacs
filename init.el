@@ -37,8 +37,7 @@
    '("afd761c9b0f52ac19764b99d7a4d871fc329f7392dfc6cd29710e8209c691477" "d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" default))
  '(fci-rule-color "#dadada")
  '(hl-sexp-background-color "#efebe9")
- '(package-selected-packages
-   '(fic-mode auctex paredit org-mime smtpmail-multi cargo-outdated pyvenv-mode))
+ '(package-selected-packages '(paredit smtpmail-multi cargo-outdated pyvenv-mode))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    '((20 . "#B71C1C")

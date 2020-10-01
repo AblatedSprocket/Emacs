@@ -18,4 +18,5 @@ projectile.cache
 auto-save-list
 eshell
 session.*
+smex-items
 *.save

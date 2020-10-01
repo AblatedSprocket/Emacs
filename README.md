@@ -36,6 +36,9 @@ There is not much to my Python development scheme. I'm working on improving the 
 ### Rust
 Like Python, development for Rust is pretty low-level at this point. First, install [Rust](https://www.rust-lang.org/tools/install). You'll want the source code for development: ```rustup component add rust-src```. Rust-Analyzer is available on nightly now, so run ```rustup update nightly``` and ```rustup component add --toolchain nightly rust-analyzer-preview``` to get it. There are some key bindings adding behavior I wanted. Look at ```init-bindings.el``` for details. At some point I'll add a section about developing Rust for embedded systems.
 
+#### Rust Web Development
+In order to develop for the web in Rust, you need ```wasm-pack```, found by executing ```curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh```.
+
 ### LaTeX
 LaTeX support is provided by AUCTeX, listed in the installation section. I'm mainly including this section because I forget how to render a preview of LaTeX documents. The command to preview is ```latex-preview-pane-mode```. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
 
