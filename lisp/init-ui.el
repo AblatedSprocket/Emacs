@@ -16,7 +16,7 @@
 (require-package 'flycheck)
 (require-package 'ivy)
 (require-package 'latex-preview-pane)
-(require-package 'material-theme)
+(require-package 'color-theme-sanityinc-tomorrow)
 (require-package 'multiple-cursors)
 (require-package 'projectile)
 (require-package 'rg)
@@ -28,10 +28,30 @@
 (require 'company)
 (require 'saveplace)
 (require 'ido)
+(require 'multiple-cursors)
 (require 'treemacs)
 (require 'recentf)
 
+;; Macros
+(defmacro my-with-advice (adlist &rest body)
+  "Executes BODY with temporary advice in ADLIST."
+  (declare (debug ((&rest (&rest form)) body))
+           (indent 1))
+  `(progn
+     ,@(mapcar (lambda (adform)
+                 (cons 'advice-add adform))
+               adlist)
+     (unwind-protect (progn ,@body)
+       ,@(mapcar (lambda (adform)
+                   `(advice-remove ,(car adform) ,(nth 2 adform)))
+                 adlist))))
+
 ;; Functions
+(defun my-bypass-confirmation (function &rest args)
+  "Call FUNCTION with ARGS, bypassing all 'y-or-n-p' prompts."
+  (my-with-advice
+   ((#'y-or-n-p :override (lambda (prompt) t)))
+   (apply function args)))
 (defun beginning-of-line-or-indentation ()
   "Move to beginning of line or indentation."
   (interactive)
@@ -88,7 +108,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-display-line-numbers-mode 1)
 (global-eldoc-mode -1)
 (ido-mode t)
-(load-theme 'material t)
+(my-bypass-confirmation 'color-theme-sanityinc-tomorrow-night)
 (menu-bar-mode -1)
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))

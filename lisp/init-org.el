@@ -36,7 +36,9 @@
 (setq org-agenda-files '("~/org/tasks/Todo.org"))
 (setq org-capture-templates
       '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-         "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
+         "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+        ("d" "dream" entry (file "~/org/dreams/Dreams.org")
+         "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?")))
 (setq org-directory "~/org")
 (setq org-journal-date-format "%A, %B %d %Y")
 (setq org-journal-dir "~/org/journal/")

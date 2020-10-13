@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: tst
+# key: tst
+# --
+#[test]
+fn $0() {
+    $1
+}

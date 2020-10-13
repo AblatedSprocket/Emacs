@@ -22,7 +22,7 @@
 ;; Variables
 (setenv "PATH" (concat "/home/andy/.cargo/bin:" (getenv "PATH")))
 
-(setq lsp-rust-analyzer-server-command '("~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-analyzer"))
+(setq lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer"))
 (setq lsp-rust-server 'rust-analyzer)
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
