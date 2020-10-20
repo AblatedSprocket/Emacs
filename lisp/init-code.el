@@ -5,16 +5,15 @@
 (require 'init-elpa)
 
 (require-package 'company-quickhelp)
-(require-package 'fic-mode)
+(require-package 'hl-todo)
 (require-package 'lsp-mode)
 (require-package 'lsp-ui)
 (require-package 'lsp-treemacs)
 (require-package 'magit)
 (require-package 'rainbow-delimiters)
 (require-package 'treemacs-magit)
-(require-package 'yasnippet)
 
-(require 'fic-mode)
+(require 'hl-todo)
 (require 'init-ui)
 (require 'lsp-mode)
 
@@ -48,10 +47,9 @@ Otherwise, just insert the typed character."
 (setq lsp-ui-doc-delay 0)
 (setq lsp-ui-doc-enable nil)
 (setq lsp-ui-doc--inline-ov t)
+(setq lsp-ui-sideline-enable nil)
 
 ;; Evaluations
-(company-quickhelp-mode)
-(yas-global-mode 1)
 
 (with-eval-after-load 'lsp-mode
   (setq lsp-modeline-diagnostics-scope :project))
@@ -62,13 +60,14 @@ Otherwise, just insert the typed character."
 (define-key lsp-mode-map (kbd "C-c s") 'lsp-find-references)
 (define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
 (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
-
+(define-key prog-mode-map (kbd "C-c h") 'hs-toggle-hiding)
 ;; Hooks
-(add-hook 'elisp-mode-hook 'fic-mode)
+(add-hook 'prog-mode-hook 'hl-todo-mode)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'fic-mode)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'prog-mode-hook 'hl-line-mode)
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook 'set-indentation)
 (eval-after-load 'company

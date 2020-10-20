@@ -23,6 +23,7 @@
 (require-package 'smex)
 (require-package 'treemacs)
 (require-package 'treemacs-projectile)
+(require-package 'yasnippet)
 
 (require 'init-elpa)
 (require 'company)
@@ -76,6 +77,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (set-default 'truncate-lines t)
 (set-face-attribute 'default nil :font "Inconsolata" :height 120)
 
+
 (setq company-minimum-prefix-length 1)
 (setq create-lockfiles nil)
 (setq inhibit-startup-message t)
@@ -97,12 +99,14 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq ido-auto-merge-work-directories-length -1)
 (setq ido-use-virtual-buffers t)
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+(setq TeX-PDF-mode nil)
 
 (setq-default save-place t)
 (setq-default word-wrap t)
 (setq-default cursor-type 'bar)
 
 ;; Evaluations
+
 (blink-cursor-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode 1)
@@ -119,12 +123,14 @@ Repeated invocations toggle between the two most recently open buffers."
 (show-paren-mode 1)
 (smex-initialize)
 (windmove-default-keybindings)
+(yas-global-mode 1)
 
 ;; Bindings
 (global-set-key (kbd "C-'") 'toggle-comment-on-line)
 (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
 (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
 (global-set-key (kbd "C-c c") 'list-colors-display)
+(global-set-key (kbd "C-c x") 'yas-expand)
 (global-set-key (kbd "C-x D") 'treemacs)
 (global-set-key (kbd "C-c m") 'mc/edit-lines)
 (global-set-key (kbd "C-x p") 'treemacs-display-current-project-exclusively)
