@@ -11,7 +11,9 @@ elpa/
 request/
 transient/
 url/
+var/
 ido.last
+org-roam.db
 places
 projectile-bookmarks.eld
 projectile.cache
