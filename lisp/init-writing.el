@@ -32,6 +32,6 @@
          (lambda()
            (setq display-line-numbers nil)))
 (add-hook 'olivetti-mode-hook 'set-printing-font)
-
+(add-hook 'olivetti-mode-hook 'flyspell-mode)
 (provide 'init-writing)
 ;;; init-writing.el ends here

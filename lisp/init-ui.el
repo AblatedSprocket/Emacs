@@ -12,6 +12,7 @@
 ;;; - Lock files are no longer generated
 ;;; - Installs ripgrep utilities (requires installation of ripgrep)
 ;;; Code:
+(require-package 'all-the-icons)
 (require-package 'company)
 (require-package 'flycheck)
 (require-package 'ivy)
@@ -23,7 +24,9 @@
 (require-package 'smex)
 (require-package 'treemacs)
 (require-package 'treemacs-projectile)
+(require-package 'yasnippet)
 
+(require 'all-the-icons)
 (require 'init-elpa)
 (require 'company)
 (require 'saveplace)
@@ -97,12 +100,20 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq ido-auto-merge-work-directories-length -1)
 (setq ido-use-virtual-buffers t)
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+(setq TeX-PDF-mode nil)
 
 (setq-default save-place t)
 (setq-default word-wrap t)
 (setq-default cursor-type 'bar)
 
 ;; Evaluations
+(setq mode-line-modes
+      (mapcar (lambda (elem)
+                (pcase elem
+                  (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
+                   "")
+                  (t elem)))
+              mode-line-modes))
 (blink-cursor-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode 1)
@@ -119,17 +130,19 @@ Repeated invocations toggle between the two most recently open buffers."
 (show-paren-mode 1)
 (smex-initialize)
 (windmove-default-keybindings)
+(yas-global-mode 1)
 
 ;; Bindings
-(global-set-key (kbd "C-'") 'toggle-comment-on-line)
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
 (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
 (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
 (global-set-key (kbd "C-c c") 'list-colors-display)
-(global-set-key (kbd "C-x D") 'treemacs)
+(global-set-key (kbd "C-c l") 'toggle-truncate-lines)
 (global-set-key (kbd "C-c m") 'mc/edit-lines)
-(global-set-key (kbd "C-x p") 'treemacs-display-current-project-exclusively)
+(global-set-key (kbd "C-c x") 'yas-expand)
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)(global-set-key (kbd "C-x D") 'treemacs)
+(global-set-key (kbd "C-x p") 'treemacs-display-current-project-exclusively)
 (global-set-key (kbd "C-x k") 'kill-buffer-and-window)
 (global-set-key (kbd "C-z") nil)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -145,6 +158,10 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "M-x") 'smex)
+(eval-after-load "flyspell"
+  '(define-key flyspell-mode-map (kbd "C-;") nil))
+(eval-after-load "flyspell"
+  '(define-key flyspell-mode-map (kbd "C-.") 'flyspell-auto-correct-previous-word))
 (define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
 (define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
 (define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)

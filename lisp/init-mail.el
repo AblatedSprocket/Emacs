@@ -108,7 +108,8 @@
           (lambda()
             (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
             (local-set-key (kbd "<tab>") 'shr-next-link)
-            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+            (local-set-key (kbd "<backtab>") 'shr-previous-link)
+            (toggle-truncate-lines)))
 
 ;; TODO: Make sure this is not needed and remove
 ;; (add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
