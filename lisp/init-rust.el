@@ -20,14 +20,14 @@
   (compile (concat "cargo build " arg)))
 
 ;; Variables
-(setenv "PATH" (concat "/home/andy/.cargo/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
 
-(setq lsp-rust-analyzer-server-display-inlay-hints t)
-(setq lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer"))
-(setq lsp-rust-server 'rust-analyzer)
+(setq lsp-rust-analyzer-server-display-inlay-hints t
+      lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
+      lsp-rust-server 'rust-analyzer)
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-(add-to-list 'exec-path "/home/andy/.cargo/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
 
 ;; Keybindings
 (define-key rust-mode-map "'" 'electric-pair)

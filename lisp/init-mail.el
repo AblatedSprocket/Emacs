@@ -30,17 +30,17 @@
 ;; Variables
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
-(setq message-kill-buffer-on-exit t)
-(setq mu4e-attachment-dir "~/Downloads")
-(setq mu4e-change-filenames-when-moving t)
-(setq mu4e-compose-context-policy 'always-ask)
-(setq mu4e-compose-dont-reply-to-self t)
-(setq mu4e-compose-in-new-frame t)
-(setq mu4e-compose-format-flowed t)
-(setq mu4e-compose-signature-auto-include nil)
-(setq mu4e-confirm-quit t)
-(setq mu4e-context-policy 'pick-first)
-(setq mu4e-contexts
+(setq message-kill-buffer-on-exit t
+      mu4e-attachment-dir "~/Downloads"
+      mu4e-change-filenames-when-moving t
+      mu4e-compose-context-policy 'always-ask
+      mu4e-compose-dont-reply-to-self t
+      mu4e-compose-in-new-frame t
+      mu4e-compose-format-flowed t
+      mu4e-compose-signature-auto-include nil
+      mu4e-confirm-quit t
+      mu4e-context-policy 'pick-first
+      mu4e-contexts
       (list
        (make-mu4e-context
         :name "general"
@@ -67,20 +67,20 @@
                 (smtpmail-smtp-server . "smtp.gmail.com")
                 (smtpmail-smtp-service . 587)
                 (smtpmail-debug-info . t)
-                (smtpmail-debug-verbose . t)))))
-(setq mu4e-headers-auto-update t)
-(setq mu4e-headers-date-format "%H:%M %d-%m-%Y")
-;; (setq mu4e-html2text-command "html2text -utf8")
-;; (setq mu4e-html2text-command 'my-render-html-message)
-(setq mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a")
-(setq mu4e-maildir (expand-file-name "~/Mail"))
-(setq mu4e-sent-messages-behavior 'delete)
-(setq mu4e-update-interval 180)
-(setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
-(setq mu4e-view-prefer-html nil)
-(setq mu4e-view-show-images t)
-(setq mu4e-view-show-addresses 't)
-(setq smtpmail-queue-mail nil)
+                (smtpmail-debug-verbose . t))))
+      mu4e-headers-auto-update t
+      mu4e-headers-date-format "%H:%M %d-%m-%Y"
+      ;; mu4e-html2text-command "html2text -utf8"
+      ;; mu4e-html2text-command 'my-render-html-message
+      mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
+      mu4e-maildir (expand-file-name "~/Mail")
+      mu4e-sent-messages-behavior 'delete
+      mu4e-update-interval 180
+      mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
+      mu4e-view-prefer-html nil
+      mu4e-view-show-images t
+      mu4e-view-show-addresses 't
+      smtpmail-queue-mail nil)
 
 (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
 (add-to-list 'mu4e-view-actions '("Webkit" . mu4e-view-in-browser-webkit) t)

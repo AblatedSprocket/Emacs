@@ -4,6 +4,7 @@
 .org-id-locations
 .recentf
 .smex-items
+config.el
 auto-save-list/
 backups/
 bookmarks/

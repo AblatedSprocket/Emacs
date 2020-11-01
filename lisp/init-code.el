@@ -35,22 +35,21 @@ Otherwise, just insert the typed character."
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 
 ;; Variables
-(setq company-idle-delay 0)
-(setq company-quickhelp-delay 0)
-(setq company-quickhelp-color-background "#cfd8dc")
-(setq company-quickhelp-color-foreground "#607d8b")
-(setq company-selection-wrap-around nil)
-(setq company-tooltip-align-annotations t)
-(setq electric-pair-mode 1)
-;; (setq lsp-signature-auto-activate t)
-(setq lsp-signature-doc-lines 1)
-(setq lsp-ui-doc-delay 0)
-(setq lsp-ui-doc-enable nil)
-(setq lsp-ui-doc--inline-ov t)
-(setq lsp-ui-sideline-enable nil)
+(setq company-idle-delay 0
+      company-quickhelp-delay 0
+      company-quickhelp-color-background "#cfd8dc"
+      company-quickhelp-color-foreground "#607d8b"
+      company-selection-wrap-around nil
+      company-tooltip-align-annotations t
+      electric-pair-mode 1
+      ;; lsp-signature-auto-activate t
+      lsp-signature-doc-lines 1
+      lsp-ui-doc-delay 0
+      lsp-ui-doc-enable nil
+      lsp-ui-doc--inline-ov t
+      lsp-ui-sideline-enable nil)
 
 ;; Evaluations
-
 (with-eval-after-load 'lsp-mode
   (setq lsp-modeline-diagnostics-scope :project))
 

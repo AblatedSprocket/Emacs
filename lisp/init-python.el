@@ -11,21 +11,26 @@
 (require 'lsp-pyls)
 
 ;; Variables
-(setenv "PATH" (concat "/home/andy/.local/bin:" (getenv "PATH")))
-(add-to-list 'exec-path "/home/andy/.local/bin")
+(setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
+(add-to-list 'exec-path "~/.local/bin")
 
 ;; (setq lsp-pyls-plugins-pycodestyle-ignore '("E501", "W293", "E225"))
 (setq lsp-pyls-plugins-pycodestyle-ignore '("E501")
       pyvenv-default-virtual-env-name "venv")
 
 ;; Bindings
-(eval-after-load "python"
-  '(define-key python-mode-map (kbd "C-c r")
+(with-eval-after-load "python"
+  (define-key python-mode-map (kbd "C-c r")
      (lambda()
        (interactive)
-       (compile (concat "venv/bin/python3 " (buffer-name))))))
-(eval-after-load "python"
-  '(define-key python-mode-map (kbd "C-c f") 'blacken-buffer))
+       (compile (concat "venv/bin/python3 " (buffer-name)))))
+  (define-key python-mode-map "'" 'electric-pair)
+  (define-key python-mode-map "\"" 'electric-pair)
+  (define-key python-mode-map "(" 'electric-pair)
+  (define-key python-mode-map "(" 'electric-pair)
+  (define-key python-mode-map "[" 'electric-pair)
+  (define-key python-mode-map "{" 'electric-pair)
+  (define-key python-mode-map (kbd "C-c f") 'blacken-buffer))
 
 ;; Hooks
 (add-hook 'python-mode-hook 'lsp)

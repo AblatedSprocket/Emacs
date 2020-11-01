@@ -78,42 +78,39 @@ Repeated invocations toggle between the two most recently open buffers."
 (set-cursor-color "#000000")
 (set-default 'truncate-lines t)
 (set-face-attribute 'default nil :font "Inconsolata" :height 120)
-
-(setq company-minimum-prefix-length 1)
-(setq create-lockfiles nil)
-(setq inhibit-startup-message t)
-(setq
- x-select-enable-clipboard t
- x-select-enable-primary t
- save-interprogram-paste-before-kill t
- apropos-do-all t
- mouse-yank-at-point t
- save-place-file (concat user-emacs-directory "places"))
-(setq auto-save-default nil)
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory
-                                               "backups"))))
-(setq ring-bell-function 'ignore)
-(setq company-tooltip-align-annotations t)
-(setq recentf-save-file (concat user-emacs-directory ".recentf"))
-(setq recentf-max-menu-items 40)
-(setq ido-use-filename-at-point nil)
-(setq ido-auto-merge-work-directories-length -1)
-(setq ido-use-virtual-buffers t)
-(setq smex-save-file (concat user-emacs-directory ".smex-items"))
-(setq TeX-PDF-mode nil)
-
-(setq-default save-place t)
-(setq-default word-wrap t)
-(setq-default cursor-type 'bar)
-
-;; Evaluations
-(setq mode-line-modes
+(setq apropos-do-all t
+      auto-save-default nil
+      backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                               "backups")))
+      company-tooltip-align-annotations t
+      company-minimum-prefix-length 2
+      create-lockfiles nil
+      ido-use-filename-at-point nil
+      ido-auto-merge-work-directories-length -1
+      ido-use-virtual-buffers t
+      inhibit-startup-message t
+      mode-line-modes
       (mapcar (lambda (elem)
                 (pcase elem
                   (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
                    "")
                   (t elem)))
-              mode-line-modes))
+              mode-line-modes)
+      mouse-yank-at-point t
+      recentf-save-file (concat user-emacs-directory ".recentf")
+      recentf-max-menu-items 40
+      ring-bell-function 'ignore
+      save-interprogram-paste-before-kill t
+      save-place-file (concat user-emacs-directory "places")
+      smex-save-file (concat user-emacs-directory ".smex-items")
+      TeX-PDF-mode nil
+      x-select-enable-clipboard t
+      x-select-enable-primary t)
+(setq-default save-place t
+              word-wrap t
+              cursor-type 'bar)
+
+;; Evaluations
 (blink-cursor-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode 1)
@@ -129,7 +126,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (recentf-mode 1)
 (show-paren-mode 1)
 (smex-initialize)
-(windmove-default-keybindings)
 (yas-global-mode 1)
 
 ;; Bindings
@@ -149,7 +145,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-c C-w") 'whack-whitespace)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
-(global-set-key (kbd "<C-return>") 'open-line)
+(global-set-key (kbd "<M-return>") 'open-line)
 (global-set-key (kbd "M-b") 'backward-word)
 (global-set-key (kbd "M-B") 'backward-to-word)
 (global-set-key (kbd "M-f") 'forward-word)
@@ -158,10 +154,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "M-x") 'smex)
-(eval-after-load "flyspell"
-  '(define-key flyspell-mode-map (kbd "C-;") nil))
-(eval-after-load "flyspell"
-  '(define-key flyspell-mode-map (kbd "C-.") 'flyspell-auto-correct-previous-word))
+(with-eval-after-load "flyspell"
+  (define-key flyspell-mode-map (kbd "C-;") nil)
+  (define-key flyspell-mode-map (kbd "C-.") 'flyspell-auto-correct-previous-word))
 (define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
 (define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
 (define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
@@ -169,6 +164,6 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; Hooks
 (add-hook 'after-init-hook 'global-flycheck-mode)
 (add-hook 'after-init-hook 'global-company-mode)
-
+(add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
 (provide 'init-ui)
 ;;; init-ui.el ends here

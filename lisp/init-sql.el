@@ -18,13 +18,28 @@
       (comint-send-string proc "\\set ECHO queries\n"))))
 
 ;; Variables
-(setq sql-postgres-login-params
-      '((user :default "postgres")
-        (database :default "smart_home")
-        (server :default "localhost")
-        (port :default 5432)))
-(setq sql-product 'postgres)
+(setq sql-connection-alist
+      '(
+        (home (sql-product 'postgres)
+              (sql-port 5432)
+              (sql-server "localhost")
+              (sql-user "postgres")
+              (sql-database "savetheglobe"))
+        (savetheglobe_home (sql-product 'postgres)
+                           (sql-port 5432)
+                           (sql-server "localhost")
+                           (sql-user "postgres")
+                           (sql-database "savetheglobe"))
+        (savetheglobe_heroku (sql-product 'postgres)
+                             (sql-port 5432)
+                             (sql-server "ec2-52-87-22-151.compute-1.amazonaws.com")
+                             (sql-user "nrsgquqvfevzbu")
+                             (sql-database "ddpfocn81le95m"))))
 
+;; Evaluations
+(with-eval-after-load "sql"
+  (define-key sql-mode-map (kbd "C-c s") 'sql-send-region)
+  (define-key sql-mode-map (kbd "C-c S") 'sql-send-buffer))
 (advice-add 'sql-interactive-mode :around 'my-sql-disable-font-lock)
 ;; Hooks
 (add-hook 'sql-mode-hook 'sql-set-sqli-buffer)

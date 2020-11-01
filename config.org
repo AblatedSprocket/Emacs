@@ -1,0 +1,672 @@
+# -*- mode: org; coding: utf-8; -*-
+#+TODO: DISABLED | ACTIVE
+#+STARTUP: indent
+* Installation
+This installation documentation is for Ubuntu, Debian-based distributions, and other distributions that use apt. There may or may not be some differences in the libraries provided by other package managers. For Emacs to pick up the configuration provided, it must be placed in =~/.config/emacs/= if using Emacs 27 or newer. Where my limited elisp abilities allow, I made the config be agnostic between Emacs 26- and Emacs 27+. There were some places I didn't know how to do this, so the config needs some modification to work with Emacs 26. Just a simple =rg-literal= search through the repo for =~/.config/emacs= and replacing it with =~/.emacs.d/=. 
+
+The process used here to install Emacs 27 is slightly different. Again, download the [source code](http://git.savannah.gnu.org/cgit/emacs.git) and untar it with =tar -xzvf emacs-27.1.tar.gz=. That said, the install packages might need revising on a new installation. Here goes. First install the dependencies: =sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libpng-dev libgif-dev libotf-dev libxml2-dev libxpm-dev libjpeg-dev librsvg2-dev libtiff-dev libgnutls28-dev libncurses5-dev texinfo auctex fonts-inconsolata fonts-sil-gentium autoconf ripgrep mu4e isync html2text gnupg2 python3-pip python3-venv sqlite3 postgresql graphviz=. Most of the dependencies I can remember my motivation for installing: =libgtk-3-dev=, and =libwebkit2gtk-4.o-dev= are for xwidget support that I wanted for viewing email in a web browser. It doesn't work particularly well, but xwidget support might also be useful for previewing LaTeX documents. I think =libncurses5-dev= is also for xwebkit support. Everything referencing a file extension just provides support for Emacs GUI to render that file type. For the most part, I only wanted support for all of those file extensions because emails have all sorts of things that I wanted to be able to view. The last dependency, =autoconf= is required for running =autogen.sh=. Run =./autogen.sh= from within the source directory to create the configuration script, then run that using =./configure --with-json --with-modules --with-xwidgets --with-rsvg --without-pop= to use the new native JSON parsing and better terminal support with vterm. According to the documentation, --with-json should not be necessary, but I added it for good measure. Once complete, run =sudo make && sudo make install= to get everything installed.
+
+On first install, it may be necessary to call =package-refresh-contents= and =package-initialize= to get everything to install properly. It may not be necessary, just something to be aware of.
+
+With that, let's get started. My general approach is that every package should have at least one sentence about it, otherwise it shouldn't be included. Hopefully this will help stave off Emacs bankruptcy, at least for a while.
+
+* ACTIVE General Configuration
+** Packages
+Packages used for general settings. I'm using =all-the-icons= to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though. I use =company= as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. Almost every buffer uses Flycheck either for code syntax or spelling via flyspell. I'm contemplating getting rid of =ivy=, I use =ido= for most things. I like =latex-preview-pane= because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. For now, sanityinc is my go-to for themes. Multiple cursors was one thing I missed from Sublime Text, so =multiple-cursors= was a happy discovery. I'm using =projectile= to manage my git projects. It also integrates with other packages I have related to code. I'm thinking about investigating =project= to see if I can remove this dependency. I use =rg= for searching through files for text when a language-server can't do the job. I always forget what =smex= does, it's a valuable addition to =ido= that gives precedence to most frequently used completions. I use =treemacs= mostly for its integrations with =projectile= to get a visual on project structure. Its integration with =lsp-mode= is also nice for viewing project symbol information. I am slowly using =yasnippet= more, I'm considering adding an integration with =company= for snippet completion, but part of me thinks that at that point I have a bigger problem.
+
+#+BEGIN_SRC emacs-lisp 
+(require-package 'all-the-icons)
+(require-package 'company)
+(require-package 'flycheck)
+(require-package 'ivy)
+(require-package 'latex-preview-pane)
+(require-package 'color-theme-sanityinc-tomorrow)
+(require-package 'multiple-cursors)
+(require-package 'projectile)
+(require-package 'rg)
+(require-package 'smex)
+(require-package 'treemacs)
+(require-package 'treemacs-projectile)
+(require-package 'yasnippet)
+
+(require 'all-the-icons)
+(require 'company)
+(require 'saveplace)
+(require 'ido)
+(require 'multiple-cursors)
+(require 'treemacs)
+(require 'recentf)
+#+END_SRC
+
+** Functions
+These are the general purpose functions I've found or made over my time with Emacs. I created the =my-bypass-confirmation= function because sanityinc loads themes with a command instead of a variable. Consequently, you have to give the ok to load a sanityinc theme which causes problems in daemon mode since there's no one to give the ok. The other functions are keybindings. I have found =beginning-of-line-or-indentation= and =whack-whitespace= very useful, but I almost never use =switch-to-previous-buffer=.
+
+#+BEGIN_SRC emacs-lisp
+(defmacro my-with-advice (adlist &rest body)
+  "Executes BODY with temporary advice in ADLIST."
+  (declare (debug ((&rest (&rest form)) body))
+           (indent 1))
+  `(progn
+     ,@(mapcar (lambda (adform)
+                 (cons 'advice-add adform))
+               adlist)
+     (unwind-protect (progn ,@body)
+       ,@(mapcar (lambda (adform)
+                   `(advice-remove ,(car adform) ,(nth 2 adform)))
+                 adlist))))
+(defun my-bypass-confirmation (function &rest args)
+  "Call FUNCTION with ARGS, bypassing all 'y-or-n-p' prompts."
+  (my-with-advice
+   ((#'y-or-n-p :override (lambda (prompt) t)))
+   (apply function args)))
+(defun beginning-of-line-or-indentation ()
+  "Move to beginning of line or indentation."
+  (interactive)
+  (if (bolp)
+      (back-to-indentation)
+    (beginning-of-line)))
+(defun switch-to-previous-buffer()
+  "Switch to previously open buffer.
+Repeated invocations toggle between the two most recently open buffers."
+  (interactive)
+  (switch-to-buffer (other-buffer (current-buffer) 1)))
+(defun whack-whitespace (arg)
+    "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work.  It skips over to the next whitespace and then whacks it all to the next word."
+      (interactive "P")
+      (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+        (re-search-forward regexp nil t)
+        (replace-match "" nil nil)))
+#+END_SRC
+
+** Settings
+General settings for my setup. I actually haven't used =apropos= much, but after investigating it while writing this, I've discovered it is a very useful tool for discovering! It functions similarly to the =C-h= keybindings, but it's a bit more accessible in my opinion. The other big thing I want to point out is I disabled minor modes showing up in the modeline using the =mode-line-modes= setting.
+#+BEGIN_SRC emacs-lisp
+(set-cursor-color "#000000")
+(set-default 'truncate-lines t)
+(set-face-attribute 'default nil :font "Inconsolata" :height 120)
+(setq apropos-do-all t
+      auto-save-default nil
+      backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                               "backups")))
+      company-tooltip-align-annotations t
+      company-minimum-prefix-length 2
+      create-lockfiles nil
+      ido-use-filename-at-point nil
+      ido-auto-merge-work-directories-length -1
+      ido-use-virtual-buffers t
+      inhibit-startup-message t
+      mode-line-modes
+      (mapcar (lambda (elem)
+                (pcase elem
+                  (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
+                   "")
+                  (t elem)))
+              mode-line-modes)
+      mouse-yank-at-point t
+      recentf-save-file (concat user-emacs-directory ".recentf")
+      recentf-max-menu-items 40
+      ring-bell-function 'ignore
+      save-interprogram-paste-before-kill t
+      save-place-file (concat user-emacs-directory "places")
+      smex-save-file (concat user-emacs-directory ".smex-items")
+      TeX-PDF-mode nil
+      x-select-enable-clipboard t
+      x-select-enable-primary t)
+(setq-default save-place t
+              word-wrap t
+              cursor-type 'bar)
+(blink-cursor-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(global-display-line-numbers-mode 1)
+(global-eldoc-mode -1)
+(ido-mode t)
+(my-bypass-confirmation 'color-theme-sanityinc-tomorrow-night)
+(menu-bar-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(projectile-global-mode)
+(recentf-mode 1)
+(show-paren-mode 1)
+(smex-initialize)
+(yas-global-mode 1)
+#+END_SRC
+
+** Keybindings
+Below are keybindings I use for pretty much every mode.
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
+(global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
+(global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
+(global-set-key (kbd "C-c c") 'list-colors-display)
+(global-set-key (kbd "C-c l") 'toggle-truncate-lines)
+(global-set-key (kbd "C-c m") 'mc/edit-lines)
+(global-set-key (kbd "C-c x") 'yas-expand)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)(global-set-key (kbd "C-x D") 'treemacs)
+(global-set-key (kbd "C-x p") 'treemacs-display-current-project-exclusively)
+(global-set-key (kbd "C-x k") 'kill-buffer-and-window)
+(global-set-key (kbd "C-z") nil)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-c C-w") 'whack-whitespace)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+(global-set-key (kbd "<M-return>") 'open-line)
+(global-set-key (kbd "M-b") 'backward-word)
+(global-set-key (kbd "M-B") 'backward-to-word)
+(global-set-key (kbd "M-f") 'forward-word)
+(global-set-key (kbd "M-F") 'forward-to-word)
+(global-set-key (kbd "M-m") 'toggle-frame-maximized)
+(global-set-key (kbd "M-p") 'backward-paragraph)
+(global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "M-x") 'smex)
+(with-eval-after-load "flyspell"
+  (define-key flyspell-mode-map (kbd "C-;") nil)
+  (define-key flyspell-mode-map (kbd "C-.") 'flyspell-auto-correct-previous-word))
+(define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
+(define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
+(define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
+#+END_SRC
+
+** Hooks
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'global-flycheck-mode)
+(add-hook 'after-init-hook 'global-company-mode)
+(add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
+#+END_SRC
+* ACTIVE Mail Client Configuration
+
+If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to Install =mu4e=, =isync=, =html2text= and =gpg2= via apt: =sudo apt install mu4e isync html2text gnupg2=.
+
+Create a file whose contents is your mail password and encrypt via gpg2: =gpg2 -c .authinfo= 
+
+Remove original files and place the encrypted ones in folders with names to match the references in =mu4e/.mbsyncrc=.
+
+Create a file whose contents is your mail password and encrypt via gpg2: =gpg2 -c .authinfo= 
+
+Remove original files and place the encrypted ones in folders with names to match the references in =mu4e/.mbsyncrc=.
+
+With everything installed we need to perform an initial sync using =mbsync=. Before that, a mail directory must be create: =mkdir ~/Mail= 
+
+Now, mail can be synced using the config file. First, create your mail directory at =~/Mail=. A different location will require configuration changes. Since the config is in an unconventional directory, it must be specified explicitly. First, navigate to =~/.config/emacs/mu4e= and run =mbsync -c .mbsyncrc -a= 
+
+The last step is to index the messages with mu: =mu index --maildir="~/Mail=.
+** Mail Packages
+There really aren't any packages to install for Emacs here. The main thing is to tell Emacs where your mu4e elisp code is.
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+(require 'mu4e)
+(require 'smtpmail)
+#+END_SRC
+** Mail Functions
+I've defined a couple of convenience functions. If an email just won't render as text, I have =mu4e-show-in-browser=. I'm holding onto hope for better webkit support so I'm keeping =mu4e-view-in-browser-webkit= around for the time being. I've never had occasion to use =search-for-sender=, but it seems like a basic function that any email client should have.
+#+BEGIN_SRC emacs-lisp
+(defun mu4e-show-in-browser ()
+  "Show an email in the default web browser."
+  (interactive)
+  (mu4e-action-view-in-browser (mu4e-action-view-in-browser (mu4e-message-at-point t))))
+
+(defun mu4e-view-in-browser-webkit (msg)
+  "View the email MSG in embedded browser."
+  (let ((url (concat "file://" (mu4e~write-body-to-html msg))))
+    (xwidget-webkit-browse-url url)))
+
+(defun search-for-sender (msg)
+  "Search for MSG messages sent by the sender of the message at point."
+  (mu4e-headers-search
+    (concat "from:" (cdar (mu4e-message-field msg :from)))))
+#+END_SRC
+** Mail Settings
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+(setq message-kill-buffer-on-exit t
+      mu4e-attachment-dir "~/Downloads"
+      mu4e-change-filenames-when-moving t
+      mu4e-compose-context-policy 'always-ask
+      mu4e-compose-dont-reply-to-self t
+      mu4e-compose-in-new-frame t
+      mu4e-compose-format-flowed t
+      mu4e-compose-signature-auto-include nil
+      mu4e-confirm-quit t
+      mu4e-context-policy 'pick-first
+      mu4e-contexts
+      (list
+       (make-mu4e-context
+        :name "general"
+        :enter-func (lambda () (mu4e-message "Entering general context"))
+        :leave-func (lambda () (mu4e-message "Leaving general context"))
+        :match-func (lambda (msg)
+                      (when msg
+                            (mu4e-message-contact-field-matches
+                             msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
+        :vars '((user-mail-address . "andrewwburch@gmail.com")
+                (user-full-name . "Andrew Burch")
+                (mu4e-sent-folder . "/Sent")
+                (mu4e-refile-folder . "/All")
+                (mu4e-drafts-folder . "/Drafts")
+                (mu4e-trash-folder . "/Trash")
+                (mu4e-compose-signature . (concat "Cheers,\n Andrew"))
+                (mu4e-compose-format-flowed . t)
+                (smtpmail-queue-dir . "~/Mail/gmail/queue/cur")
+                (message-send-mail-function . smtpmail-send-it)
+                (smtpmail-smtp-user . "andrewwburch")
+                (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+                (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+                (smtpmail-default-smtp-server . "smtp.gmail.com")
+                (smtpmail-smtp-server . "smtp.gmail.com")
+                (smtpmail-smtp-service . 587)
+                (smtpmail-debug-info . t)
+                (smtpmail-debug-verbose . t))))
+      mu4e-headers-auto-update t
+      mu4e-headers-date-format "%H:%M %d-%m-%Y"
+      ;; mu4e-html2text-command "html2text -utf8"
+      ;; mu4e-html2text-command 'my-render-html-message
+      mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
+      mu4e-maildir (expand-file-name "~/Mail")
+      mu4e-sent-messages-behavior 'delete
+      mu4e-update-interval 180
+      mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
+      mu4e-view-prefer-html nil
+      mu4e-view-show-images t
+      mu4e-view-show-addresses 't
+      smtpmail-queue-mail nil)
+
+(add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
+(add-to-list 'mu4e-view-actions '("Webkit" . mu4e-view-in-browser-webkit) t)
+(add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+** Mail Hooks
+I've never actually composed a message in mu4e, so I don't have a lot going on for the settings. As I use it more, this will hopefully change. headers mode hook just makes the view a little more palatable for me. The last hook for the keybindings just makes navigation a little easier for me.
+#+BEGIN_SRC emacs-lisp
+(add-hook 'mu4e-compose-mode-hook
+          (defun compose-mail ()
+            "Settings for mail composition."
+            (use-hard-newlines -1)))
+(add-hook 'mu4e-headers-mode-hook
+          (defun mu4e-change-head()
+            (interactive)
+            (setq mu4e-headers-fields `((:date . 22)
+                                        (:flags . 6)
+                                        (:from . 22)
+                                        (:thread-subject . ,(- (window-body-width) 70))
+                                        (:size . 7)))))
+(add-hook 'mu4e-view-mode-hook
+          (lambda()
+            (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
+            (local-set-key (kbd "<tab>") 'shr-next-link)
+            (local-set-key (kbd "<backtab>") 'shr-previous-link)
+            (toggle-truncate-lines)))
+#+END_SRC
+* ACTIVE Org
+Org-mode is incredibly complex, so I will just document the components that I'm currently using here. When referencing a key binding, =C= indicates the control key, =M= corresponds to alt, and =S= refers to shift. The keybindings here are kind of hard to remember, but when you use the functions within an org file, the minibuffer will more often than not tell you what the kybinding for a function is after it executes.
+
+In an org file, a todo can be created to manage tasks. Todos are created using =C-S-<ENTER>= or =M-S-<ENTER>=.
+Headings are created by inserting an asterisk at the start of a line. The asterisk can be demoted a level by typing =M-<RIGHT>= and promoted a level by hitting =M-<LEFT>=. A property can be added to a heading by typing =C-c C-x p=. A TODO item can be archived by typing =C-c C-x a=.
+
+Org habit is useful for recurring todos. The main component to habits is that they be scheduled ideally using the =org-schedule= command (=C-c C-s=), and within that schedule date, before the closing angle bracket, set a reminder interval and an optional due date interval separated by a slash: =.+2d= or =.+2d/4d=.
+
+In order for org-roam to work, it requires sqlite3, which is included in the install script at the beginning of the README. If you want to be able to display everything in a graph you need Graphviz: =sudo apt install graphviz=.
+** Org Packages
+At this point, I'm using org-habit, org-mu4e, org-roam and a little of org-journal. All of this is built-in so it's only a matter of requiring the packages.
+#+BEGIN_SRC emacs-lisp
+  (require 'org-habit)
+  (require 'org-journal)
+  (require 'org-mu4e)
+#+END_SRC
+** Org Functions
+I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
+#+BEGIN_SRC emacs-lisp
+  (defun org-summary-todo (n-done n-not-done)
+    "Switch entry to DONE when all subentries are done, to TODO otherwise."
+    (let (org-log-done org-log-states)    ; turn off logging
+      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+#+END_SRC
+** Org Settings
+For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-return=. I also had a bit of time one winter visiting in-laws, so I decided to make a bunch of icons to customize the look of my =org-agenda=. For tasks and habits, I sync my phone with my files on my computer. The app I use is called Orgzly, which stores completion events in a =LOGBOOK= drawer. Luckily org-mode has an =org-log-into-drawer= setting to create the same functionality so my app and desktop work together seamlessly.
+#+BEGIN_SRC emacs-lisp
+  (define-prefix-command 'ring-map)
+  (global-set-key (kbd "C-o") 'ring-map)
+  (setq org-agenda-breadcrumbs-separator " ❱ "
+        org-agenda-category-icon-alist '(("Appointment" "~/.config/emacs/icons/bell.svg" nil nil :ascent center)
+                                         ("Cleaning" "~/.config/emacs/icons/flower.svg" nil nil :ascent center)
+                                         ("Contractor" "~/.config/emacs/icons/tools.svg" nil nil :ascent center)
+                                         ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
+                                         ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
+                                         ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
+                                         ("Learning" "~/.config/emacs/icons/flask.svg" nil nil :ascent center)
+                                         ("Life" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
+                                         ("Maintenance" "~/.config/emacs/icons/wrench.svg" nil nil :ascent center)
+                                         ("Organizing" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
+                                         ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
+                                         ("Todo" "~/.config/emacs/icons/gears.svg" nil nil :ascent center))
+        org-agenda-files '("~/org/tasks/Todo.org")
+        org-capture-templates
+        '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+          ("d" "dream" entry (file "~/org/dreams/Dreams.org")
+           "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
+        org-directory "~/org"
+        org-journal-date-format "%A, %B %d %Y"
+        org-journal-dir "~/org/journal/"
+        org-journal-enable-agenda-integration t
+        org-journal-file-format "%Y.org"
+        org-journal-file-type "yearly"
+        org-journal-skip-carryover-drawers t
+        org-log-into-drawer "LOGBOOK"
+        org-modules '(org-habit)
+        ;; org-mu4e-convert-to-html t
+        org-mu4e-link-query-in-headers-mode nil
+        org-roam-capture--file-name-default "%<%Y%m%d>"
+        org-roam-completion-system 'ido
+        org-roam-capture-templates
+        '(("d" "default" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "%<%Y%m%d>-${slug}"
+           :head "#+title: ${title}\n"
+           :unnarrowed t))
+        org-roam-directory "~/org-roam")
+  (add-to-list 'org-agenda-custom-commands
+               '("x" "Testing tags for negating DONE" tags "-TODO=\"DONE\"" nil nil ))
+  (add-to-list 'org-agenda-files org-journal-dir)
+#+END_SRC
+** Org Keybindings
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "org"
+    (org-load-modules-maybe t)
+    (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
+    (define-key org-mode-map (kbd "C-c f") 'org-roam-insert)
+    (define-key org-mode-map (kbd "<M-return>") nil)
+    (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading))
+
+  (global-set-key (kbd "C-o c") 'org-capture)
+  (global-set-key (kbd "C-o C-r c") 'org-roam-capture)
+  (global-set-key (kbd "C-o C-r f") 'org-roam-find-file)
+  (global-set-key (kbd "C-o C-r g") 'org-roam-graph)
+  (global-set-key (kbd "C-o C-r i") 'org-roam-insert)
+#+END_SRC
+** Org Hooks
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'after-init-hook 'org-roam-mode)
+  (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+  (add-hook 'org-mode-hook 'flyspell-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'toggle-truncate-lines)
+#+END_SRC
+* ACTIVE Writing and Typesetting
+I've added a pretty basic writing environment to my Emacs config. LaTeX support is provided by AUCTeX, listed in the installation section. I'm mainly including this section because I forget how to render a preview of LaTeX documents. The command to preview is =latex-preview-pane-mode=. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
+** Writing Packages
+I've included =auctex= for writing LaTeX documents and =company-auctex= because I love having the completions and sometimes I forget the LaTeX command I'm looking for. I'm slowly moving my Markdown documents to org, so I'm not sure how long I'll keep that package around, but =olivetti= is great for replicating some of the functionality of a typical word processor, like centering the document on the page and establishing margins. 
+#+BEGIN_SRC emacs-lisp
+(require-package 'auctex)
+(require-package 'company-auctex)
+(require-package 'markdown-mode)
+(require-package 'olivetti)
+(require 'company-auctex)
+(require 'olivetti)
+#+END_SRC
+** Writing Functions
+I like the idea of keeping code and more creative writing separate, so I wanted a font to enforce that separation.
+#+BEGIN_SRC emacs-lisp
+(defun set-printing-font ()
+  "Set font to Gentium."
+  (face-remap-add-relative 'default '(:family "Gentium")))
+#+END_SRC
+** Writing Settings
+I kind of fiddled around with different widths in =olivetti= mode to see what felt right for a typical document. I go back and forth on which filetypes to trigger =olivetti= mode on. I've put in Markdown and org, but those don't feel right a lot of the time. I always go back to plain old =txt= files, though.
+#+BEGIN_SRC emacs-lisp
+(setq olivetti-body-width 84)
+(add-to-list 'auto-mode-alist '("\\.txt\\'" . olivetti-mode))
+#+END_SRC
+** Writing Keybindings
+I like having =C-c r= point to a run-like function, and generating a preview is about as close to "running" a LaTeX file as you can get in my opinion, so that's what I went with.
+#+BEGIN_SRC emacs-lisp
+(add-hook 'TeX-mode-hook
+          (lambda()
+            ;; (local-set-key (kbd "C-c r") 'latex-preview-pane-mode)))
+            (local-set-key (kbd "C-c r") 'latex-preview-pane-mode)))
+#+END_SRC
+** Writing Hooks
+Line numbers have only been helpful to me so far in code, so I disabled them for writing documents. It also helps with the separation between code and documents that I'm going for with the second hook. Last but not least, who couldn't use a good dictionary?
+#+BEGIN_SRC emacs-lisp
+(add-hook 'olivetti-mode-hook
+         (lambda()
+           (setq display-line-numbers nil)))
+(add-hook 'olivetti-mode-hook 'set-printing-font)
+(add-hook 'olivetti-mode-hook 'flyspell-mode)
+#+END_SRC
+* ACTIVE General Code Settings
+So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the =lsp-mode= umbrella. 
+** Code Packages
+As far as packages go, =company-quickhelp= is installed, which may not be necessary. It adds documentation to completion options which is nice sometimes, but I think a separate buffer for documentation might work just as well for me. A recent discovery is =hl-todo=, which highlights =TODO= items in buffers where the mode is active. Previously, I used =fic-mode=, but it didn't highlight as you typed, there was another trigger it operated off of which bugged me. So far, I am very happy to be able to use =lsp-mode= in all of my programming projects. I am not as excited about =lsp-ui=. It offers some neat functionality, but I am still evaluating how useful it is for me. A lot of the feedback from =lsp-ui= I prefer to see in the modeline or somewhere more out of the way. I have also found =lsp-treemacs= pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio. I am not sure if =magit= should be in this section or a more general configuration section. I'm seeing more and more places outside of code where source control would be useful. For me, =rainbow-delimiters= has saved me a lot of time tracking down parentheses and brackets in Rust and the little elisp I am willing to commit to. I haven't actually used =treemacs-magit= yet. It was a package I read about and was convinced I needed. I am only just starting to get comfortable with =magit= after spending many months using the CLI. I imagine I will have more to say about =treemacs-magit= soon.
+#+BEGIN_SRC emacs-lisp
+(require-package 'company-quickhelp)
+(require-package 'hl-todo)
+(require-package 'lsp-mode)
+(require-package 'lsp-ui)
+(require-package 'lsp-treemacs)
+(require-package 'magit)
+(require-package 'rainbow-delimiters)
+(require-package 'treemacs-magit)
+(require 'hl-todo)
+(require 'lsp-mode)
+#+END_SRC
+** Code Functions
+Coming from Visual Studio, I got used to pairs of quotes and parentheses and things being added. The first function is an attempt to remedy this. For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding.
+#+BEGIN_SRC emacs-lisp
+(defun electric-pair ()
+  "If at end of line, insert character pair without surrounding spaces.
+Otherwise, just insert the typed character."
+  (interactive)
+  (if (eolp) (let (parens-require-spaces) (insert-pair)) (self-insert-command 1)))
+(defun toggle-comment-on-line ()
+  "Comment or uncomment current line."
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+#+END_SRC
+** Code Settings
+There is not a lot related to code packages that need modifying for me. However, for Python and Rust, I have the various binaries that Emacs needs access to (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here. I had had trouble with =company= taking a long time to list completions, it turned out =company-idle-delay= was the setting I needed for this. It took me too long to figure that out. Set it if you want to change how long you have to wait for =company= completions to appear. Other than that, =electric-pair-mode= is the only other setting worth mentioning. It works with the =electric-pair= function. 
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'exec-path "~/.local/bin")
+(setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
+(setq company-idle-delay 0
+      company-quickhelp-delay 0
+      company-quickhelp-color-background "#cfd8dc"
+      company-quickhelp-color-foreground "#607d8b"
+      company-selection-wrap-around nil
+      company-tooltip-align-annotations t
+      electric-pair-mode 1
+      ;; lsp-signature-auto-activate t
+      lsp-signature-doc-lines 1
+      lsp-ui-doc-delay 0
+      lsp-ui-doc-enable nil
+      lsp-ui-doc--inline-ov t
+      lsp-ui-sideline-enable nil)
+(with-eval-after-load 'lsp-mode
+  (setq lsp-modeline-diagnostics-scope :project)
+  (define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
+#+END_SRC
+** Code Keybindings
+The keybindings defined here all provide LSP functionality. This is nice because it adds consistency to different languages and creates a more seamless experience.
+#+BEGIN_SRC emacs-lisp
+(define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
+(define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
+(define-key lsp-mode-map (kbd "C-c s") 'lsp-find-references)
+(define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
+(define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
+(define-key prog-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+#+END_SRC
+** Code Hooks
+I think the hooks here are mostly self-explanatory. I recently discovered that =flyspell= has a =prog-mode= version that only looks for spelling errors in strings, and I'm liking it so far.
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'hl-todo-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook (lambda ()
+                            (setq indent-tabs-mode nil)))
+#+END_SRC
+* ACTIVE Python
+If you are not interested in Python development, you can set the state of the Python heading to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8. There is not much to my Python development scheme. On a fresh OS, you may need pip, which is included in the big install script under [[*Installation][Installation]]. To get started with Python development, install python language server and black: =pip3 install 'python-language-server[all]' black=. Python language server provides the backend for LSP-mode, and black is a nifty formatting tool to make code conform to pep8. Emacs uses Python development features via LSP-mode.
+** Python Packages
+Currently, I use =blacken= for code formatting and =pyvenv= to interface with my projects' virtual environments.
+#+BEGIN_SRC emacs-lisp
+(require-package 'blacken)
+(require-package 'pyvenv)
+(require 'blacken)
+(require 'lsp-pyls)
+#+END_SRC
+** Python Settings
+The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. I disabled those here.
+#+BEGIN_SRC emacs-lisp
+(setq lsp-pyls-plugins-pycodestyle-ignore '("E501")
+      pyvenv-default-virtual-env-name "venv")
+#+END_SRC
+** Python Keybindings
+For the most part, the keybindings I like for Python development are covered by LSP, so the only thing here, really, are =electric-pair= completions. Even those are pretty universal and probably better suited for the general code settings section.
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "python"
+  (define-key python-mode-map (kbd "C-c r")
+     (lambda()
+       (interactive)
+       (compile (concat "venv/bin/python3 " (buffer-name)))))
+  (define-key python-mode-map "'" 'electric-pair)
+  (define-key python-mode-map "\"" 'electric-pair)
+  (define-key python-mode-map "(" 'electric-pair)
+  (define-key python-mode-map "(" 'electric-pair)
+  (define-key python-mode-map "[" 'electric-pair)
+  (define-key python-mode-map "{" 'electric-pair)
+  (define-key python-mode-map (kbd "C-c f") 'blacken-buffer))
+#+END_SRC
+** Python Hooks
+The hooks here should be self-explanatory, just getting me some of that sweet LSP and virtual environment functionality. 
+#+BEGIN_SRC emacs-lisp
+;; Hooks
+(add-hook 'python-mode-hook 'lsp)
+(add-hook 'python-mode-hook 'pyvenv-mode)
+#+END_SRC
+* ACTIVE Rust
+Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the Rust heading to =DISABLED= with no side-effects. If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]]. You'll want the source code for development: =rustup component add rust-src=. Rust-Analyzer is available on nightly now, so you /can/ run =rustup update nightly= and =rustup component add --toolchain nightly rust-analyzer-preview= to get it. The Rust-Analyzer version in nightly lags what's available, however, so if you want the most recent edition of Rust-Analyzer, download it from Github. At some point I'll add a section about developing Rust for embedded systems.
+** Rust Packages
+The only packages I've found helpful enough to warrant including are =rust-mode= and =flycheck-rust=. There's a =cargo-mode= as well, but I just bind the cargo shell commands to the =compile= command. That way I can also add whatever flags I want for the compiler.
+#+BEGIN_SRC emacs-lisp
+(require-package 'rust-mode)
+(require-package 'flycheck-rust)
+(require 'company)
+(require 'rust-mode)
+(require 'flycheck)
+(require 'flycheck-rust)
+(require 'lsp-mode)
+#+END_SRC
+** Rust Functions
+I wrote a function to ask for custom build arguments since I so frequently compile for both Desktop and my Raspberry Pis.
+#+BEGIN_SRC emacs-lisp
+(defun cargo-build (arg)
+  "Build with input ARG."
+  (interactive "MCargo Build arguments: ")
+  (compile (concat "cargo build " arg)))
+#+END_SRC
+** Rust Settings
+Personally, I like using an updated version of Rust-Analyzer, so I just put the binary in my =~/.local/bin= directory and add it to Emacs' =PATH= and =exec-path=. The last thing is to tell =rust-mode= to activate when a =.rs= file is opened.
+#+BEGIN_SRC emacs-lisp
+(setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
+(setq lsp-rust-analyzer-server-display-inlay-hints t
+      lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
+      lsp-rust-server 'rust-analyzer)
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(add-to-list 'exec-path "~/.local/bin")
+#+END_SRC
+** Rust Keybindings
+
+#+BEGIN_SRC emacs-lisp
+(define-key rust-mode-map "'" 'electric-pair)
+(define-key rust-mode-map "\"" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "[" 'electric-pair)
+(define-key rust-mode-map "{" 'electric-pair)
+(define-key rust-mode-map (kbd "C-c b") 'cargo-build)
+(define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
+(define-key rust-mode-map (kbd "C-c r")
+  (lambda ()
+    (interactive)
+    (compile "cargo run")))
+(define-key rust-mode-map (kbd "C-c k")
+  (lambda ()
+    (interactive)
+    (compile "cargo check")))
+(define-key rust-mode-map (kbd "C-c t")
+  (lambda ()
+    (interactive)
+    (compile "cargo test -- --nocapture")))
+(define-key rust-mode-map (kbd "C-c C-f") nil)
+#+END_SRC
+** Rust Hooks
+#+BEGIN_SRC emacs-lisp
+(add-hook 'rust-mode-hook 'lsp)
+(add-hook 'rust-mode-hook 'flycheck-rust-setup)
+#+END_SRC
+* ACTIVE SQL
+My configuration also provides some customization of Emacs =SQL= mode. My workflow for SQL usually consists of two buffers: one of a SQL file and the other is the SQL interactive buffer. The SQL file is helpful because I can save and track my queries easily without thinking about it and the keeping the SQLi buffer separate is nice because I can disable font-lock so query results don't have silly distracting faces.
+** SQL Packages
+The only package used here so far is =sqlup-mode= which auto capitalizes SQL keywords to replicate what many SQL clients do.
+#+BEGIN_SRC emacs-lisp
+(require-package 'sqlup-mode)
+#+END_SRC
+** SQL Functions
+The first function disables font-lock for =sql-interactive-mode= and the second sets up the =sql-interactive-mode= buffer automatically when =sql-mode= is enabled (either by opening a SQL buffer or manually activating =sql-mode=).
+#+BEGIN_SRC emacs-lisp
+(defun my-sql-disable-font-lock (orig-fun &rest args)
+  "Disable syntax highlighting for SQL output."
+  (cl-letf (((symbol-function #'sql-product-font-lock) #'ignore))
+    (apply orig-fun args)))
+(defun my-sql-login-hook ()
+  "Custom SQL log-in behaviors."
+  (when (eq sql-product 'postgres)
+    (let ((proc (get-buffer-process (current-buffer))))
+      (comint-send-string proc "\\set ECHO queries\n"))))
+#+END_SRC
+** SQL Settings
+Here, I've set up a list of connections I use frequently. I was surprised by how much of a quality-of-life improvement this was.
+#+BEGIN_SRC emacs-lisp
+(setq sql-connection-alist
+      '(
+        (home (sql-product 'postgres)
+              (sql-port 5432)
+              (sql-server "localhost")
+              (sql-user "postgres")
+              (sql-database "savetheglobe"))
+        (savetheglobe_home (sql-product 'postgres)
+                           (sql-port 5432)
+                           (sql-server "localhost")
+                           (sql-user "postgres")
+                           (sql-database "savetheglobe"))
+        (savetheglobe_heroku (sql-product 'postgres)
+                             (sql-port 5432)
+                             (sql-server "ec2-52-87-22-151.compute-1.amazonaws.com")
+                             (sql-user "nrsgquqvfevzbu")
+                             (sql-database "ddpfocn81le95m"))))
+#+END_SRC
+** SQL Keybindings
+I made a couple of keybindings for sending region and the whole buffer to the =sql-interactive-mode= buffer. I believe there are existing bindings for this, but I wanted something more in keeping with the rest of my keybinding setup. 
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "sql"
+  (define-key sql-mode-map (kbd "C-c s") 'sql-send-region)
+  (define-key sql-mode-map (kbd "C-c S") 'sql-send-buffer))
+(advice-add 'sql-interactive-mode :around 'my-sql-disable-font-lock)
+#+END_SRC
+** SQL Hooks
+The first hook automatically creates a sqli-buffer when =sql-mode= is activated, the second and third enable the SQL keyword auto-casing, the fourth is for query result readability, and the fifth is for auto-login in the =sql-interactive-mode= buffer.
+#+BEGIN_SRC emacs-lisp
+(add-hook 'sql-mode-hook 'sql-set-sqli-buffer)
+(add-hook 'sql-mode-hook 'sqlup-mode)
+(add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+(add-hook 'sql-mode-hook '(lambda ()
+                            (setq truncate-lines t
+                                  word-wrap nil)))
+;; (add-hook 'sql-login-hook 'my-sql-login-hook)
+#+END_SRC
