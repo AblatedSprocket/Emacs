@@ -134,7 +134,7 @@ General settings for my setup. I actually haven't used =apropos= much, but after
 #+END_SRC
 
 ** ACTIVE Keybindings
-Below are keybindings I use for pretty much every mode.
+Below are keybindings I use for pretty much every mode. I suppose =toggle-comment-on-line= could be moved to the code section.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-;") 'toggle-comment-on-line)
 (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
@@ -170,12 +170,14 @@ Below are keybindings I use for pretty much every mode.
 #+END_SRC
 
 ** ACTIVE Hooks
+I love flycheck and company and don't have any modes where I don't want these, so I enabled them globally.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-init-hook 'global-flycheck-mode)
 (add-hook 'after-init-hook 'global-company-mode)
 (add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
 #+END_SRC
 * Mail Client Configuration
+One of the main drivers for me to use =mu4e= (or another Emacs package) for email management is to provide access to email in =org-mode=. This really shines when you need to make a =TODO= item from an email. You simply use a capture template, insert a link to the email, flesh out the =TODO= tasks, and save. If you leave and have to come back, there is no need to go to your inbox and find the email, everything is in your =TODO=.
 
 If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to Install =mu4e=, =isync=, =html2text= and =gpg2= via apt: =sudo apt install mu4e isync html2text gnupg2=.
 
@@ -218,6 +220,7 @@ I've defined a couple of convenience functions. If an email just won't render as
     (concat "from:" (cdar (mu4e-message-field msg :from)))))
 #+END_SRC
 ** ACTIVE Mail Settings
+I have a lot of customization for =mu4e=. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of =mu4e= is contexts, which can be associated with an email address. This provides separation between work and home, for example.
 #+BEGIN_SRC emacs-lisp
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
@@ -316,6 +319,7 @@ At this point, I'm using org-habit, org-mu4e, org-roam and a little of org-journ
   (require 'org-habit)
   (require 'org-journal)
   (require 'org-mu4e)
+  (require 'org-roam-protocol)
 #+END_SRC
 ** ACTIVE Org Functions
 I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
@@ -368,12 +372,36 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
            :file-name "%<%Y%m%d>-${slug}"
            :head "#+title: ${title}\n"
            :unnarrowed t))
-        org-roam-directory "~/org-roam")
+        org-roam-directory "~/org-roam"
+        org-roam-graph-edge-extra-config '(
+        ("color" . "green")
+        ("fillcolor" . "green"))
+        org-roam-graph-extra-config '(
+        ("bgcolor" . "lightgray"))
+        org-roam-graph-node-extra-config '(
+        ("color" . "skyblue")
+        ("fillcolor" . "skyblue")
+        ("fontname" . "Arial")
+        ("style" . "filled"))
+        ;;org-roam-graph-viewer nil
+        org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8000
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20)
   (add-to-list 'org-agenda-custom-commands
                '("x" "Testing tags for negating DONE" tags "-TODO=\"DONE\"" nil nil ))
   (add-to-list 'org-agenda-files org-journal-dir)
+  (org-roam-server-mode)
 #+END_SRC
 ** ACTIVE Org Keybindings
+My keybindings for org are mostly unnecessary remappings to better integrate with my workflow. That, and more centralized access to =org= and =org-roam= commands I use frequently via the =C-o= remapping mentioned in [[*Org Settings][Org Settings]].
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load "org"
     (org-load-modules-maybe t)
@@ -389,6 +417,7 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
   (global-set-key (kbd "C-o C-r i") 'org-roam-insert)
 #+END_SRC
 ** ACTIVE Org Hooks
+Most of the hooks related to =org-mode= are simply triggering other modes.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'after-init-hook 'org-roam-mode)
   (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
@@ -583,7 +612,7 @@ Personally, I like using an updated version of Rust-Analyzer, so I just put the 
 (add-to-list 'exec-path "~/.local/bin")
 #+END_SRC
 ** ACTIVE Rust Keybindings
-
+The keybindings I use for Rust are mostly quality-of-life completions and Rust-specific versions of the generic code bindings I mentioned in [[*Code Settings][Code Settings]]. Rust is kind of interesting because the comipler provides a =check= command that compiles the code without statically linking anything. This provides error checking without the overhead of a full build. I'm contemplating using this as my default build command, but I compile for other targets so frequently that a separate command is fine for now. It is, however, non-intuitive to use =check= when every other mode uses a different command.
 #+BEGIN_SRC emacs-lisp
 (define-key rust-mode-map "'" 'electric-pair)
 (define-key rust-mode-map "\"" 'electric-pair)
@@ -608,6 +637,7 @@ Personally, I like using an updated version of Rust-Analyzer, so I just put the 
 (define-key rust-mode-map (kbd "C-c C-f") nil)
 #+END_SRC
 ** ACTIVE Rust Hooks
+Like most languages, the only hooks I really need for Rust are LSP and flycheck.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'rust-mode-hook 'lsp)
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)
