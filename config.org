@@ -308,10 +308,12 @@ At this point, I'm using org-habit, org-mu4e, org-roam and a little of org-journ
   (require-package 'org-journal)
   (require-package 'org-roam)
   (require-package 'org-roam-server)
+  (require-package 'ox-hugo)
   (require 'org-habit)
   (require 'org-journal)
   (require 'org-mu4e)
   (require 'org-roam-protocol)
+  (require 'ox-hugo)
 #+END_SRC
 ** ACTIVE Org Functions
 I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
@@ -346,6 +348,7 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
           ("d" "dream" entry (file "~/org/dreams/Dreams.org")
            "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
         org-directory "~/org"
+        org-log-done 'time
         org-journal-date-format "%A, %B %d %Y"
         org-journal-dir "~/org/journal/"
         org-journal-enable-agenda-integration t
