@@ -3,7 +3,7 @@
 #+STARTUP: indent
 * General Configuration
 ** ACTIVE Packages
-Packages used for general settings. I'm using =all-the-icons= to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though. I use =company= as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. Almost every buffer uses Flycheck either for code syntax or spelling via flyspell. I'm contemplating getting rid of =ivy=, I use =ido= for most things. I like =latex-preview-pane= because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. For now, sanityinc is my go-to for themes. Multiple cursors was one thing I missed from Sublime Text, so =multiple-cursors= was a happy discovery. I'm using =projectile= to manage my git projects. It also integrates with other packages I have related to code. I'm thinking about investigating =project= to see if I can remove this dependency. I use =rg= for searching through files for text when a language-server can't do the job. I always forget what =smex= does, it's a valuable addition to =ido= that gives precedence to most frequently used completions. I use =treemacs= mostly for its integrations with =projectile= to get a visual on project structure. Its integration with =lsp-mode= is also nice for viewing project symbol information. I am slowly using =yasnippet= more, I'm considering adding an integration with =company= for snippet completion, but part of me thinks that at that point I have a bigger problem.
+Packages used for general settings. I'm using =all-the-icons= to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though. I use =company= as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. Almost every buffer uses Flycheck either for code syntax or spelling via flyspell. I'm contemplating getting rid of =ivy=, I use =ido= for most things. I like =latex-preview-pane= because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. For now, sanityinc is my go-to for themes. Multiple cursors was one thing I missed from Sublime Text, so =multiple-cursors= was a happy discovery. I use =rg= for searching through files for text when a language-server can't do the job. I always forget what =smex= does, it's a valuable addition to =ido= that gives precedence to most frequently used completions. I use =treemacs= mostly to get a visual on project structure. Its integration with =lsp-mode= is also nice for viewing project symbol information. I am slowly using =yasnippet= more, I'm considering adding an integration with =company= for snippet completion, but part of me thinks that at that point I have a bigger problem.
 
 #+BEGIN_SRC emacs-lisp 
 (require-package 'all-the-icons)
@@ -13,11 +13,9 @@ Packages used for general settings. I'm using =all-the-icons= to get unicode sup
 (require-package 'latex-preview-pane)
 (require-package 'color-theme-sanityinc-tomorrow)
 (require-package 'multiple-cursors)
-(require-package 'projectile)
 (require-package 'rg)
 (require-package 'smex)
 (require-package 'treemacs)
-(require-package 'treemacs-projectile)
 (require-package 'yasnippet)
 
 (require 'all-the-icons)
@@ -117,7 +115,6 @@ General settings for my setup. I actually haven't used =apropos= much, but after
   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
-(projectile-global-mode)
 (recentf-mode 1)
 (show-paren-mode 1)
 (smex-initialize)

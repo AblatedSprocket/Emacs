@@ -103,7 +103,7 @@ Note the weekly scope of the command's precision.")
  '(custom-safe-themes
    '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
  '(package-selected-packages
-   '(org-roam-server treemacs-projectile treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv org-journal olivetti multiple-cursors lsp-ui lsp-treemacs latex-preview-pane ivy hl-todo flycheck-rust company-quickhelp company-auctex color-theme-sanityinc-tomorrow blacken all-the-icons)))
+   '(org-roam-server treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv org-journal olivetti multiple-cursors lsp-ui lsp-treemacs latex-preview-pane ivy hl-todo flycheck-rust company-quickhelp company-auctex color-theme-sanityinc-tomorrow blacken all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
