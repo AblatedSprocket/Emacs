@@ -524,7 +524,7 @@ Org Roam is great for managing information about things I'm learning about.
 
 **** Org-Roam Dependencies
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC shell
 sudo apt install sqlite3
 #+END_SRC
 
