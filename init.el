@@ -93,17 +93,16 @@ Note the weekly scope of the command's precision.")
 (add-hook 'after-save-hook 'my-tangle-config-org-hook-func)
 
 (provide 'init)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(sanityinc-tomorrow-night))
+ '(custom-enabled-themes '(sanityinc-tomorrow-day))
  '(custom-safe-themes
-   '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
+   '("9e39a8334e0e476157bfdb8e42e1cea43fad02c9ec7c0dbd5498cf02b9adeaf1" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
  '(package-selected-packages
-   '(org-roam-server treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv org-journal olivetti multiple-cursors lsp-ui lsp-treemacs latex-preview-pane ivy hl-todo flycheck-rust company-quickhelp company-auctex color-theme-sanityinc-tomorrow blacken all-the-icons)))
+   '(web-mode use-package ts treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-hugo org-roam-server org-journal olivetti mw-thesaurus multiple-cursors lsp-ui lsp-treemacs latex-preview-pane langtool ivy hl-todo flycheck-rust company-quickhelp company-lsp company-auctex color-theme-sanityinc-tomorrow blacken all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -2,9 +2,15 @@
 #+TODO: DISABLED | ACTIVE
 #+STARTUP: indent
 * Emacs Config
+
 Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings.
+
 ** ACTIVE General Configuration
-These are the general purpose functions I've found or made over my time with Emacs. I have found =beginning-of-line-or-indentation= and =whack-whitespace= very useful as keybindings, but I almost never use =switch-to-previous-buffer=. I actually haven't used Apropos much, but after investigating it while writing this, I've discovered it is a very useful tool for discovering! It functions similarly to the =C-h= keybindings, but it's a bit more accessible in my opinion. The other big thing I want to point out is I disabled minor modes showing up in the modeline using the =mode-line-modes= setting.
+
+These are the general purpose functions I've found or made over my time with Emacs. I have found =beginning-of-line-or-indentation= and =whack-whitespace= very useful as keybindings, but I almost never use =switch-to-previous-buffer=. I actually haven't used Apropos much, but after investigating it while writing this, I've discovered it is a very useful tool for discovering! It functions similarly to the =C-h= keybindings, but it's a bit more accessible in my opinion. The other big thing I want to point out is I disabled minor modes showing up in the modeline using the =mode-line-modes= setting. To use the Inconsolata font, you may have to install it first.
+
+*NOTE:* General configuration has [[* General Configuration Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (defun beginning-of-line-or-indentation ()
   "Move to beginning of line or indentation."
@@ -84,14 +90,26 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-n") 'forward-paragraph)
 
 #+END_SRC
+
+*** General Configuration Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install fonts-inconsolata
+#+END_SRC
+
 *** ACTIVE All the Icons
+
 I'm using All the Icons to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'all-the-icons)
 (require 'all-the-icons)
 #+END_SRC
+
 *** ACTIVE Company
+
 I use Company as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. I had had trouble with Company taking a long time to list completions, it turned out =company-idle-delay= was the setting I needed for this. It took me too long to figure that out. Set it if you want to change how long you have to wait for Company completions to appear.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'company)
 (require 'company)
@@ -101,15 +119,21 @@ I use Company as my go-to completion engine. I have it enabled globally because 
       company-tooltip-align-annotations t)
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
+
 *** ACTIVE Flycheck
+
 Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't fi have any modes where I don't want Flycheck, so I enabled them globally.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'flycheck)
 (require 'flycheck)
 (add-hook 'after-init-hook 'global-flycheck-mode)
 #+END_SRC
+
 *** ACTIVE Flyspell
+
 I recently discovered that Flyspell has a Prog Mode version that only looks for spelling errors in strings, and I'm liking it so far.
+
 #+BEGIN_SRC emacs-lisp
 (defun flyspell-goto-previous-error (arg)
   "Go to arg previous spelling error."
@@ -156,8 +180,11 @@ I recently discovered that Flyspell has a Prog Mode version that only looks for 
 (add-hook 'org-mode-hook 'flyspell-mode)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
+
 *** ACTIVE Ido
+
 Ido provides great minibuffer completion.
+
 #+BEGIN_SRC emacs-lisp
 (require 'ido)
 (setq ido-use-filename-at-point nil
@@ -165,53 +192,65 @@ Ido provides great minibuffer completion.
       ido-use-virtual-buffers t)
 (ido-mode t)
 #+END_SRC
-*** ACTIVE LaTeX Preview Pane
-I like Latex Preview Pane because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
-#+BEGIN_SRC emacs-lisp
-(require-package 'latex-preview-pane)
-(add-hook 'TeX-mode-hook
-          (lambda()
-            (local-set-key (kbd "C-c r") 'latex-preview-pane-mode)))
-#+END_SRC
-*** ACTIVE MHTML
-MHTML is par for every other package I've used for HTML templates. I don't have any real configuration for it, just a bunch of snippets.
-#+BEGIN_SRC 
-(add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
-#+END_SRC
+
 *** ACTIVE Multiple Cursors
+
 Multiple cursors was one thing I missed from Sublime Text, so Multiple-Cursors was a happy discovery.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'multiple-cursors)
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c m") 'mc/edit-lines)
 #+End_SRC
+
 *** ACTIVE Recentf
+
 #+BEGIN_SRC emacs-lisp
 (require 'recentf)
 (recentf-mode 1)
 #+END_SRC
+
 *** ACTIVE Ripgrep
-I use Ripgre (rg) for searching through files for text when a language-server can't do the job.
+
+I use Ripgrep for searching through files for text when a language-server can't do the job.
+
+*NOTE:* Ripgrep has [[Ripgrep Dependencies][dependencies]]
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'rg)
 #+END_SRC
+
+**** Ripgrep Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install ripgrep
+#+END_SRC
+
 *** ACTIVE SanityInc Tomorrow Themes
+
 For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'color-theme-sanityinc-tomorrow)
 (add-hook 'after-init-hook (lambda ()
   (load-theme 'sanityinc-tomorrow-night t)))
 #+END_SRC
+
 *** ACTIVE Smex
+
 I always forget what Smex does, it's a valuable addition to Ido that gives precedence to most frequently used completions.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'smex)
 (smex-initialize)
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
 (global-set-key (kbd "M-x") 'smex)
 #+END_SRC
+
 *** ACTIVE Treemacs
+
 I use Treemacs mostly to get a visual on project structure. Its integration with LSP mode is also nice for viewing project symbol information.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'treemacs)
 (require 'treemacs)
@@ -221,17 +260,22 @@ I use Treemacs mostly to get a visual on project structure. Its integration with
 (define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
 (define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
 #+END_SRC
+
 *** ACTIVE Yasnippet
+
 I am slowly using YASnippet more, I'm considering adding an integration with Company for snippet completion, but part of me thinks that at that point I have a bigger problem.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'yasnippet)
 (yas-global-mode 1)
 (global-set-key (kbd "C-c x") 'yas-expand)
 #+END_SRC
+
 ** ACTIVE Mu4e
+
 One of the main drivers for me to use Mu4e (or another Emacs package) for email management is to provide access to email in Org mode. This really shines when you need to make a =TODO= item from an email. You simply use a capture template, insert a link to the email, flesh out the =TODO= tasks, and save. If you leave and have to come back, there is no need to go to your inbox and find the email, everything is in your =TODO=.
 
-If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. The first task is to install Mu4e dependencies: =sudo apt install mu4e isync html2text gnupg2=.
+If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. Be sure to install the [[* Mu4e Dependencies][dependencies]] before moving ahead.
 
 Create a file whose contents is your mail password and encrypt via gpg2: =gpg2 -c .authinfo= 
 
@@ -249,7 +293,10 @@ The last step is to index the messages with mu: =mu index --maildir=~/Mail=.
 
 I've defined a couple of convenience functions. If an email just won't render as text, I have =mu4e-show-in-browser=. I'm holding onto hope for better webkit support so I'm keeping =mu4e-view-in-browser-webkit= around for the time being. I've never had occasion to use =search-for-sender=, but it seems like a basic function that any email client should have.
 
-I have a lot of customization for Mmu4e. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of Mu4e contexts, which can be associated with an email address. This provides separation between work and home, for example.
+I have a lot of customization for Mu4e. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of Mu4e contexts, which can be associated with an email address. This provides separation between work and home, for example.
+
+*NOTE:* Mu4e has [[* Mu4e Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
 (require 'mu4e)
@@ -340,12 +387,21 @@ I have a lot of customization for Mmu4e. Admittedly, most of it was taken from o
             (local-set-key (kbd "<backtab>") 'shr-previous-link)
             (toggle-truncate-lines)))
 #+END_SRC
-** ACTIVE Org 
+
+*** Mu4e Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install mu4e isync html2text gnupg2
+#+END_SRC 
+
+** ACTIVE Org
+
 For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-return=. I also had a bit of time one winter visiting in-laws, so I decided to make a bunch of icons to customize the look of my Org-Agenda. For tasks and habits, I sync my phone with my files on my computer. The app I use is called Orgzly, which stores completion events in a LOGBOOK= drawer. Luckily org-mode has an =org-log-into-drawer= setting to create the same functionality so my app and desktop work together seamlessly.
 
 My keybindings for org are mostly unnecessary remappings to better integrate with my workflow.
 
 I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
+
 #+BEGIN_SRC emacs-lisp
 (require 'org)
 (defun org-summary-todo (n-done n-not-done)
@@ -372,8 +428,11 @@ I only have one function, which is meant to change the status of a parent task t
 (add-hook 'org-mode-hook 'org-indent-mode)
 (add-hook 'org-mode-hook 'toggle-truncate-lines)
 #+END_SRC
+
 *** ACTIVE Org-Agenda
+
 I'm not good about using it, but the intention here is to have Org-Agenda manage the tasks I set for myself every day. It works in conjunction with the Orgzly app for mobile. Orgzly logs task completions in a =LOGBOOK= drawer, so to make org-mode compatible, I added the =org-log-into-drawer= setting.
+
 #+BEGIN_SRC emacs-lisp
 (require 'org)
 (require 'org-agenda)
@@ -397,13 +456,20 @@ I'm not good about using it, but the intention here is to have Org-Agenda manage
 (define-key org-agenda-mode-map (kbd "M-m") nil)
 (global-set-key (kbd "C-o a") 'org-agenda)
 #+END_SRC
+
 *** ACTIVE Org Habit
+
 Org habit is useful for recurring todos. The main component to habits is that they be scheduled ideally using the =org-schedule= command (=C-c C-s=), and within that schedule date, before the closing angle bracket, set a reminder interval and an optional due date interval separated by a slash: =.+2d= or =.+2d/4d=.
+
 #+BEGIN_SRC emacs-lisp
 (require 'org-habit)
 (setq org-modules '(org-habit))
 #+END_SRC
+
 *** ACTIVE Org Journal
+
+One of the things I've always wished I were better at keeping was a journal. Since I use Emacs all of the time, my hope is that making a journal more accessible will help me be more consistent.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'org-journal)
 (require 'org-agenda)
@@ -419,13 +485,16 @@ Org habit is useful for recurring todos. The main component to habits is that th
                                        "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
 (global-set-key (kbd "C-o j") 'org-journal-new-entry)
 #+END_SRC
+
 *** ACTIVE Org-Roam
-Org Roam is great for managing information about things I'm learning about. In order for Org-Roam to work, it requires SQLite3, which is included in the install script at the beginning of the README. If you want to be able to display everything in a graph you need Graphviz: =sudo apt install graphviz=.
+
+Org Roam is great for managing information about things I'm learning about. 
+
+*NOTE:* Org-Roam has [[* Org-Roam Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'org-roam)
-(require-package 'org-roam-server)
 (require 'org)
-(require 'org-roam-protocol)
 (setq org-roam-capture--file-name-default "%<%Y%m%d>"
       org-roam-completion-system 'ido
       org-roam-capture-templates
@@ -444,9 +513,31 @@ Org Roam is great for managing information about things I'm learning about. In o
       ("color" . "skyblue")
       ("fillcolor" . "skyblue")
       ("fontname" . "Arial")
-      ("style" . "filled"))
-      ;;org-roam-graph-viewer nil
-      org-roam-server-host "127.0.0.1"
+      ("style" . "filled")))
+(define-key org-mode-map (kbd "C-c i") 'org-roam-insert)
+(global-set-key (kbd "C-o r") 'org-roam-capture)
+(add-hook 'after-init-hook 'org-roam-mode)
+(global-set-key (kbd "C-o f") 'org-roam-find-file)
+(global-set-key (kbd "C-o g") 'org-roam-graph)
+(global-set-key (kbd "C-o i") 'org-roam-insert)
+#+END_SRC
+
+**** Org-Roam Dependencies
+
+#+BEGIN_SRC emacs-lisp
+sudo apt install sqlite3
+#+END_SRC
+
+*** ACTIVE Org-Roam Server
+
+Org-Roam Server provides a novel way of interacting with your Org-Roam files. Most of the appeal is visual to my knowledge, and the functionality it provides is available within Emacs.
+
+*NOTE:* Org-Roam Server has [[* Org-Roam Server Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'org-roam-server)
+(require 'org-roam-protocol)
+(setq org-roam-server-host "127.0.0.1"
       org-roam-server-port 8000
       org-roam-server-authenticate nil
       org-roam-server-export-inline-images t
@@ -458,23 +549,37 @@ Org Roam is great for managing information about things I'm learning about. In o
       org-roam-server-network-label-truncate-length 60
       org-roam-server-network-label-wrap-length 20)
 (org-roam-server-mode)
-(define-key org-mode-map (kbd "C-c i") 'org-roam-insert)
-(global-set-key (kbd "C-o r") 'org-roam-capture)
-(add-hook 'after-init-hook 'org-roam-mode)
-(global-set-key (kbd "C-o f") 'org-roam-find-file)
-(global-set-key (kbd "C-o g") 'org-roam-graph)
-(global-set-key (kbd "C-o i") 'org-roam-insert)
 #+END_SRC
+
+**** Org-Roam Server Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install graphviz
+#+END_SRC
+
 *** ACTIVE Ox-Hugo
+
 Currently, I'm using Ox-Hugo to manage my personal website. Most of the custom configuration for that is in the site's org file as local variables so it doesn't show up here. That site is in a separate repo [[https://gitlab.com/AblatedSprocket/nothingissimple][here]].
+
+*NOTE:* Ox-Hugo has [[* Ox-Hugo Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
   (require-package 'ox-hugo)
   (require 'ox-hugo)
   (add-to-list 'org-capture-templates `("p" "post" entry (file+headline "~/NothingIsSimple/site.org" "Posts")
                                          "* TODO %?\n:PROPERTIES:\n:EXPORT_FILE_NAME: \n:END:\n"))
 #+END_SRC
+
+**** Ox-Hugo Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install hugo
+#+END_SRC
+
 *** ACTIVE Ox-SlimHTML
+
 Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I'm trying out storing my bookmarks in an Org file so I can add notes. I don't know if this is a useful workflow yet so this might go on the chopping block.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'ox-slimhtml)
 (require 'ox-slimhtml)
@@ -484,45 +589,97 @@ Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I
     '((bold . ox-slimhtml-bold)
       (special-block . org-html-special-block)))
 #+END_SRC
+
 ** Prose
-I like using Emacs as a code editor and for creative writing. Emacs doesn't have a lot of the things a standard word processor does (especially by default), but I've found the packages that provide a better experience for me than Word or any other word processor.
+
+I like using Emacs as a code editor and for creative writing. Emacs doesn't have a lot of the things a standard word processor does (especially by default), but I've found the packages that provide a better experience for me than Word or any other word processor. To use Auctex you need to install a few things:
+
+*NOTE:* Prose has [[* Prose Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (defun set-printing-font ()
   "Set font to Gentium."
   (face-remap-add-relative 'default '(:family "Gentium")))
 #+END_SRC
+
+*** Prose Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install fonts-sil-gentium
+#+END_SRC
+
 *** ACTIVE Auctex
+
 LaTeX support is provided by Auctex. In general I use Org for writing, but if I need something typeset, Auctex is what I use. I like having =C-c r= point to a run-like function, and generating a preview is about as close to "running" a LaTeX file as you can get in my opinion, so that's what I went with.
+
+*NOTE:* Auctex has [[* Auctex Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'auctex)
 #+END_SRC
+
+**** Auctex Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install texinfo auctex
+#+END_SRC
+
 *** ACTIVE Company-Auctex
+
 I just love Company and want to use it wherever I can. Feel free to disable this.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'company-auctex)
 #+END_SRC
-*** ACTIVE Langtool
-Langtool provides some basic spelling and grammar errors. Presently I'm using Flycheck for spelling, so hopefully this proves better than I'm expecting on the grammar front. This package requires [[https://dev.languagetool.org/http-server][LanguageTool]] and Java. Download the LanguageTool library and extract it to =~/.local/lib/= and install Java:
-#+BEGIN_SRC shell
-sudo apt install openjdk-14-jre-headless
+
+*** ACTIVE LaTeX Preview Pane
+
+I like Latex Preview Pane because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'latex-preview-pane)
+(add-hook 'TeX-mode-hook
+          (lambda()
+            (local-set-key (kbd "C-c r") 'latex-preview-pane-mode)))
 #+END_SRC
+
+*** ACTIVE Langtool
+
+Langtool provides some basic spelling and grammar errors. Presently I'm using Flycheck for spelling, so hopefully this proves better than I'm expecting on the grammar front. This package requires [[https://dev.languagetool.org/http-server][LanguageTool]] and Java. Download the LanguageTool library and extract it to =~/.local/lib/= and install Java.
+
 If you want to use LanguageTool outside of Emacs, the configuration is a little different. I'm debating setting up a Systemd service for LanguageTool and configuring Langtool to use that instead of spinning up its own instance. For now, this works.
+
+*NOTE:* Langtool has [[* Langtool Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'langtool)
 (setq langtool-language-tool-server-jar
 "~/.local/lib/LanguageTool-5.1/languagetool-server.jar")
 #+END_SRC
+
+**** Langtool Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install openjdk-14-jre-headless
+#+END_SRC
+
 *** ACTIVE Merriam-Webster Thesaurus
+
 This marks an important milestone for my view to how I write. This is something I always wanted. I always hated having to break my immersion in my writing to go to a browser to look up a synonym for something. I haven't used this extensively yet, but I think it will make a huge difference for me. 
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'mw-thesaurus)
 (define-key org-mode-map (kbd "C-c h") 'mw-thesaurus-lookup-at-point)
 #+END_SRC
+
 *** ACTIVE Olivetti
+
 Some parts of a standard word processor I missed until I learned about Olivetti. I mostly wanted the document centered on the page with a fixed width. I'm still exploring its capabilities, but if more is desired, Olivetti might not be the way to go.
 
 I like the idea of keeping code and more creative writing separate, so I wanted a font to enforce that separation.
+
 I kind of fiddled around with different widths in Olivetti mode to see what felt right for a typical document. I go back and forth on which file types to trigger Olivetti on. I've put in Markdown and org, but those don't feel right a lot of the time. I always go back to plain old .txt files, though.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'olivetti)
 (require 'olivetti)
@@ -534,8 +691,11 @@ I kind of fiddled around with different widths in Olivetti mode to see what felt
 (add-hook 'olivetti-mode-hook 'set-printing-font)
 (add-hook 'olivetti-mode-hook 'flyspell-mode)
 #+END_SRC
+
 ** ACTIVE General Code Configuration
+
 For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding. I have the various binaries that Emacs needs access to for programming languages (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here.
+
 #+BEGIN_SRC emacs-lisp
 (defun toggle-comment-on-line ()
   "Comment or uncomment current line."
@@ -550,13 +710,15 @@ For code, =toggle-comment-on-line= has been an invaluable function that I use al
 (add-hook 'prog-mode-hook (lambda ()
                             (setq indent-tabs-mode nil)))
 #+END_SRC
+
 **** ACTIVE Python
+
 If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
 
 For the most part, the keybindings I like for Python development are covered by LSP, so the only thing here, really, are Electric-Pair completions. Even those are pretty universal and probably better suited for the general code settings section. In order to use Emacs for Python you will of course need Python and pip:
-#+BEGIN_SRC shell
-sudo apt install python3.8 python3-pip
-#+END_SRC
+
+*NOTE:* Python has [[* Python Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require 'python)
 (define-key python-mode-map "'" 'electric-pair)
@@ -567,31 +729,59 @@ sudo apt install python3.8 python3-pip
 (define-key python-mode-map "{" 'electric-pair)
 (add-hook 'python-mode-hook 'lsp)
 #+END_SRC
-***** ACTIVE Blacken
-Currently, I use Blacken for Python code formatting. Assuming you have installed the required packages for [[* Python][Python]], you will need to install Black:
+
+***** Python Dependencies
+
 #+BEGIN_SRC shell
-pip3 install black
+sudo apt install python3.8 python3-pip
 #+END_SRC
+
+***** ACTIVE Blacken
+
+Currently, I use Blacken for Python code formatting.
+
+*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
+
+*NOTE:* Blacken has [[* Blacken Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'blacken)
 (require 'blacken)
 (require 'python)
 (define-key python-mode-map (kbd "C-c f") 'blacken-buffer)
 #+END_SRC
-***** ACTIVE LSP-Pyls
-Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. Assuming you have installed the packages required for [[* Python][Python]], you need to install PyLS:
+
+****** Blacken Dependencies
 #+BEGIN_SRC shell
-pip3 install 'python-language-server[all]'
+pip3 install black
 #+END_SRC
+
+***** ACTIVE LSP-Pyls
+
+Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. 
+
+*NOTE* Assumes you have installed packages for [[* Python Dependencies][Python]]
+
+*NOTE* LSP-Pyls has [[* LSP-Pyls Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require 'lsp-pyls)
 (setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
 #+END_SRC
-***** ACTIVE Pyvenv
-I use Pyvenv to interface with my projects' virtual environments. Assuming you have installed the packages in [[* Python][Python]], You will need to install Venv:
+
+****** LSP-Pyls Dependencies
 #+BEGIN_SRC shell
-sudo apt install python3-venv
+pip3 install 'python-language-server[all]'
 #+END_SRC
+
+***** ACTIVE Pyvenv
+
+I use Pyvenv to interface with my projects' virtual environments. 
+
+*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
+
+*NOTE:* Pyvenv has [[* Pyvenv Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'pyvenv)
 (setq pyvenv-default-virtual-env-name "venv")
@@ -601,11 +791,19 @@ sudo apt install python3-venv
      (compile (concat "venv/bin/python3 " (buffer-name)))))
 (add-hook 'python-mode-hook 'pyvenv-mode)
 #+END_SRC
-**** ACTIVE Rust
-Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects. If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]] and [[https://github.com/rust-analyzer/rust-analyzer/releases][Rust-Analyzer]]. For Rust-Analyzer, get the latest release and put the binary in =~/.local/bin=. You can put it somewhere else if you want, just make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in [[* Built-in Programming][Built-in Programming]]. You will also need to change the config in this section to point to your desired Rust-Analyzer location. You'll want Rust source code for a better user experience:
+
+****** Pyvenv Dependencies
+
 #+BEGIN_SRC shell
-rustup component add rust-src
+sudo apt install python3-venv
 #+END_SRC
+
+**** ACTIVE Rust
+
+Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects. If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]] and [[https://github.com/rust-analyzer/rust-analyzer/releases][Rust-Analyzer]]. For Rust-Analyzer, get the latest release and put the binary in =~/.local/bin=. You can put it somewhere else if you want, just make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in [[* Built-in Programming][Built-in Programming]]. You will also need to change the config in this section to point to your desired Rust-Analyzer location.
+
+*NOTE:* Rust has [[* Rust Dependencies][dependencies]].
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'rust-mode)
 (require 'rust-mode)
@@ -643,7 +841,15 @@ rustup component add rust-src
 (define-key rust-mode-map (kbd "C-c C-f") nil)
 (add-hook 'rust-mode-hook 'lsp)
 #+END_SRC
+
+***** Rust Dependencies
+
+#+BEGIN_SRC shell
+rustup component add rust-src
+#+END_SRC
+
 ***** ACTIVE Rust Flycheck
+
 Rust Flycheck provides syntax highlighting. I need to make sure this is required.
 #+BEGIN_SRC emacs-lisp
 (require-package 'flycheck-rust)
@@ -651,15 +857,21 @@ Rust Flycheck provides syntax highlighting. I need to make sure this is required
 (require 'flycheck-rust)
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)
 #+END_SRC
+
 *** ACTIVE HL-Todo
+
 HL-Todo highlights to-do items in buffers where the mode is active. Previously, I used a package called FIC mode, which is supposed to only highlight to-dos in strings and comments but it didn't work as advertised.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'hl-todo)
 (require 'hl-todo)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
 #+END_SRC
+
 *** ACTIVE LSP
+
 So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'lsp-mode)
 (require 'lsp-mode)
@@ -672,30 +884,52 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
 (define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
 (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
 #+END_SRC
+
 *** ACTIVE LSP-Treemacs
+
 I haven't actually used Treemacs-Magit yet. It was a package I read about and was convinced I needed. I am only just starting to get comfortable with Magit after spending many months using the CLI. I imagine I will have more to say about Treemacs-Magit soon.
 I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
 #+BEGIN_SRC emacs-lisp
 (require-package 'lsp-treemacs)
 #+END_SRC
+
 *** ACTIVE Magit
+
 I am not sure if Magit should be in this section or a more general configuration section. I'm seeing more and more places outside of code where source control would be useful.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'magit)
 #+END_SRC
+
+*** ACTIVE MHTML
+
+MHTML is par for every other package I've used for HTML templates. I don't have any real configuration for it, just a bunch of snippets.
+
+#+BEGIN_SRC 
+(add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
+#+END_SRC
+
 *** ACTIVE Treemacs-Magit
+
 I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'treemacs-magit)
 #+END_SRC
+
 *** ACTIVE Rainbow Delimiters
+
 For me, Rainbow Delimiters has saved me a lot of time tracking down parentheses and brackets in Rust and the little elisp I am willing to commit to.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 #+END_SRC
+
 ** ACTIVE SQL Client Configuration
+
 My configuration also provides some customization of Emacs' SQL mode. My workflow for SQL usually consists of two buffers: one of a SQL file and the other is the SQL interactive buffer. The SQL file is helpful because I can save and track my queries easily without thinking about it and the keeping the SQLi buffer separate is nice because I can disable font-lock so query results don't have silly distracting faces. The first function disables font-lock for SQL Interactive mode and the second sets up the SQL Interactive-mode buffer automatically when SQL mode is enabled (either by opening a SQL buffer or manually activating SQL mode). Here, I've set up a list of connections I use frequently. I was surprised by how much of a quality-of-life improvement this was. I made a couple of keybindings for sending region and the whole buffer to the SQL Interactive mode buffer. I believe there are existing bindings for this, but I wanted something more in keeping with the rest of my keybinding setup. 
+
 #+BEGIN_SRC emacs-lisp
 (require 'sql)
 (defun my-sql-disable-font-lock (orig-fun &rest args)
@@ -734,8 +968,11 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
                                   word-wrap nil)))
 ;; (add-hook 'sql-login-hook 'my-sql-login-hook)
 #+END_SRC
+
 ** ACTIVE SQLUp
+
 SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs as well.
+
 #+BEGIN_SRC emacs-lisp
 (require-package 'sqlup-mode)
 (require 'sql)
