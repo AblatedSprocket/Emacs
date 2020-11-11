@@ -76,13 +76,6 @@ Note the weekly scope of the command's precision.")
         (insert ";;; config.el ends here"))
       (message "—————• Wrote %s" output-file))))
 
-(let ((orgfile (concat user-emacs-directory "config.org"))
-      (elfile (concat user-emacs-directory "config.el"))
-      (gc-cons-threshold most-positive-fixnum))
-  (when (or (not (file-exists-p elfile))
-            (file-newer-than-file-p orgfile elfile))
-    (my-tangle-config-org))
-  (load-file elfile))
 
 ;; when config.org is saved, re-generate config.el:
 (defun my-tangle-config-org-hook-func ()
@@ -90,6 +83,15 @@ Note the weekly scope of the command's precision.")
 	(let ((orgfile (concat user-emacs-directory "config.org"))
 		  (elfile (concat user-emacs-directory "config.el")))
 	  (my-tangle-config-org))))
+
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(let ((orgfile (concat user-emacs-directory "config.org"))
+      (elfile (concat user-emacs-directory "config.el"))
+      (gc-cons-threshold most-positive-fixnum))
+  (when (or (not (file-exists-p elfile))
+            (file-newer-than-file-p orgfile elfile))
+    (my-tangle-config-org))
+  (load-file elfile))
 (add-hook 'after-save-hook 'my-tangle-config-org-hook-func)
 
 (provide 'init)
@@ -102,7 +104,7 @@ Note the weekly scope of the command's precision.")
  '(custom-safe-themes
    '("9e39a8334e0e476157bfdb8e42e1cea43fad02c9ec7c0dbd5498cf02b9adeaf1" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
  '(package-selected-packages
-   '(web-mode use-package ts treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-hugo org-roam-server org-journal olivetti mw-thesaurus multiple-cursors lsp-ui lsp-treemacs latex-preview-pane langtool ivy hl-todo flycheck-rust company-quickhelp company-lsp company-auctex color-theme-sanityinc-tomorrow blacken all-the-icons)))
+   '(svg web-mode use-package ts treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-hugo org-roam-server org-journal olivetti mw-thesaurus multiple-cursors lsp-ui lsp-treemacs latex-preview-pane langtool ivy hl-todo flycheck-rust company-quickhelp company-lsp company-auctex color-theme-sanityinc-tomorrow blacken all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -418,6 +418,7 @@ I only have one function, which is meant to change the status of a parent task t
         org-directory "~/org")
 (org-load-modules-maybe t)
 (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
+(define-key org-mode-map (kbd "C-c C-w") nil)
 (define-key org-mode-map (kbd "<M-return>") nil)
 (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
 
@@ -455,6 +456,14 @@ I'm not good about using it, but the intention here is to have Org-Agenda manage
                '("x" "Testing tags for negating DONE" tags "-TODO=\"DONE\"" nil nil ))
 (define-key org-agenda-mode-map (kbd "M-m") nil)
 (global-set-key (kbd "C-o a") 'org-agenda)
+#+END_SRC
+
+*** ACTIVE Org-Gantt
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'svg)
+(require-package 'ts)
+(require 'org-gantt-mode)
 #+END_SRC
 
 *** ACTIVE Org Habit
@@ -683,13 +692,15 @@ I kind of fiddled around with different widths in Olivetti mode to see what felt
 #+BEGIN_SRC emacs-lisp
 (require-package 'olivetti)
 (require 'olivetti)
-(setq olivetti-body-width 84)
+(setq olivetti-body-width 77)
 (add-to-list 'auto-mode-alist '("\\.txt\\'" . olivetti-mode))
 (add-hook 'olivetti-mode-hook
          (lambda()
            (setq display-line-numbers nil)))
 (add-hook 'olivetti-mode-hook 'set-printing-font)
 (add-hook 'olivetti-mode-hook 'flyspell-mode)
+(add-hook 'olivetti-mode-hook (lambda ()
+  (setq olivetti-body-width 84)))
 #+END_SRC
 
 ** ACTIVE General Code Configuration
