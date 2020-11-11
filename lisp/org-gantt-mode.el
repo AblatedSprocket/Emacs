@@ -25,11 +25,15 @@
                   (bgTask       . "blue")
                   (bgKP         . "purple")
                   (stLink       . "red")
+		  (bgBase       . "white")
                   )
   "default gantt colors")
 (defvar og-Dims '((rowH . 21)
                   (headRows . 3))
   "default dimensions for gantt")
+(defvar t-Offset 5
+  "Vertical offset of text.")
+
 (defvar og-Text '((fontSize . 20)
                   (fontFamily . "sans")
                   (dateFormat . "%d/%m/%Y"))
@@ -353,6 +357,7 @@
                           :dominant-baseline "middle"
                           :font-family  (alist-get 'fontFamily og-Text)))
          )
+    (og-background svg W H)
     (og-title svg W1 (* (alist-get 'rowH og-Dims) (alist-get 'headRows og-Dims)))
     (og-gridHead svg W1 W2 (* (alist-get 'rowH og-Dims) (alist-get 'headRows og-Dims)) scale total)
     (seq-map-indexed (lambda (task row) (og-draw-task svg task row W1 W2 total)) og-project)
@@ -363,6 +368,10 @@
       )  
     )
   )
+(defun og-background (svg W H)
+  "Create a background block for a gantt SVG with width W and height H."
+  (interactive "P")
+  (svg-rectangle svg 0 0 W H :fill-color (alist-get 'bgBase og-Cols)))
 ;;|--------------------------------------------------------------
 ;;|Description : create a title block for a gantt
 ;;|NOTE : 
@@ -376,9 +385,9 @@
   (svg-rectangle svg 0 0 W H :fill-color (alist-get 'bgTitleBlock og-Cols))
   (let* ((X 10)
          (H (alist-get 'rowH og-Dims))
-         (Y1 (* 0.5 H))
-         (Y2 (+ Y1  H))
-         (Y3 (+ Y2  H))
+         (Y1 (+ (* 0.5 H) t-Offset))
+         (Y2 (+ Y1 H))
+         (Y3 (+ Y2 H))
          (S  (format " - Start: %s" (ts-format (alist-get 'dateFormat og-Text) og-start)))
          (E  (format " - End: %s" (ts-format (alist-get 'dateFormat og-Text) og-end)))
          )
@@ -456,7 +465,7 @@
          (Y2   (if long (* (alist-get 'rowH og-Dims)
                            (+ (length og-project) (alist-get 'headRows og-Dims)))
                  Y))
-         (Yt   (+ Y1 (* 0.5 (alist-get 'rowH og-Dims))))
+         (Yt   (+ Y1 (* 0.5 (alist-get 'rowH og-Dims)) t-Offset))
          )
     (message "%s->%s (%s)" (ts-Y p1) (ts-Y p2) dd)
     (svg-line svg X1 Y1 X1 Y2)
@@ -489,7 +498,7 @@
          (Yt   (+ Y1 (* 0.5 (alist-get 'rowH og-Dims))))
          )
     (svg-line svg X1 Y1 X1 Y2)
-    (svg-text svg (format "%s" name) :x Xt :y Yt
+    (svg-text svg (format "%s" name) :x Xt :y (+ Yt t-Offset)
               :fill "black"
               :font-size fs :text-anchor "middle")
     (list X2 p2 (ts-adjust 'month 1 p2))
@@ -518,7 +527,7 @@
          (Yt   (+ Y1 (* 0.5 (alist-get 'rowH og-Dims))))
          )
     (svg-line svg X1 Y1 X1 Y2)
-    (svg-text svg (format "%s" name) :x Xt :y Yt
+    (svg-text svg (format "%s" name) :x Xt :y (+ Yt t-Offset)
               :fill "black"
               :font-size fs :text-anchor "middle")
     (list X2 p2 (ts-adjust 'day 7 p2))
@@ -587,8 +596,8 @@
     (setf (myTask-X2 task) X4)
     (setf (myTask-Y  task) Y)
     
-    (svg-text svg (format "%s" (myTask-Id task) )         :x 2  :y Y :fill "black" :font-size fs)
-    (svg-text svg (format "%s" (myTask-Description task)) :x 50 :y Y :fill "black" :font-size fs)
+    (svg-text svg (format "%s" (myTask-Id task) )         :x 2  :y (+ Y t-Offset) :fill "black" :font-size fs)
+    (svg-text svg (format "%s" (myTask-Description task)) :x 50 :y (+ Y t-Offset) :fill "black" :font-size fs)
     (cond
      ;; Key points centered around X2
      ((string= (myTask-Type task) "KP")
