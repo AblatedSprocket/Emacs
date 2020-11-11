@@ -27,3 +27,6 @@ sudo make && sudo make install
 On first install, try running =package-refresh-contents= and =package-initialize= within Emacs if you encounter errors. This has fixed things for me in the past.
 
 With everything installed, I suggest moving to [[file:config.org][config.org]] for details on how everything is configured.
+
+* Notes
+Anything in the =lisp= directory isn't mine. Org-Gantt is currently maintained [[https://gitlab.com/joukeHijlkema/org-gantt/][here]]. I just have some minor changes to make it render more nicely for me.
