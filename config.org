@@ -59,6 +59,7 @@ Repeated invocations toggle between the two most recently open buffers."
               word-wrap t
               cursor-type 'bar)
 (blink-cursor-mode 1)
+(column-number-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode 1)
 (global-eldoc-mode -1)
@@ -77,13 +78,13 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
 (global-set-key (kbd "C-x k") 'kill-buffer-and-window)
 (global-set-key (kbd "C-z") nil)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-c C-w") 'whack-whitespace)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
 (global-set-key (kbd "<M-return>") 'open-line)
-(global-set-key (kbd "M-b") 'backward-word)
-(global-set-key (kbd "M-B") 'backward-to-word)
+(global-set-key (kbd "M-b") 'backward-to-word)
+(global-set-key (kbd "M-B") 'backward-word)
 (global-set-key (kbd "M-f") 'forward-word)
 (global-set-key (kbd "M-F") 'forward-to-word)
 (global-set-key (kbd "M-m") 'toggle-frame-maximized)
@@ -120,6 +121,14 @@ I use Company as my go-to completion engine. I have it enabled globally because 
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
 
+*** ACTIVE Electric-Pair
+I miss having auto-completions for certain pairs. Every mode is a little different
+#+BEGIN_SRC emacs-lisp
+(defun electric-pair ()
+  "Insert pair without spaces."
+  (interactive)
+  (let (parens-require-spaces) (insert-pair)))
+#+END_SRC
 *** ACTIVE Flycheck
 
 Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't fi have any modes where I don't want Flycheck, so I enabled them globally.
@@ -427,7 +436,6 @@ I only have one function, which is meant to change the status of a parent task t
 (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 (add-hook 'org-mode-hook 'org-indent-mode)
-(add-hook 'org-mode-hook 'toggle-truncate-lines)
 #+END_SRC
 
 *** ACTIVE Org-Agenda
@@ -703,7 +711,19 @@ I kind of fiddled around with different widths in Olivetti mode to see what felt
   (setq olivetti-body-width 84)))
 #+END_SRC
 
-** ACTIVE General Code Configuration
+*** DISABLED LSP-LaTeX
+
+*NOTE:* LSP-LaTeX has 
+#+BEGIN_SRC emacs-lisp
+(require-package 'lsp-latex)
+#+END_SRC
+
+**** LSP-LaTeX Dependencies
+
+Requires installing TeXLab. Releases can be found [[https://github.com/latex-lsp/texlab/releases][here]]. Extract the file and copy to =~/.local/bin/=.
+
+** ACTIVE Code Configuration
+
 
 For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding. I have the various binaries that Emacs needs access to for programming languages (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here.
 
@@ -722,32 +742,7 @@ For code, =toggle-comment-on-line= has been an invaluable function that I use al
                             (setq indent-tabs-mode nil)))
 #+END_SRC
 
-**** ACTIVE Python
-
-If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
-
-For the most part, the keybindings I like for Python development are covered by LSP, so the only thing here, really, are Electric-Pair completions. Even those are pretty universal and probably better suited for the general code settings section. In order to use Emacs for Python you will of course need Python and pip:
-
-*NOTE:* Python has [[* Python Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp
-(require 'python)
-(define-key python-mode-map "'" 'electric-pair)
-(define-key python-mode-map "\"" 'electric-pair)
-(define-key python-mode-map "(" 'electric-pair)
-(define-key python-mode-map "(" 'electric-pair)
-(define-key python-mode-map "[" 'electric-pair)
-(define-key python-mode-map "{" 'electric-pair)
-(add-hook 'python-mode-hook 'lsp)
-#+END_SRC
-
-***** Python Dependencies
-
-#+BEGIN_SRC shell
-sudo apt install python3.8 python3-pip
-#+END_SRC
-
-***** ACTIVE Blacken
+*** ACTIVE Blacken
 
 Currently, I use Blacken for Python code formatting.
 
@@ -762,12 +757,18 @@ Currently, I use Blacken for Python code formatting.
 (define-key python-mode-map (kbd "C-c f") 'blacken-buffer)
 #+END_SRC
 
-****** Blacken Dependencies
+**** Blacken Dependencies
+
 #+BEGIN_SRC shell
 pip3 install black
 #+END_SRC
 
-***** ACTIVE LSP-Pyls
+*** DISABLED Debug Adapter Protocol
+#+BEGIN_SRC emacs-lisp
+(require-package 'dap-mode)
+(require 'dap-gdb-lldb)
+#+END_SRC
+*** ACTIVE LSP-Pyls
 
 Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. 
 
@@ -780,93 +781,10 @@ Python language server provides the backend for LSP-mode. The one thing I dislik
 (setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
 #+END_SRC
 
-****** LSP-Pyls Dependencies
+**** LSP-Pyls Dependencies
+
 #+BEGIN_SRC shell
 pip3 install 'python-language-server[all]'
-#+END_SRC
-
-***** ACTIVE Pyvenv
-
-I use Pyvenv to interface with my projects' virtual environments. 
-
-*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
-
-*NOTE:* Pyvenv has [[* Pyvenv Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp
-(require-package 'pyvenv)
-(setq pyvenv-default-virtual-env-name "venv")
-(define-key python-mode-map (kbd "C-c r")
-   (lambda()
-     (interactive)
-     (compile (concat "venv/bin/python3 " (buffer-name)))))
-(add-hook 'python-mode-hook 'pyvenv-mode)
-#+END_SRC
-
-****** Pyvenv Dependencies
-
-#+BEGIN_SRC shell
-sudo apt install python3-venv
-#+END_SRC
-
-**** ACTIVE Rust
-
-Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects. If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]] and [[https://github.com/rust-analyzer/rust-analyzer/releases][Rust-Analyzer]]. For Rust-Analyzer, get the latest release and put the binary in =~/.local/bin=. You can put it somewhere else if you want, just make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in [[* Built-in Programming][Built-in Programming]]. You will also need to change the config in this section to point to your desired Rust-Analyzer location.
-
-*NOTE:* Rust has [[* Rust Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp
-(require-package 'rust-mode)
-(require 'rust-mode)
-(require 'lsp-mode)
-(defun cargo-build (arg)
-  "Build with input ARG."
-  (interactive "MCargo Build arguments: ")
-  (compile (concat "cargo build " arg)))
-(setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
-(setq lsp-rust-analyzer-server-display-inlay-hints t
-      lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
-      lsp-rust-server 'rust-analyzer)
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-(add-to-list 'exec-path "~/.local/bin")
-(define-key rust-mode-map "'" 'electric-pair)
-(define-key rust-mode-map "\"" 'electric-pair)
-(define-key rust-mode-map "(" 'electric-pair)
-(define-key rust-mode-map "(" 'electric-pair)
-(define-key rust-mode-map "[" 'electric-pair)
-(define-key rust-mode-map "{" 'electric-pair)
-(define-key rust-mode-map (kbd "C-c b") 'cargo-build)
-(define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
-(define-key rust-mode-map (kbd "C-c r")
-  (lambda ()
-    (interactive)
-    (compile "cargo run")))
-(define-key rust-mode-map (kbd "C-c k")
-  (lambda ()
-    (interactive)
-    (compile "cargo check")))
-(define-key rust-mode-map (kbd "C-c t")
-  (lambda ()
-    (interactive)
-    (compile "cargo test -- --nocapture")))
-(define-key rust-mode-map (kbd "C-c C-f") nil)
-(add-hook 'rust-mode-hook 'lsp)
-#+END_SRC
-
-***** Rust Dependencies
-
-#+BEGIN_SRC shell
-rustup component add rust-src
-#+END_SRC
-
-***** ACTIVE Rust Flycheck
-
-Rust Flycheck provides syntax highlighting. I need to make sure this is required.
-#+BEGIN_SRC emacs-lisp
-(require-package 'flycheck-rust)
-(require 'flycheck)
-(require 'flycheck-rust)
-(add-hook 'rust-mode-hook 'flycheck-rust-setup)
 #+END_SRC
 
 *** ACTIVE HL-Todo
@@ -920,12 +838,52 @@ MHTML is par for every other package I've used for HTML templates. I don't have 
 (add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
 #+END_SRC
 
-*** ACTIVE Treemacs-Magit
+*** ACTIVE Python
 
-I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
+If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
+
+For the most part, the keybindings I like for Python development are covered by LSP, so the only thing here, really, are Electric-Pair completions. Even those are pretty universal and probably better suited for the general code settings section. In order to use Emacs for Python you will of course need Python and pip:
+
+*NOTE:* Python has [[* Python Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp
-(require-package 'treemacs-magit)
+(require 'python)
+(define-key python-mode-map "'" 'electric-pair)
+(define-key python-mode-map "\"" 'electric-pair)
+(define-key python-mode-map "(" 'electric-pair)
+(define-key python-mode-map "[" 'electric-pair)
+(define-key python-mode-map "{" 'electric-pair)
+(add-hook 'python-mode-hook 'lsp)
+#+END_SRC
+
+**** Python Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install python3.8 python3-pip
+#+END_SRC
+
+*** ACTIVE Pyvenv
+
+I use Pyvenv to interface with my projects' virtual environments. 
+
+*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
+
+*NOTE:* Pyvenv has [[* Pyvenv Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'pyvenv)
+(setq pyvenv-default-virtual-env-name "venv")
+(define-key python-mode-map (kbd "C-c r")
+   (lambda()
+     (interactive)
+     (compile (concat "venv/bin/python3 " (buffer-name)))))
+(add-hook 'python-mode-hook 'pyvenv-mode)
+#+END_SRC
+
+**** Pyvenv Dependencies
+
+#+BEGIN_SRC shell
+sudo apt install python3-venv
 #+END_SRC
 
 *** ACTIVE Rainbow Delimiters
@@ -935,6 +893,81 @@ For me, Rainbow Delimiters has saved me a lot of time tracking down parentheses 
 #+BEGIN_SRC emacs-lisp
 (require-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+#+END_SRC
+
+*** ACTIVE Restclient
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'restclient)
+(require 'restclient)
+#+END_SRC
+
+*** ACTIVE Rust
+
+Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects. If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]] and [[https://github.com/rust-analyzer/rust-analyzer/releases][Rust-Analyzer]]. For Rust-Analyzer, get the latest release and put the binary in =~/.local/bin=. You can put it somewhere else if you want, just make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in [[* Built-in Programming][Built-in Programming]]. You will also need to change the config in this section to point to your desired Rust-Analyzer location.
+
+*NOTE:* Rust has [[* Rust Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'rust-mode)
+(require 'rust-mode)
+(require 'lsp-mode)
+(defun cargo-build (arg)
+  "Build with input ARG."
+  (interactive "MCargo Build arguments: ")
+  (compile (concat "cargo build " arg)))
+(add-to-list 'exec-path "~/.cargo/bin")
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setq lsp-rust-analyzer-server-display-inlay-hints t
+      lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
+      lsp-rust-server 'rust-analyzer)
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(define-key rust-mode-map "\"" 'electric-pair)
+(define-key rust-mode-map "(" 'electric-pair)
+(define-key rust-mode-map "[" 'electric-pair)
+(define-key rust-mode-map "{" 'electric-pair)
+(define-key rust-mode-map "<" 'electric-pair)
+(define-key rust-mode-map (kbd "C-c b") 'cargo-build)
+(define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
+(define-key rust-mode-map (kbd "C-c r")
+  (lambda ()
+    (interactive)
+    (compile "cargo run")))
+(define-key rust-mode-map (kbd "C-c k")
+  (lambda ()
+    (interactive)
+    (compile "cargo check")))
+(define-key rust-mode-map (kbd "C-c t")
+  (lambda ()
+    (interactive)
+    (compile "cargo test -- --nocapture")))
+(define-key rust-mode-map (kbd "C-c C-f") nil)
+(add-hook 'rust-mode-hook 'lsp)
+#+END_SRC
+
+**** Rust Dependencies
+
+#+BEGIN_SRC shell
+rustup component add rust-src
+#+END_SRC
+
+*** ACTIVE Rust Flycheck
+
+Rust Flycheck provides syntax highlighting. I need to make sure this is required.
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'flycheck-rust)
+(require 'flycheck)
+(require 'flycheck-rust)
+(add-hook 'rust-mode-hook 'flycheck-rust-setup)
+#+END_SRC
+
+*** ACTIVE Treemacs-Magit
+
+I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'treemacs-magit)
 #+END_SRC
 
 ** ACTIVE SQL Client Configuration
@@ -989,4 +1022,56 @@ SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs a
 (require 'sql)
 (add-hook 'sql-mode-hook 'sqlup-mode)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+#+END_SRC
+* Work
+
+Integrations with Jira and Slack
+
+** DISABLED Ejira
+
+Ejira seems like a good integration for Jira. The primary downside of Ejira is that it's not in MELPA. I've been working with this and Org-Jira, but this seems better supported. Also, ejira gets all issues by default whereas Org-Jira only pulls in issues assigned to me. My only qualm is that I can't assign an issue to anyone except Unassigned.
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'cl-lib)
+(require-package 'dash)
+(require-package 'dash-functional)
+(require-package 'jiralib2)
+(require-package 'language-detection)
+(require-package 'ox-jira)
+(require-package 's)
+(require 'ejira)
+(setq jiralib2-url "https://jasonandandybuildsomething.atlassian.net"
+      jiralib2-auth 'token
+      jiralib2-user-login-name "andrewwburch@gmail.com"
+      jiralib2-token (auth-source-pick-first-password
+                      :host "jasonandandybuildsomething.atlassian.net"
+                      :user "andrewwburch@gmail.com")
+      ejira-org-directory "~/.org-jira"
+      ejira-projects '("SB")
+      ejira-priorities-alist '(("Highest" . ?A)
+                               ("High"    . ?B)
+                               ("Medium"  . ?C)
+                               ("Low"     . ?D)
+                               ("Lowest"  . ?E))
+      ejira-todo-states-alist '(("To Do"       . 1)
+                                ("In Progress" . 2)
+                                ("Done"        . 3))
+      org-id-track-globally t)
+#+END_SRC
+
+** DISABLED Slack
+
+I've proofed out this slack integration and got it to a working state.
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'slack)
+(require 'slack)
+(setq slack-prefer-current-team t)
+(slack-register-team
+  :name "Team Engineer"
+  :default t
+  :token (auth-source-pick-first-password
+          :host "teamengineer.slack.com"
+          :user "andrewwburch@gmail.com"))
+(slack-start)
 #+END_SRC

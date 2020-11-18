@@ -1,5 +1,6 @@
 *~
 .cache/
+.extension/
 .lsp-session*
 .org-id-locations
 .recentf
@@ -14,6 +15,7 @@ transient/
 url/
 var/
 ido.last
+network-security.data
 org-roam.db
 places
 projectile-bookmarks.eld

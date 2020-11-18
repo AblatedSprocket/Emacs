@@ -1,0 +1,15 @@
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("org-refile-last-stored"
+ (filename . "~/org/jira/SB.org")
+ (front-context-string . "** TODO [#C] Web")
+ (rear-context-string . "d?\n*** Comments\n")
+ (position . 4807))
+("org-capture-last-stored"
+ (filename . "~/org/jira/SB.org")
+ (front-context-string . "**** [2020-11-18")
+ (rear-context-string . "xt using ejira.\n")
+ (position . 573))
+)

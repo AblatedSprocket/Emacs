@@ -29,4 +29,4 @@ On first install, try running =package-refresh-contents= and =package-initialize
 With everything installed, I suggest moving to [[file:config.org][config.org]] for details on how everything is configured.
 
 * Notes
-Anything in the =lisp= directory isn't mine. Org-Gantt is currently maintained [[https://gitlab.com/joukeHijlkema/org-gantt/][here]]. I just have some minor changes to make it render more nicely for me.
+Anything in the =lisp= directory isn't mine. Org-Gantt is currently maintained [[https://gitlab.com/joukeHijlkema/org-gantt/][here]]. I just have some minor changes to make it render more nicely for me. Ejira is currently maintained [[https://github.com/nyyManni/ejira/blob/master/ejira-core.el][here]], waiting for it to get to MELPA.
