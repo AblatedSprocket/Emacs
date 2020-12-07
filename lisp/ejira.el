@@ -28,8 +28,7 @@
 (require 'org)
 (require 'dash-functional)
 (require 'ejira-core)
-
-
+(require 'jiralib2)
 
 (defvar ejira-push-deadline-changes t
   "Sync deadlines to server when updated with `ejira-set-deadline'.")

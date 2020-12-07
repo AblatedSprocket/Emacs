@@ -106,7 +106,7 @@ Note the weekly scope of the command's precision.")
  '(org-agenda-files
    '("/home/andy/org/journal/2020-08-02.org" "~/org/tasks/Todo.org" "/home/andy/org/journal/2020.org"))
  '(package-selected-packages
-   '(jiralib2 cl-lib language-detection ox-jira dap-mode svg web-mode ts treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-hugo org-roam-server org-journal olivetti mw-thesaurus multiple-cursors lsp-ui lsp-treemacs latex-preview-pane langtool ivy hl-todo flycheck-rust company-quickhelp company-lsp color-theme-sanityinc-tomorrow blacken all-the-icons)))
+   '(cl-lib language-detection dap-mode svg web-mode ts treemacs-magit sqlup-mode smex rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-hugo org-roam-server org-journal olivetti mw-thesaurus multiple-cursors lsp-ui lsp-treemacs latex-preview-pane langtool ivy hl-todo flycheck-rust company-quickhelp company-lsp color-theme-sanityinc-tomorrow blacken all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

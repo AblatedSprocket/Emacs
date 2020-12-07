@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: b
+# key: b
+# --
+<button $1>$0</button>

@@ -12,7 +12,7 @@ These are the general purpose functions I've found or made over my time with Ema
 
 *NOTE:* General configuration has [[* General Configuration Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (defun beginning-of-line-or-indentation ()
   "Move to beginning of line or indentation."
   (interactive)
@@ -102,7 +102,7 @@ sudo apt install fonts-inconsolata
 
 I'm using All the Icons to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'all-the-icons)
 (require 'all-the-icons)
 #+END_SRC
@@ -111,7 +111,7 @@ I'm using All the Icons to get unicode support for most images. I still see a fe
 
 I use Company as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. I had had trouble with Company taking a long time to list completions, it turned out =company-idle-delay= was the setting I needed for this. It took me too long to figure that out. Set it if you want to change how long you have to wait for Company completions to appear.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'company)
 (require 'company)
 (setq company-idle-delay 0
@@ -123,7 +123,7 @@ I use Company as my go-to completion engine. I have it enabled globally because 
 
 *** ACTIVE Electric-Pair
 I miss having auto-completions for certain pairs. Every mode is a little different
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (defun electric-pair ()
   "Insert pair without spaces."
   (interactive)
@@ -133,7 +133,7 @@ I miss having auto-completions for certain pairs. Every mode is a little differe
 
 Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't fi have any modes where I don't want Flycheck, so I enabled them globally.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'flycheck)
 (require 'flycheck)
 (add-hook 'after-init-hook 'global-flycheck-mode)
@@ -143,7 +143,7 @@ Almost every buffer uses Flycheck either for code syntax or spelling via Flyspel
 
 I recently discovered that Flyspell has a Prog Mode version that only looks for spelling errors in strings, and I'm liking it so far.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (defun flyspell-goto-previous-error (arg)
   "Go to arg previous spelling error."
   (interactive "p")
@@ -194,7 +194,7 @@ I recently discovered that Flyspell has a Prog Mode version that only looks for 
 
 Ido provides great minibuffer completion.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'ido)
 (setq ido-use-filename-at-point nil
       ido-auto-merge-work-directories-length -1
@@ -206,7 +206,7 @@ Ido provides great minibuffer completion.
 
 Multiple cursors was one thing I missed from Sublime Text, so Multiple-Cursors was a happy discovery.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'multiple-cursors)
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c m") 'mc/edit-lines)
@@ -214,7 +214,7 @@ Multiple cursors was one thing I missed from Sublime Text, so Multiple-Cursors w
 
 *** ACTIVE Recentf
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'recentf)
 (recentf-mode 1)
 #+END_SRC
@@ -225,7 +225,7 @@ I use Ripgrep for searching through files for text when a language-server can't 
 
 *NOTE:* Ripgrep has [[Ripgrep Dependencies][dependencies]]
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'rg)
 #+END_SRC
 
@@ -239,7 +239,7 @@ sudo apt install ripgrep
 
 For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'color-theme-sanityinc-tomorrow)
 (add-hook 'after-init-hook (lambda ()
   (load-theme 'sanityinc-tomorrow-night t)))
@@ -249,7 +249,7 @@ For now, sanityinc is my go-to for themes. I'm a big fan of their night and day 
 
 I always forget what Smex does, it's a valuable addition to Ido that gives precedence to most frequently used completions.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'smex)
 (smex-initialize)
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
@@ -260,7 +260,7 @@ I always forget what Smex does, it's a valuable addition to Ido that gives prece
 
 I use Treemacs mostly to get a visual on project structure. Its integration with LSP mode is also nice for viewing project symbol information.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'treemacs)
 (require 'treemacs)
 (global-set-key (kbd "C-x D") 'treemacs)
@@ -274,7 +274,7 @@ I use Treemacs mostly to get a visual on project structure. Its integration with
 
 I am slowly using YASnippet more, I'm considering adding an integration with Company for snippet completion, but part of me thinks that at that point I have a bigger problem.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'yasnippet)
 (yas-global-mode 1)
 (global-set-key (kbd "C-c x") 'yas-expand)
@@ -306,7 +306,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 
 *NOTE:* Mu4e has [[* Mu4e Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
 (require 'mu4e)
 (require 'smtpmail)
@@ -411,7 +411,7 @@ My keybindings for org are mostly unnecessary remappings to better integrate wit
 
 I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'org)
 (defun org-summary-todo (n-done n-not-done)
     "Switch entry to DONE when all subentries are done, to TODO otherwise."
@@ -424,9 +424,12 @@ I only have one function, which is meant to change the status of a parent task t
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
           ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n"))
-        org-directory "~/org")
+        org-directory "~/org"
+      org-highest-priority ?A
+      org-lowest-priority ?E)
 (org-load-modules-maybe t)
 (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
+(define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
 (define-key org-mode-map (kbd "C-c C-w") nil)
 (define-key org-mode-map (kbd "<M-return>") nil)
 (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
@@ -442,7 +445,7 @@ I only have one function, which is meant to change the status of a parent task t
 
 I'm not good about using it, but the intention here is to have Org-Agenda manage the tasks I set for myself every day. It works in conjunction with the Orgzly app for mobile. Orgzly logs task completions in a =LOGBOOK= drawer, so to make org-mode compatible, I added the =org-log-into-drawer= setting.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'org)
 (require 'org-agenda)
 (setq org-agenda-breadcrumbs-separator " ❱ "
@@ -468,7 +471,7 @@ I'm not good about using it, but the intention here is to have Org-Agenda manage
 
 *** ACTIVE Org-Gantt
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'svg)
 (require-package 'ts)
 (require 'org-gantt-mode)
@@ -478,7 +481,7 @@ I'm not good about using it, but the intention here is to have Org-Agenda manage
 
 Org habit is useful for recurring todos. The main component to habits is that they be scheduled ideally using the =org-schedule= command (=C-c C-s=), and within that schedule date, before the closing angle bracket, set a reminder interval and an optional due date interval separated by a slash: =.+2d= or =.+2d/4d=.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'org-habit)
 (setq org-modules '(org-habit))
 #+END_SRC
@@ -487,7 +490,7 @@ Org habit is useful for recurring todos. The main component to habits is that th
 
 One of the things I've always wished I were better at keeping was a journal. Since I use Emacs all of the time, my hope is that making a journal more accessible will help me be more consistent.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'org-journal)
 (require 'org-agenda)
 (require 'org-journal)
@@ -509,7 +512,7 @@ Org Roam is great for managing information about things I'm learning about.
 
 *NOTE:* Org-Roam has [[* Org-Roam Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'org-roam)
 (require 'org)
 (setq org-roam-capture--file-name-default "%<%Y%m%d>"
@@ -551,7 +554,7 @@ Org-Roam Server provides a novel way of interacting with your Org-Roam files. Mo
 
 *NOTE:* Org-Roam Server has [[* Org-Roam Server Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'org-roam-server)
 (require 'org-roam-protocol)
 (setq org-roam-server-host "127.0.0.1"
@@ -580,7 +583,7 @@ Currently, I'm using Ox-Hugo to manage my personal website. Most of the custom c
 
 *NOTE:* Ox-Hugo has [[* Ox-Hugo Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
   (require-package 'ox-hugo)
   (require 'ox-hugo)
   (add-to-list 'org-capture-templates `("p" "post" entry (file+headline "~/NothingIsSimple/site.org" "Posts")
@@ -597,7 +600,7 @@ sudo apt install hugo
 
 Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I'm trying out storing my bookmarks in an Org file so I can add notes. I don't know if this is a useful workflow yet so this might go on the chopping block.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'ox-slimhtml)
 (require 'ox-slimhtml)
 (org-export-define-derived-backend 'custom-html-exporter
@@ -613,7 +616,7 @@ I like using Emacs as a code editor and for creative writing. Emacs doesn't have
 
 *NOTE:* Prose has [[* Prose Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (defun set-printing-font ()
   "Set font to Gentium."
   (face-remap-add-relative 'default '(:family "Gentium")))
@@ -631,7 +634,7 @@ LaTeX support is provided by Auctex. In general I use Org for writing, but if I 
 
 *NOTE:* Auctex has [[* Auctex Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'auctex)
 #+END_SRC
 
@@ -645,7 +648,7 @@ sudo apt install texinfo auctex
 
 I just love Company and want to use it wherever I can. Feel free to disable this.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'company-auctex)
 #+END_SRC
 
@@ -653,7 +656,7 @@ I just love Company and want to use it wherever I can. Feel free to disable this
 
 I like Latex Preview Pane because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'latex-preview-pane)
 (add-hook 'TeX-mode-hook
           (lambda()
@@ -668,7 +671,7 @@ If you want to use LanguageTool outside of Emacs, the configuration is a little 
 
 *NOTE:* Langtool has [[* Langtool Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'langtool)
 (setq langtool-language-tool-server-jar
 "~/.local/lib/LanguageTool-5.1/languagetool-server.jar")
@@ -684,7 +687,7 @@ sudo apt install openjdk-14-jre-headless
 
 This marks an important milestone for my view to how I write. This is something I always wanted. I always hated having to break my immersion in my writing to go to a browser to look up a synonym for something. I haven't used this extensively yet, but I think it will make a huge difference for me. 
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'mw-thesaurus)
 (define-key org-mode-map (kbd "C-c h") 'mw-thesaurus-lookup-at-point)
 #+END_SRC
@@ -697,7 +700,7 @@ I like the idea of keeping code and more creative writing separate, so I wanted 
 
 I kind of fiddled around with different widths in Olivetti mode to see what felt right for a typical document. I go back and forth on which file types to trigger Olivetti on. I've put in Markdown and org, but those don't feel right a lot of the time. I always go back to plain old .txt files, though.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'olivetti)
 (require 'olivetti)
 (setq olivetti-body-width 77)
@@ -714,7 +717,7 @@ I kind of fiddled around with different widths in Olivetti mode to see what felt
 *** DISABLED LSP-LaTeX
 
 *NOTE:* LSP-LaTeX has 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'lsp-latex)
 #+END_SRC
 
@@ -727,7 +730,7 @@ Requires installing TeXLab. Releases can be found [[https://github.com/latex-lsp
 
 For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding. I have the various binaries that Emacs needs access to for programming languages (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (defun toggle-comment-on-line ()
   "Comment or uncomment current line."
   (interactive)
@@ -750,7 +753,7 @@ Currently, I use Blacken for Python code formatting.
 
 *NOTE:* Blacken has [[* Blacken Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'blacken)
 (require 'blacken)
 (require 'python)
@@ -764,7 +767,7 @@ pip3 install black
 #+END_SRC
 
 *** DISABLED Debug Adapter Protocol
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'dap-mode)
 (require 'dap-gdb-lldb)
 #+END_SRC
@@ -776,7 +779,7 @@ Python language server provides the backend for LSP-mode. The one thing I dislik
 
 *NOTE* LSP-Pyls has [[* LSP-Pyls Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'lsp-pyls)
 (setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
 #+END_SRC
@@ -791,7 +794,7 @@ pip3 install 'python-language-server[all]'
 
 HL-Todo highlights to-do items in buffers where the mode is active. Previously, I used a package called FIC mode, which is supposed to only highlight to-dos in strings and comments but it didn't work as advertised.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'hl-todo)
 (require 'hl-todo)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
@@ -801,7 +804,7 @@ HL-Todo highlights to-do items in buffers where the mode is active. Previously, 
 
 So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'lsp-mode)
 (require 'lsp-mode)
 ;; Previously this required with-eval-after-load lsp
@@ -809,7 +812,7 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
       lsp-signature-doc-lines 1)
 (define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
 (define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
-(define-key lsp-mode-map (kbd "C-c s") 'lsp-find-references)
+(define-key lsp-mode-map (kbd "C-c s") 'rg)
 (define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
 (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
 #+END_SRC
@@ -818,7 +821,7 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
 
 I haven't actually used Treemacs-Magit yet. It was a package I read about and was convinced I needed. I am only just starting to get comfortable with Magit after spending many months using the CLI. I imagine I will have more to say about Treemacs-Magit soon.
 I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'lsp-treemacs)
 #+END_SRC
 
@@ -826,7 +829,7 @@ I have found LSP-Treemacs pretty useful. I like being able to see all of the sym
 
 I am not sure if Magit should be in this section or a more general configuration section. I'm seeing more and more places outside of code where source control would be useful.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'magit)
 #+END_SRC
 
@@ -838,6 +841,13 @@ MHTML is par for every other package I've used for HTML templates. I don't have 
 (add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
 #+END_SRC
 
+*** ACTIVE OB-Restclient
+
+#+BEGIN_SRC emacs-lisp :padline no
+(require-package 'ob-restclient)
+(require 'restclient)
+(org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
+#+END_SRC
 *** ACTIVE Python
 
 If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
@@ -846,7 +856,7 @@ For the most part, the keybindings I like for Python development are covered by 
 
 *NOTE:* Python has [[* Python Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'python)
 (define-key python-mode-map "'" 'electric-pair)
 (define-key python-mode-map "\"" 'electric-pair)
@@ -870,7 +880,7 @@ I use Pyvenv to interface with my projects' virtual environments.
 
 *NOTE:* Pyvenv has [[* Pyvenv Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'pyvenv)
 (setq pyvenv-default-virtual-env-name "venv")
 (define-key python-mode-map (kbd "C-c r")
@@ -890,14 +900,16 @@ sudo apt install python3-venv
 
 For me, Rainbow Delimiters has saved me a lot of time tracking down parentheses and brackets in Rust and the little elisp I am willing to commit to.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 #+END_SRC
 
 *** ACTIVE Restclient
 
-#+BEGIN_SRC emacs-lisp
+I'm hoping to use Restclient as a stand-in for Postman. I found an integration with Org-Babel that I think will make this awesome.
+
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'restclient)
 (require 'restclient)
 #+END_SRC
@@ -908,7 +920,7 @@ Development for Rust is pretty low-level at this point. If you're not interested
 
 *NOTE:* Rust has [[* Rust Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'rust-mode)
 (require 'rust-mode)
 (require 'lsp-mode)
@@ -955,7 +967,7 @@ rustup component add rust-src
 
 Rust Flycheck provides syntax highlighting. I need to make sure this is required.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'flycheck-rust)
 (require 'flycheck)
 (require 'flycheck-rust)
@@ -966,7 +978,7 @@ Rust Flycheck provides syntax highlighting. I need to make sure this is required
 
 I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'treemacs-magit)
 #+END_SRC
 
@@ -974,7 +986,7 @@ I haven't had the opportunity to use this extensively yet. Since I'm just gettin
 
 My configuration also provides some customization of Emacs' SQL mode. My workflow for SQL usually consists of two buffers: one of a SQL file and the other is the SQL interactive buffer. The SQL file is helpful because I can save and track my queries easily without thinking about it and the keeping the SQLi buffer separate is nice because I can disable font-lock so query results don't have silly distracting faces. The first function disables font-lock for SQL Interactive mode and the second sets up the SQL Interactive-mode buffer automatically when SQL mode is enabled (either by opening a SQL buffer or manually activating SQL mode). Here, I've set up a list of connections I use frequently. I was surprised by how much of a quality-of-life improvement this was. I made a couple of keybindings for sending region and the whole buffer to the SQL Interactive mode buffer. I believe there are existing bindings for this, but I wanted something more in keeping with the rest of my keybinding setup. 
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require 'sql)
 (defun my-sql-disable-font-lock (orig-fun &rest args)
   "Disable syntax highlighting for SQL output."
@@ -1003,8 +1015,8 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
                              (sql-user "nrsgquqvfevzbu")
                              (sql-database "ddpfocn81le95m"))))
 
-(define-key sql-mode-map (kbd "C-c s") 'sql-send-region)
-(define-key sql-mode-map (kbd "C-c S") 'sql-send-buffer)
+(define-key sql-mode-map (kbd "C-c r") 'sql-send-region)
+(define-key sql-mode-map (kbd "C-c R") 'sql-send-buffer)
 (advice-add 'sql-interactive-mode :around 'my-sql-disable-font-lock)
 (add-hook 'sql-mode-hook 'sql-set-sqli-buffer)
 (add-hook 'sql-mode-hook '(lambda ()
@@ -1017,25 +1029,25 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
 
 SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs as well.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'sqlup-mode)
 (require 'sql)
 (add-hook 'sql-mode-hook 'sqlup-mode)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
 #+END_SRC
-* Work
+
+** Work
 
 Integrations with Jira and Slack
 
-** DISABLED Ejira
+*** ACTIVE Ejira
 
 Ejira seems like a good integration for Jira. The primary downside of Ejira is that it's not in MELPA. I've been working with this and Org-Jira, but this seems better supported. Also, ejira gets all issues by default whereas Org-Jira only pulls in issues assigned to me. My only qualm is that I can't assign an issue to anyone except Unassigned.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'cl-lib)
 (require-package 'dash)
 (require-package 'dash-functional)
-(require-package 'jiralib2)
 (require-package 'language-detection)
 (require-package 'ox-jira)
 (require-package 's)
@@ -1053,17 +1065,18 @@ Ejira seems like a good integration for Jira. The primary downside of Ejira is t
                                ("Medium"  . ?C)
                                ("Low"     . ?D)
                                ("Lowest"  . ?E))
-      ejira-todo-states-alist '(("To Do"       . 1)
-                                ("In Progress" . 2)
-                                ("Done"        . 3))
+      ejira-todo-states-alist '(("To Do" . 11)
+                                ("Doing" . 21)
+                                ("Test"  . 41)
+                                ("Done"  . 31))
       org-id-track-globally t)
 #+END_SRC
 
-** DISABLED Slack
+*** DISABLED Slack
 
 I've proofed out this slack integration and got it to a working state.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :padline no
 (require-package 'slack)
 (require 'slack)
 (setq slack-prefer-current-team t)

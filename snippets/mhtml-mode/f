@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: f
+# key: f
+# --
+<form action="$1" method="POST">
+    $0
+</form>
