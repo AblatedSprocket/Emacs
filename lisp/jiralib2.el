@@ -63,7 +63,7 @@
   :type 'string)
 
 (defcustom jiralib2-user-account-id nil
-  "Account ID to use for calls to JIRA API."
+  "Account ID to use for JIRA API calls."
   :group 'jiralib2
   :type 'string)
 
@@ -158,7 +158,7 @@
   (interactive)
   (let ((info (jiralib2-get-user-info)))
     (message
-     "Successfully logged in\n\nUsername:  %s\nEmail:     %s\nAccount ID: %s\n"
+     "Successfully logged in\n\nUsername:  %s\nFull Name: %s\nEmail:     %s\nAccount ID: %s\n"
      (alist-get 'name info)
      (alist-get 'displayName info)
      (alist-get 'emailAddress info)
@@ -226,12 +226,6 @@ If no session exists, or it has expired, login first."
   (jiralib2-session-call (format "/rest/api/2/issue/%s/comment/%s"
                                  issue-key comment-id)))
 
-(defun jiralib2-edit-status (issue-key status)
-  "Update issue ISSUE-KEY status to STATUS."
-  (jiralib2-session-call (format "/rest/api/2/issue/%s/transitions"
-                                 issue-key)
-                         :type "POST"
-                         :data (json-encode '((transition (id . status))))))
 
 (defun jiralib2--get-users (project-key)
   "Download assignable users information given the PROJECT-KEY."
@@ -283,6 +277,25 @@ If no session exists, or it has expired, login first."
   (jiralib2-session-call (format "/rest/api/2/issue/%s/assignee" issue-key)
                          :type "PUT"
                          :data (json-encode `((accountId . ,account-id)))))
+
+(defun jiralib2-do-jql-search (jql &optional limit)
+  "Run a JQL query and return the list of issues that matched.
+LIMIT is the maximum number of queries to return. Note that JIRA has an internal
+limit of how many queries to return, as such, it might not be possible to find
+*ALL* the issues that match a query.
+
+DEPRECATED, use `jiralib2-jql-search' instead."
+  (unless (or limit (numberp limit))
+    (setq limit 1000))
+  (append
+   (cdr
+    (assoc 'issues
+           (jiralib2-session-call "/rest/api/2/search"
+                                  :type "POST"
+                                  :data (json-encode
+                                         `((jql . ,jql)
+                                           (maxResults . ,limit))))))
+   nil))
 
 (defun jiralib2-jql-search (jql &rest fields)
   "Run a JQL query and return the list of issues that matched.

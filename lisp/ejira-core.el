@@ -70,10 +70,9 @@
   :group 'ejira
   :type '(repeat string))
 
-(defcustom ejira-priorities-alist '(("High" . ?A)
-                                    ("Medium"    . ?B)
-                                    ("Low"  . ?C))
-
+(defcustom ejira-priorities-alist '(("High"   . ?A)
+                                    ("Medium" . ?B)
+                                    ("Low"    . ?C))
   "Association list to convert between `org-mode' and JIRA priorities.
 If modifying, remember to set `org-lowest-priority' and `org-highest-priority'
 so that all priorities are valid."
@@ -677,6 +676,9 @@ of the document."
   "Find a value from fields L recursively with KEYS."
   (let ((value (let* (key exists)
                  (while (and keys (listp l))
+                   (when (and (listp (caar l))
+                              (not (cdr l)))
+                     (setq l (car l)))
                    (setq key (car keys))
                    (setq exists nil)
                    (mapc (lambda (item)
