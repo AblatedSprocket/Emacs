@@ -40,8 +40,6 @@
 
 (require 'ejira-parser)
 
-
-
 (defgroup ejira nil
   "JIRA synchronization for Emacs."
   :group 'applications

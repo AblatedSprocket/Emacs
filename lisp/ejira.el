@@ -69,7 +69,7 @@ This is the function used in `ejira-update-project'. Override with
   "Builds JQL to find unresolved project tickets assigned to PROJECT-ID.
 This is the default function used in `ejira-update-project'. Override with
 `ejira-update-jql-unresolved-fn'."
-  (format "project = '%s' and resolution = unresolved" project-id))
+  (format "project = '%s'" project-id))
 
 (defun ejira-jql-my-unresolved-project-tickets (project-id)
   "Builds JQL to find your unresolved project tickets assigned to PROJECT-ID.
