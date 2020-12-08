@@ -235,14 +235,26 @@ I use Ripgrep for searching through files for text when a language-server can't 
 sudo apt install ripgrep
 #+END_SRC
 
-*** ACTIVE SanityInc Tomorrow Themes
+*** DISABLED SanityInc Tomorrow Themes
 
 For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'color-theme-sanityinc-tomorrow)
 (add-hook 'after-init-hook (lambda ()
   (load-theme 'sanityinc-tomorrow-night t)))
+#+END_SRC
+
+*** ACTIVE Nord Theme
+
+I really like the nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however they are a little unwieldy.
+
+#+BEGIN_SRC emacs-lisp
+(require-package 'nord-theme)
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (frame)  
+		(with-selected-frame frame (load-theme 'nord t))))
+  (load-theme 'nord t))
 #+END_SRC
 
 *** ACTIVE Smex
@@ -1042,7 +1054,7 @@ Integrations with Jira and Slack
 
 *** ACTIVE Ejira
 
-Ejira seems like a good integration for Jira. The primary downside of Ejira is that it's not in MELPA. I've been working with this and Org-Jira, but this seems better supported. Also, ejira gets all issues by default whereas Org-Jira only pulls in issues assigned to me. My only qualm is that I can't assign an issue to anyone except Unassigned.
+I'm working on a couple of programming projects outside of work, one with another person. He wanted to use Jira, and I noticed that there are a couple of Jira integrations for Emacs, Org-Jira and Ejira. I chose Ejira because it takes advantage of Jira's REST API, as opposed to Org-Jira which is SOAP-based. It's much easier for me to debug JSON payloads as opposed to XML. Currently, the Ejira files are included with my config for two reasons: one is that Ejira is not on MELPA yet, and the second is that there's some deal-breaking functionality missing from the maintained branch, mostly mentioning users.
 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'cl-lib)
@@ -1058,18 +1070,19 @@ Ejira seems like a good integration for Jira. The primary downside of Ejira is t
       jiralib2-token (auth-source-pick-first-password
                       :host "jasonandandybuildsomething.atlassian.net"
                       :user "andrewwburch@gmail.com")
-      ejira-org-directory "~/.org-jira"
+      ejira-org-directory "~/.jira"
       ejira-projects '("SB")
       ejira-priorities-alist '(("Highest" . ?A)
                                ("High"    . ?B)
                                ("Medium"  . ?C)
                                ("Low"     . ?D)
                                ("Lowest"  . ?E))
-      ejira-todo-states-alist '(("To Do" . 11)
+      ejira-todo-states-alist '(("ToDo"  . 11)
                                 ("Doing" . 21)
                                 ("Test"  . 41)
                                 ("Done"  . 31))
-      org-id-track-globally t)
+      org-id-track-globally t
+      org-todo-keywords '((sequence "TODO" "DOING" "TEST" "DONE")))
 #+END_SRC
 
 *** DISABLED Slack
