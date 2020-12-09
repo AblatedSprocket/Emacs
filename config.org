@@ -1081,6 +1081,10 @@ I'm working on a couple of programming projects outside of work, one with anothe
                                 ("Doing" . 2)
                                 ("Test"  . 3)
                                 ("Done"  . 4))
+      ejira-org-todo-keywords-alist '(("SB" . ("TODO"
+                                             "DOING"
+                                             "TEST"
+                                             "DONE")))
       org-id-track-globally t)
 #+END_SRC
 
