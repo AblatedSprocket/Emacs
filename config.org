@@ -1077,12 +1077,11 @@ I'm working on a couple of programming projects outside of work, one with anothe
                                ("Medium"  . ?C)
                                ("Low"     . ?D)
                                ("Lowest"  . ?E))
-      ejira-todo-states-alist '(("ToDo"  . 11)
-                                ("Doing" . 21)
-                                ("Test"  . 41)
-                                ("Done"  . 31))
-      org-id-track-globally t
-      org-todo-keywords '((sequence "TODO" "DOING" "TEST" "DONE")))
+      ejira-todo-states-alist '(("To Do"  . 1)
+                                ("Doing" . 2)
+                                ("Test"  . 3)
+                                ("Done"  . 4))
+      org-id-track-globally t)
 #+END_SRC
 
 *** DISABLED Slack
