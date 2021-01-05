@@ -3,10 +3,10 @@
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
 (("org-refile-last-stored"
- (filename . "~/org/jira/SB.org")
- (front-context-string . "** TODO [#C] Web")
- (rear-context-string . "d?\n*** Comments\n")
- (position . 4807))
+ (filename . "~/.jira/SB.org")
+ (front-context-string . "** TODO [#D] Tes")
+ (rear-context-string . "on\n*** Comments\n")
+ (position . 11159))
 ("org-capture-last-stored"
  (filename . "~/org/jira/SB.org")
  (front-context-string . "**** [2020-11-18")

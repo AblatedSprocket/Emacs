@@ -13,89 +13,95 @@ These are the general purpose functions I've found or made over my time with Ema
 *NOTE:* General configuration has [[* General Configuration Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
-(defun beginning-of-line-or-indentation ()
-  "Move to beginning of line or indentation."
-  (interactive)
-  (if (bolp)
-      (back-to-indentation)
-    (beginning-of-line)))
-(defun switch-to-previous-buffer()
-  "Switch to previously open buffer.
-Repeated invocations toggle between the two most recently open buffers."
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
-(defun whack-whitespace (arg)
-    "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work.  It skips over to the next whitespace and then whacks it all to the next word."
-      (interactive "P")
-      (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
-        (re-search-forward regexp nil t)
-        (replace-match "" nil nil)))
-(set-cursor-color "#000000")
-(set-default 'truncate-lines t)
-(set-face-attribute 'default nil :font "Inconsolata" :height 120)
-(setq apropos-do-all t
-      auto-save-default nil
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      create-lockfiles nil
-      inhibit-startup-message t
-      mode-line-modes
-      (mapcar (lambda (elem)
-                (pcase elem
-                  (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
-                   "")
-                  (t elem)))
-              mode-line-modes)
-      mouse-yank-at-point t
-      recentf-save-file (concat user-emacs-directory ".recentf")
-      recentf-max-menu-items 40
-      ring-bell-function 'ignore
-      save-interprogram-paste-before-kill t
-      save-place-file (concat user-emacs-directory "places")
+  (defun beginning-of-line-or-indentation ()
+    "Move to beginning of line or indentation."
+    (interactive)
+    (if (bolp)
+        (back-to-indentation)
+      (beginning-of-line)))
+  (defun switch-to-previous-buffer()
+    "Switch to previously open buffer.
+  Repeated invocations toggle between the two most recently open buffers."
+    (interactive)
+    (switch-to-buffer (other-buffer (current-buffer) 1)))
+  (defun custom-toggle-comment ()
+    "Toggle comment on region if region is active else toggle comment on line."
+    (interactive)
+    (if (use-region-p)
+        (comment-or-uncomment-region (region-beginning) (region-end))
+      (toggle-comment-on-line)))
+  (defun whack-whitespace (arg)
+      "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
+        (interactive "P")
+        (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+          (re-search-forward regexp nil t)
+          (replace-match "" nil nil)))
+  (set-cursor-color "#000000")
+  ;; (set-face-attribute 'default nil :font "Inconsolata" :height 120)
+  (set-face-attribute 'default nil :font "Hack" :height 100)
+  (setq apropos-do-all t
+        auto-save-default nil
+        backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+        create-lockfiles nil
+        inhibit-startup-message t
+        mode-line-modes
+        (mapcar (lambda (elem)
+                  (pcase elem
+                    (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
+                     "")
+                    (t elem)))
+                mode-line-modes)
+        mouse-yank-at-point t
+        recentf-save-file (concat user-emacs-directory ".recentf")
+        recentf-max-menu-items 40
+        ring-bell-function 'ignore
+        save-interprogram-paste-before-kill t
+        save-place-file (concat user-emacs-directory "places")
 
-      TeX-PDF-mode nil
-      x-select-enable-clipboard t
-      x-select-enable-primary t)
-(setq-default save-place t
-              word-wrap t
-              cursor-type 'bar)
-(blink-cursor-mode 1)
-(column-number-mode 1)
-(fset 'yes-or-no-p 'y-or-n-p)
-(global-display-line-numbers-mode 1)
-(global-eldoc-mode -1)
-(menu-bar-mode -1)
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-(show-paren-mode 1)
-(global-set-key (kbd "C-;") 'toggle-comment-on-line)
-(global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
-(global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
-(global-set-key (kbd "C-c c") 'list-colors-display)
-(global-set-key (kbd "C-c l") 'toggle-truncate-lines)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-x k") 'kill-buffer-and-window)
-(global-set-key (kbd "C-z") nil)
-(global-set-key (kbd "C-c C-w") 'whack-whitespace)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
-(global-set-key (kbd "<M-return>") 'open-line)
-(global-set-key (kbd "M-b") 'backward-to-word)
-(global-set-key (kbd "M-B") 'backward-word)
-(global-set-key (kbd "M-f") 'forward-word)
-(global-set-key (kbd "M-F") 'forward-to-word)
-(global-set-key (kbd "M-m") 'toggle-frame-maximized)
-(global-set-key (kbd "M-p") 'backward-paragraph)
-(global-set-key (kbd "M-n") 'forward-paragraph)
+        TeX-PDF-mode nil
+        x-select-enable-clipboard t
+        x-select-enable-primary t)
+  (setq-default save-place t
+                word-wrap t
+                cursor-type 'bar)
+  (blink-cursor-mode 1)
+  (column-number-mode 1)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (global-display-line-numbers-mode 1)
+  (global-eldoc-mode -1)
+  (menu-bar-mode -1)
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
+  (show-paren-mode 1)
+  (global-set-key (kbd "M-;") 'custom-toggle-comment)
+  (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
+  (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
+  (global-set-key (kbd "C-c c") 'list-colors-display)
+  (global-set-key (kbd "C-c l") 'toggle-truncate-lines)
+  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
+  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+  (global-set-key (kbd "C-x k") 'kill-buffer-and-window)
+  (global-set-key (kbd "C-z") nil)
+  (global-set-key (kbd "C-c C-w") 'whack-whitespace)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key (kbd "C-M-s") 'isearch-forward)
+  (global-set-key (kbd "C-M-r") 'isearch-backward)
+  (global-set-key (kbd "<M-return>") 'open-line)
+  (global-set-key (kbd "M-b") 'backward-to-word)
+  (global-set-key (kbd "M-B") 'backward-word)
+  (global-set-key (kbd "M-f") 'forward-word)
+  (global-set-key (kbd "M-F") 'forward-to-word)
+  (global-set-key (kbd "M-m") 'toggle-frame-maximized)
+  (global-set-key (kbd "M-p") 'backward-paragraph)
+  (global-set-key (kbd "M-n") 'forward-paragraph)
 #+END_SRC
 
 *** General Configuration Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install fonts-inconsolata
+sudo apt install fonts-inconsolata fonts-hack
 #+END_SRC
 
 *** ACTIVE All the Icons
@@ -123,12 +129,14 @@ I use Company as my go-to completion engine. I have it enabled globally because 
 
 *** ACTIVE Electric-Pair
 I miss having auto-completions for certain pairs. Every mode is a little different
+
 #+BEGIN_SRC emacs-lisp :padline no
 (defun electric-pair ()
   "Insert pair without spaces."
   (interactive)
   (let (parens-require-spaces) (insert-pair)))
 #+END_SRC
+
 *** ACTIVE Flycheck
 
 Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't fi have any modes where I don't want Flycheck, so I enabled them globally.
@@ -246,15 +254,26 @@ For now, sanityinc is my go-to for themes. I'm a big fan of their night and day 
 
 *** ACTIVE Nord Theme
 
-I really like the nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however they are a little unwieldy.
+I really like the Nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however the workarounds are a little unwieldy. The only grievance I have with Nord is that source blocks don't have any distinguishing background faces, so I set the =backgrond= property on the =org-block= face to =nord1= and the =background= property for =org-block-begin-line= and =org-block-end-line= faces to =nord2=. Hopefully, I'll figure out how to make those changes from my config here, but for now, they're in the Nord package I downloaded from MELPA. One caveat to this configuration is that the =:extend= property is only valid in Emacs 27+, so my configuration is getting increasingly unfriendly toward Emacs 26-.
 
 #+BEGIN_SRC emacs-lisp
-(require-package 'nord-theme)
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame)  
-		(with-selected-frame frame (load-theme 'nord t))))
-  (load-theme 'nord t))
+  (require-package 'nord-theme)
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame)  
+                  (with-selected-frame frame (load-theme 'nord t))
+                  (dolist (face '(org-block
+                                    org-block-begin-line
+                                    org-block-end-line
+                                    org-level-1))
+                                    (set-face-attribute face nil :extend t))))
+    (load-theme 'nord t)
+    (with-eval-after-load 'org
+      (dolist (face '(org-block
+                      org-block-begin-line
+                      org-block-end-line
+                      org-level-1))
+        (set-face-attribute face nil :extend t))))
 #+END_SRC
 
 *** ACTIVE Smex
@@ -312,7 +331,7 @@ Now, mail can be synced using the config file. First, create your mail directory
 
 The last step is to index the messages with mu: =mu index --maildir=~/Mail=.
 
-I've defined a couple of convenience functions. If an email just won't render as text, I have =mu4e-show-in-browser=. I'm holding onto hope for better webkit support so I'm keeping =mu4e-view-in-browser-webkit= around for the time being. I've never had occasion to use =search-for-sender=, but it seems like a basic function that any email client should have.
+I've defined a couple of convenience functions. If an email just won't render as text, I have =mu4e-show-in-browser=. I've never had occasion to use =search-for-sender=, but it seems like a basic function that any email client should have.
 
 I have a lot of customization for Mu4e. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of Mu4e contexts, which can be associated with an email address. This provides separation between work and home, for example.
 
@@ -327,10 +346,6 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
   "Show an email in the default web browser."
   (interactive)
   (mu4e-action-view-in-browser (mu4e-action-view-in-browser (mu4e-message-at-point t))))
-(defun mu4e-view-in-browser-webkit (msg)
-  "View the email MSG in embedded browser."
-  (let ((url (concat "file://" (mu4e~write-body-to-html msg))))
-    (xwidget-webkit-browse-url url)))
 (defun search-for-sender (msg)
   "Search for MSG messages sent by the sender of the message at point."
   (mu4e-headers-search
@@ -389,7 +404,6 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
       mu4e-view-show-addresses 't
       smtpmail-queue-mail nil)
 (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
-(add-to-list 'mu4e-view-actions '("Webkit" . mu4e-view-in-browser-webkit) t)
 (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 (add-hook 'message-mode-hook (lambda ()
           (use-hard-newlines -1)))
@@ -406,7 +420,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
             (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
             (local-set-key (kbd "<tab>") 'shr-next-link)
             (local-set-key (kbd "<backtab>") 'shr-previous-link)
-            (toggle-truncate-lines)))
+            (setq truncate-lines t)))
 #+END_SRC
 
 *** Mu4e Dependencies
@@ -426,18 +440,18 @@ I only have one function, which is meant to change the status of a parent task t
 #+BEGIN_SRC emacs-lisp :padline no
 (require 'org)
 (defun org-summary-todo (n-done n-not-done)
-    "Switch entry to DONE when all subentries are done, to TODO otherwise."
-    (let (org-log-done org-log-states)    ; turn off logging
-      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)    ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (define-prefix-command 'ring-map)
 (global-set-key (kbd "C-o") 'ring-map)
 (setq org-capture-templates
-        '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+      '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
           ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n"))
         org-directory "~/org"
-      org-highest-priority ?A
+        org-highest-priority ?A
       org-lowest-priority ?E)
 (org-load-modules-maybe t)
 (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
@@ -445,12 +459,12 @@ I only have one function, which is meant to change the status of a parent task t
 (define-key org-mode-map (kbd "C-c C-w") nil)
 (define-key org-mode-map (kbd "<M-return>") nil)
 (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
-
 (global-set-key (kbd "C-o c") 'org-capture)
-
 (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-(add-hook 'org-mode-hook 'org-indent-mode)
+(add-hook 'org-mode-hook (lambda ()
+                           (org-indent-mode)
+                           (setq truncate-lines t)))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
@@ -516,6 +530,7 @@ One of the things I've always wished I were better at keeping was a journal. Sin
 (add-to-list 'org-capture-templates `("d" "dream" entry (file "~/org/dreams/Dreams.org")
                                        "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
 (global-set-key (kbd "C-o j") 'org-journal-new-entry)
+(add-hook 'org-journal-mode-hook (lambda () (setq truncate-lines t)))
 #+END_SRC
 
 *** ACTIVE Org-Roam
@@ -560,9 +575,9 @@ Org Roam is great for managing information about things I'm learning about.
 sudo apt install sqlite3
 #+END_SRC
 
-*** ACTIVE Org-Roam Server
+*** DISABLED Org-Roam Server
 
-Org-Roam Server provides a novel way of interacting with your Org-Roam files. Most of the appeal is visual to my knowledge, and the functionality it provides is available within Emacs.
+Org-Roam Server provides a novel way of interacting with your Org-Roam files. Most of the appeal is visual to my knowledge, and the functionality it provides is available within Emacs. =org-roam-server-mode= must be called for the server to start.
 
 *NOTE:* Org-Roam Server has [[* Org-Roam Server Dependencies][dependencies]].
 
@@ -855,11 +870,14 @@ MHTML is par for every other package I've used for HTML templates. I don't have 
 
 *** ACTIVE OB-Restclient
 
+OB-Restclient has been a joy to use. If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. I'm debating using Org-Babel to add literate programming to all of my source code and tangling it out for compiling and running. My only reservation with this is that this is not commonplace, meaning 1) I would have to live without it on projects that I don't own and 2) anyone who might want to contribute to a project of mine would have to deal with org-babel-tangle.
+
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'ob-restclient)
 (require 'restclient)
 (org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
 #+END_SRC
+
 *** ACTIVE Python
 
 If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
@@ -919,7 +937,7 @@ For me, Rainbow Delimiters has saved me a lot of time tracking down parentheses 
 
 *** ACTIVE Restclient
 
-I'm hoping to use Restclient as a stand-in for Postman. I found an integration with Org-Babel that I think will make this awesome.
+I'm hoping to use Restclient as a stand-in for Postman. I found an integration with Org-Babel that has been great to use. For me, Org-Babel is a must for Restclient.
 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'restclient)
@@ -1052,7 +1070,7 @@ SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs a
 
 Integrations with Jira and Slack
 
-*** ACTIVE Ejira
+*** DISABLED Ejira
 
 I'm working on a couple of programming projects outside of work, one with another person. He wanted to use Jira, and I noticed that there are a couple of Jira integrations for Emacs, Org-Jira and Ejira. I chose Ejira because it takes advantage of Jira's REST API, as opposed to Org-Jira which is SOAP-based. It's much easier for me to debug JSON payloads as opposed to XML. Currently, the Ejira files are included with my config for two reasons: one is that Ejira is not on MELPA yet, and the second is that there's some deal-breaking functionality missing from the maintained branch, mostly mentioning users.
 
@@ -1104,3 +1122,13 @@ I've proofed out this slack integration and got it to a working state.
           :user "andrewwburch@gmail.com"))
 (slack-start)
 #+END_SRC
+*** DISABLED Discord
+**** Discord Dependencies
+
+First install Bitlbee:
+
+#+BEGIN_SRC shell :padline no
+sudo apt install bitlbee-dev
+#+END_SRC
+
+Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
