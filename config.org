@@ -36,7 +36,7 @@ These are the general purpose functions I've found or made over my time with Ema
         (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
           (re-search-forward regexp nil t)
           (replace-match "" nil nil)))
-  (set-cursor-color "#000000")
+  (set-cursor-color "#ffff00")
   ;; (set-face-attribute 'default nil :font "Inconsolata" :height 120)
   (set-face-attribute 'default nil :font "Hack" :height 100)
   (setq apropos-do-all t
@@ -331,7 +331,7 @@ Now, mail can be synced using the config file. First, create your mail directory
 
 The last step is to index the messages with mu: =mu index --maildir=~/Mail=.
 
-I've defined a couple of convenience functions. If an email just won't render as text, I have =mu4e-show-in-browser=. I've never had occasion to use =search-for-sender=, but it seems like a basic function that any email client should have.
+I've defined a convenience function called =search-for-sender= which I've never had occasion to use, but it seems like a basic function that any email client should have.
 
 I have a lot of customization for Mu4e. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of Mu4e contexts, which can be associated with an email address. This provides separation between work and home, for example.
 
@@ -342,10 +342,6 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 (require 'mu4e)
 (require 'smtpmail)
 (require 'org-mu4e)
-(defun mu4e-show-in-browser ()
-  "Show an email in the default web browser."
-  (interactive)
-  (mu4e-action-view-in-browser (mu4e-action-view-in-browser (mu4e-message-at-point t))))
 (defun search-for-sender (msg)
   "Search for MSG messages sent by the sender of the message at point."
   (mu4e-headers-search
@@ -550,7 +546,6 @@ Org Roam is great for managing information about things I'm learning about.
          :file-name "%<%Y%m%d>-${slug}"
          :head "#+title: ${title}\n"
          :unnarrowed t))
-      org-roam-directory "~/org-roam"
       org-roam-graph-edge-extra-config '(
       ("color" . "green")
       ("fillcolor" . "green"))
@@ -569,6 +564,13 @@ Org Roam is great for managing information about things I'm learning about.
 (global-set-key (kbd "C-o i") 'org-roam-insert)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp :padline no :tangle no
+(setq org-roam-directory "~/org-roam")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :padline no
+(setq org-roam-directory "~/Documents/WorldApart")
+#+END_SRC
 **** Org-Roam Dependencies
 
 #+BEGIN_SRC shell
