@@ -9,13 +9,13 @@ This installation documentation is for Emacs 27 on Ubuntu, Debian-based distribu
 Download the [[http://git.savannah.gnu.org/cgit/emacs.git][source code]] and untar it with =tar -xzvf emacs-27.1.tar.gz=. The following command is mostly for me, installing all dependencies for my config in one go. If you want to do things piece-meal, each package section has an install script for its own dependencies. Here's the complete dependency installation script:
 
 #+BEGIN_SRC shell
-sudo apt install auctex autoconf fonts-hack fonts-inconsolata fonts-sil-gentium gnupg2 graphviz isync libgif-dev libgnutls28-dev libjpeg-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev mu4e postgresql python3-pip python3-venv ripgrep sqlite3 texinfo
+sudo apt install libgtk-3-dev libncurses5-dev auctex autoconf fonts-hack fonts-inconsolata fonts-sil-gentium gnupg2 graphviz isync libgif-dev libgnutls28-dev libjpeg-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev mu4e postgresql python3-pip python3-venv ripgrep sqlite3 texinfo
 #+END_SRC
 
 And here are the minimum requirements for the piece-meal approach:
 
 #+BEGIN_SRC shell
-sudo apt install autoconf libgif-dev libgnutls28-dev libjpeg-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
+sudo apt install libgtk-3-dev libncurses5-dev autoconf libgif-dev libgnutls28-dev libjpeg-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
 #+END_SRC
 
 Most of the dependencies I can remember my motivation for installing. Everything referencing a file extension just provides support for Emacs GUI to render that file type. For the most part, I only wanted support for all of those file extensions because emails have all sorts of things that I wanted to be able to view. The last dependency, =autoconf= is required for running =autogen.sh=. Run =./autogen.sh= from within the source directory to create the configuration script, then run that using =./configure --with-json --with-modules --with-rsvg --without-pop= to use the new native JSON parsing and better terminal support with vterm. According to the documentation, --with-json should not be necessary, but I added it for good measure. Once complete, make and install to get everything installed:
