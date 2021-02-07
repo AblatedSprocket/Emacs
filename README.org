@@ -9,24 +9,61 @@ This installation documentation is for Emacs 27 on Ubuntu, Debian-based distribu
 Download the [[http://git.savannah.gnu.org/cgit/emacs.git][source code]] and untar it with =tar -xzvf emacs-27.1.tar.gz=. The following command is mostly for me, installing all dependencies for my config in one go. If you want to do things piece-meal, each package section has an install script for its own dependencies. Here's the complete dependency installation script:
 
 #+BEGIN_SRC shell
-sudo apt install libgtk-3-dev libncurses5-dev auctex autoconf fonts-hack fonts-inconsolata fonts-sil-gentium gnupg2 graphviz isync libgif-dev libgnutls28-dev libjpeg-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev mu4e postgresql python3-pip python3-venv ripgrep sqlite3 texinfo
+sudo apt install auctex autoconf fonts-hack fonts-inconsolata fonts-sil-gentium gnupg2 graphviz isync libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev mu4e postgresql python3-pip python3-venv ripgrep sqlite3 texinfo
 #+END_SRC
 
 And here are the minimum requirements for the piece-meal approach:
 
 #+BEGIN_SRC shell
-sudo apt install libgtk-3-dev libncurses5-dev autoconf libgif-dev libgnutls28-dev libjpeg-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
+sudo apt install autoconf libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
 #+END_SRC
 
-Most of the dependencies I can remember my motivation for installing. Everything referencing a file extension just provides support for Emacs GUI to render that file type. For the most part, I only wanted support for all of those file extensions because emails have all sorts of things that I wanted to be able to view. The last dependency, =autoconf= is required for running =autogen.sh=. Run =./autogen.sh= from within the source directory to create the configuration script, then run that using =./configure --with-json --with-modules --with-rsvg --without-pop= to use the new native JSON parsing and better terminal support with vterm. According to the documentation, --with-json should not be necessary, but I added it for good measure. Once complete, make and install to get everything installed:
+For my own sake, I alphabetized the dependencies, I've tabulated their purpose for posterity so I can remember what's going on:
+
+| Package           | Function                                                                      |
+|-------------------+-------------------------------------------------------------------------------|
+| autoconf          | Building from source                                                          |
+| fonts-hack        | Adds hack font, maybe my favorite monospace option                            |
+| fonts-inconsolata | Adds inconsolata font, my second favorite monospace option                    |
+| fonts-sil-gentium | My favorite serif font so far                                                 |
+| gnupg2            | I use this in my Mu4e config and Gnus Authinfo for managing logins for things |
+| graphviz          | Provides neat visualization of org-roam trees                                 |
+| isync             | Provides mbsync as Mu4e mail synchronization application                      |
+| libgif-dev        | GIF file support                                                              |
+| libgnutls28-dev   | Suggested during the configure step, seemed legit                             |
+| libgtk-3-dev      | Suggested for prividing display support, seemed legit                         |
+| libjpeg-dev       | JPG file support                                                              |
+| libncurses5-dev   | Suggested during the configure step, seemed legit                             |
+| libotf-dev        | OTF file support                                                              |
+| libpng-dev        | PNG file support                                                              |
+| librsvg2-dev      | SVG file support                                                              |
+| libtiff-dev       | TIFF file support                                                             |
+| libxml2-dev       | XML file support                                                              |
+| libxpm-dev        | XPM file support                                                              |
+| mu4e              | Mail client                                                                   |
+| postgresql        | RDBMS (Used to SQL server, felt like I needed an alternative)                 |
+| python3-pip       | Python package manager                                                        |
+| python3-venv      | Python virtual environment system                                             |
+| ripgrep           | grep alternative                                                              |
+| sqlite3           | SQLite RDBMS                                                                  |
+| texinfo           | Suggested for doc support (I think) during the configure step, seemed legit   |
+
+Once all of that is installed, it's time to configure and install Emacs! Navigate to the directory of the unzipped source code and enter the following to get the configuration files ready for the install:
 
 #+BEGIN_SRC shell
-sudo make && sudo make install
+  ./autogen.sh
+  ./configure
+#+END_SRC
+
+Sometimes, =./configure= suggests more packages to install. I don't really know any better so I typically look up the application it wants (I've found deb packages often don't quite match the apps) and install it. Anyway, once that's all done, it's install time:
+
+#+BEGIN_SRC shell
+  sudo make && sudo make install
 #+END_SRC
 
 On first install, try running =package-refresh-contents= and =package-initialize= within Emacs if you encounter errors. This has fixed things for me in the past.
 
-With everything installed, I suggest moving to [[file:config.org][config.org]] for details on how everything is configured.
+With everything installed, I suggest moving to [[file:config.org][config.org]] for details on how everything is configured. Unless you want Emacs to run as a daemon on startup. In that case, keep reading!
 
 * Daemon
 
