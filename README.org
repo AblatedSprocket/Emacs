@@ -28,5 +28,42 @@ On first install, try running =package-refresh-contents= and =package-initialize
 
 With everything installed, I suggest moving to [[file:config.org][config.org]] for details on how everything is configured.
 
+* Daemon
+
+When installing from source, it appears that the =emacs.service= file does not always get created properly, so starting an Emacs server (i.e. running Emacs as a daemon) by executing =systemctl --user enable emacs= does not work. You can check by running =systemctl status --user emacs=. The command will tell you where the service file is located. I created my own systemd entry in =~/.config/systemd/user/emacs.service= as described [here](https://www.emacswiki.org/emacs/EmacsAsDaemon). If the service file exists, just make sure it looks like this:
+
+#+BEGIN_EXAMPLE
+[Unit]
+Description=Emacs texteditor
+Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/emacs --daemon
+ExecStop=/usr/local/bin/emacsclient --eval "(kill-emacs)"
+Environment=SSH_AUTH_SOCK=%t/keyring/ssh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+#+END_EXAMPLE
+
+To run an Emacs client, either run =emacsclient -create-frame --alternate-editor=""=, or create a Desktop entry in =~/.local/share/applications\emacsclient.desktop=:
+
+#+BEGIN_EXAMPLE
+[Desktop Entry]
+Name = Emacs Client
+GenericName=Text Editor
+Comment=Emacs Editor
+MimeType=text/english;text/plain
+Exec=emacsclient -create-frame --alternate-editor=""
+Icon=emacs
+Type=Application
+Terminal=false
+Categories=Development;TextEditor;Utility;
+StartupWMClass=Emacs
+#+END_EXAMPLE
+
+
 * Notes
 Anything in the =lisp= directory isn't mine. Org-Gantt is currently maintained [[https://gitlab.com/joukeHijlkema/org-gantt/][here]]. I just have some minor changes to make it render more nicely for me. Ejira is currently maintained [[https://github.com/nyyManni/ejira/blob/master/ejira-core.el][here]], waiting for it to get to MELPA.
