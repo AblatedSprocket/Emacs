@@ -48,7 +48,7 @@ Restart=on-failure
 WantedBy=default.target
 #+END_EXAMPLE
 
-To run an Emacs client, either run =emacsclient -create-frame --alternate-editor=""=, or create a Desktop entry in =~/.local/share/applications\emacsclient.desktop=:
+To run an Emacs client, either run =emacsclient -create-frame --alternate-editor=""=, or create a Desktop entry in =~/.local/share/applications/emacsclient.desktop=:
 
 #+BEGIN_EXAMPLE
 [Desktop Entry]
