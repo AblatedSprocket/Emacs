@@ -564,11 +564,11 @@ Org Roam is great for managing information about things I'm learning about.
 (global-set-key (kbd "C-o i") 'org-roam-insert)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :padline no :tangle no
+#+BEGIN_SRC emacs-lisp :padline no
 (setq org-roam-directory "~/org-roam")
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :padline no
+#+BEGIN_SRC emacs-lisp :padline no :tangle no
 (setq org-roam-directory "~/Documents/WorldApart")
 #+END_SRC
 **** Org-Roam Dependencies
@@ -809,7 +809,6 @@ Python language server provides the backend for LSP-mode. The one thing I dislik
 *NOTE* LSP-Pyls has [[* LSP-Pyls Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require 'lsp-pyls)
 (setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
 #+END_SRC
 
