@@ -948,7 +948,7 @@ I'm hoping to use Restclient as a stand-in for Postman. I found an integration w
 
 *** ACTIVE Rust
 
-Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects. If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]] and [[https://github.com/rust-analyzer/rust-analyzer/releases][Rust-Analyzer]]. For Rust-Analyzer, get the latest release and put the binary in =~/.local/bin=. You can put it somewhere else if you want, just make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in [[* Built-in Programming][Built-in Programming]]. You will also need to change the config in this section to point to your desired Rust-Analyzer location.
+Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects.
 
 *NOTE:* Rust has [[* Rust Dependencies][dependencies]].
 
@@ -990,8 +990,20 @@ Development for Rust is pretty low-level at this point. If you're not interested
 #+END_SRC
 
 **** Rust Dependencies
+If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]]. Once that's done, install Rust-Analyzer by cloning the repository:
 
 #+BEGIN_SRC shell
+git clone https://github.com/rust-analyzer/rust-analyzer.git
+cd rust-analyzer
+cargo xtask install --server
+#+END_SRC
+
+Now you should see the =rust-analyzer= binary under =~/.cargo/bin/=. Make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in your [[* Rust][Rust]] config.
+
+To enable various IDE features, you will want to install =rust-src=:
+
+#+BEGIN_SRC shell
+
 rustup component add rust-src
 #+END_SRC
 
