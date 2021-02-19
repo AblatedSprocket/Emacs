@@ -52,7 +52,7 @@ Once all of that is installed, it's time to configure and install Emacs! Navigat
 
 #+BEGIN_SRC shell
   ./autogen.sh
-  ./configure
+  ./configure --with-json --with-modules --with-rsvg --without-pop
 #+END_SRC
 
 Sometimes, =./configure= suggests more packages to install. I don't really know any better so I typically look up the application it wants (I've found deb packages often don't quite match the apps) and install it. Anyway, once that's all done, it's install time:
