@@ -317,15 +317,23 @@ One of the main drivers for me to use Mu4e (or another Emacs package) for email 
 
 If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. Be sure to install the [[* Mu4e Dependencies][dependencies]] before moving ahead.
 
-Create a file whose contents is your mail password and encrypt via gpg2: =gpg2 -c .authinfo= 
+With everything installed we need to perform an initial sync using the =mbsync= command. Before that, a mail directory must be created: =mkdir ~/Mail= 
 
-Remove original files and place the encrypted ones in folders with names to match the references in =~/.config/emacs/mu4e/.mbsyncrc=.
+My =.mbsyncrc= is set up to use Gnus Authinfo, so we need to set that up as well. It's not too bad, simply create a file named =~/.authinfo= and add this line:
 
-Create a file whose contents is your mail password and encrypt via gpg2: =gpg2 -c .authinfo= 
+#+BEGIN_SRC  :padline no
+machine smtp.gmail.com login USERNAME password PASSWORD port 587
+#+END_SRC
 
-Remove original files and place the encrypted ones in folders with names to match the references in =~/.config/emacs/mu4e/.mbsyncrc=.
+Now, encrypt the file with the following command:
 
-With everything installed we need to perform an initial sync using the =mbsync= command. Before that, a mail directory must be create: =mkdir ~/Mail= 
+#+BEGIN_SRC  :padline no
+gpg2 --symmetric .authinfo
+#+END_SRC
+
+I have Mu4e hooked up to my gmail account so that's how the example is laid out. Of course, you will need to substitute your username and password for the capitalized words, but other than that you should be good.
+
+As an aside, Gnus Authinfo can be used in a variety of ways in Emacs: many packages support it. I recommend looking into it for any packages interfacing with a service you log into like Slack or Gitlab.
 
 Now, mail can be synced using the config file. First, create your mail directory at =~/Mail=. A different location will require configuration changes. Since the config is in an unconventional directory, it must be specified explicitly. First, navigate to =~/.config/emacs/mu4e= and run =mbsync -c .mbsyncrc -a= 
 
