@@ -327,8 +327,14 @@ machine smtp.gmail.com login USERNAME password PASSWORD port 587
 
 Now, encrypt the file with the following command:
 
-#+BEGIN_SRC  :padline no
-gpg2 --symmetric .authinfo
+#+BEGIN_SRC shell :padline no
+  gpg2 --symmetric .authinfo
+#+END_SRC
+
+To decrypt later just enter the following:
+
+#+BEGIN_SRC shell :padline no
+  gpg2 --decrypt .authinfo.gpg
 #+END_SRC
 
 I have Mu4e hooked up to my gmail account so that's how the example is laid out. Of course, you will need to substitute your username and password for the capitalized words, but other than that you should be good.
@@ -337,7 +343,13 @@ As an aside, Gnus Authinfo can be used in a variety of ways in Emacs: many packa
 
 Now, mail can be synced using the config file. First, create your mail directory at =~/Mail=. A different location will require configuration changes. Since the config is in an unconventional directory, it must be specified explicitly. First, navigate to =~/.config/emacs/mu4e= and run =mbsync -c .mbsyncrc -a= 
 
-The last step is to index the messages with mu: =mu index --maildir=~/Mail=.
+The last step is to index the messages with mu:
+
+#+BEGIN_SRC shell :padline no
+  mu init --maildir=~/Mail=
+  mu index
+#+END_SRC
+
 
 I've defined a convenience function called =search-for-sender= which I've never had occasion to use, but it seems like a basic function that any email client should have.
 
@@ -442,33 +454,35 @@ My keybindings for org are mostly unnecessary remappings to better integrate wit
 I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require 'org)
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)    ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-(define-prefix-command 'ring-map)
-(global-set-key (kbd "C-o") 'ring-map)
-(setq org-capture-templates
-      '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
-          ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n"))
-        org-directory "~/org"
-        org-highest-priority ?A
-      org-lowest-priority ?E)
-(org-load-modules-maybe t)
-(define-key org-mode-map (kbd "C-c i") 'org-insert-link)
-(define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
-(define-key org-mode-map (kbd "C-c C-w") nil)
-(define-key org-mode-map (kbd "<M-return>") nil)
-(define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
-(global-set-key (kbd "C-o c") 'org-capture)
-(add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
-(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-(add-hook 'org-mode-hook (lambda ()
-                           (org-indent-mode)
-                           (setq truncate-lines t)))
+  (require 'org)
+  (defun org-summary-todo (n-done n-not-done)
+    "Switch entry to DONE when all subentries are done, to TODO otherwise."
+    (let (org-log-done org-log-states)    ; turn off logging
+      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+  (define-prefix-command 'ring-map)
+  (global-set-key (kbd "C-o") 'ring-map)
+  (setq org-capture-templates
+            '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
+                ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n"))
+              org-directory "~/org"
+              org-highest-priority ?A
+            org-lowest-priority ?E)
+
+
+      (org-load-modules-maybe t)
+      (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
+      (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
+      (define-key org-mode-map (kbd "C-c C-w") nil)
+      (define-key org-mode-map (kbd "<M-return>") nil)
+      (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
+      (global-set-key (kbd "C-o c") 'org-capture)
+      (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
+      (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+      (add-hook 'org-mode-hook (lambda ()
+                                 (org-indent-mode)
+                                 (setq truncate-lines t)))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
@@ -808,6 +822,25 @@ pip3 install black
 (require-package 'dap-mode)
 (require 'dap-gdb-lldb)
 #+END_SRC
+
+*** ACTIVE LSP
+
+So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
+
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'lsp-mode)
+  (require 'lsp-mode)
+  ;; Previously this required with-eval-after-load lsp
+  (setq lsp-modeline-diagnostics-scope :project
+        lsp-signature-doc-lines 1)
+  (define-key lsp-mode-map (kbd "C-c `") 'lsp-restart-workspace)
+  (define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
+  (define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
+  (define-key lsp-mode-map (kbd "C-c s") 'rg)
+  (define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
+  (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
+#+END_SRC
+
 *** ACTIVE LSP-Pyls
 
 Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. 
@@ -834,23 +867,6 @@ HL-Todo highlights to-do items in buffers where the mode is active. Previously, 
 (require-package 'hl-todo)
 (require 'hl-todo)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
-#+END_SRC
-
-*** ACTIVE LSP
-
-So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'lsp-mode)
-(require 'lsp-mode)
-;; Previously this required with-eval-after-load lsp
-(setq lsp-modeline-diagnostics-scope :project
-      lsp-signature-doc-lines 1)
-(define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
-(define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
-(define-key lsp-mode-map (kbd "C-c s") 'rg)
-(define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
-(define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
 #+END_SRC
 
 *** ACTIVE LSP-Treemacs
@@ -1143,7 +1159,7 @@ I've proofed out this slack integration and got it to a working state.
           :user "andrewwburch@gmail.com"))
 (slack-start)
 #+END_SRC
-*** DISABLED Discord
+*** DISABLED Discordn
 **** Discord Dependencies
 
 First install Bitlbee:

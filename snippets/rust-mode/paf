@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: paf
+# key: paf
+# --
+pub async fn $1 {
+    $0
+}

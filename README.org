@@ -67,7 +67,7 @@ With everything installed, I suggest moving to [[file:config.org][config.org]] f
 
 * Daemon
 
-When installing from source, it appears that the =emacs.service= file does not always get created properly, so starting an Emacs server (i.e. running Emacs as a daemon) by executing =systemctl --user enable emacs= does not work. You can check by running =systemctl status --user emacs=. The command will tell you where the service file is located. I created my own systemd entry in =~/.config/systemd/user/emacs.service= as described [here](https://www.emacswiki.org/emacs/EmacsAsDaemon). If the service file exists, just make sure it looks like this:
+When installing from source, it appears that the =emacs.service= file does not always get created properly, so starting an Emacs server (i.e. running Emacs as a daemon) by executing =systemctl --user enable emacs= does not work. You can check by running =systemctl status --user emacs=. The command will tell you where the service file is located. I created my own systemd entry in =~/.config/systemd/user/emacs.service= as described [https://www.emacswiki.org/emacs/EmacsAsDaemon][here]. If the service file exists, just make sure it looks like this:
 
 #+BEGIN_EXAMPLE
 [Unit]
@@ -85,7 +85,13 @@ Restart=on-failure
 WantedBy=default.target
 #+END_EXAMPLE
 
-To run an Emacs client, either run =emacsclient -create-frame --alternate-editor=""=, or create a Desktop entry in =~/.local/share/applications/emacsclient.desktop=:
+To run an Emacs client, either run:
+
+#+BEGIN_SRC shell :padline no
+emacsclient -create-frame --alternate-editor=""
+#+END_SRC
+
+Or, create a Desktop entry in =~/.local/share/applications/emacsclient.desktop=:
 
 #+BEGIN_EXAMPLE
 [Desktop Entry]
