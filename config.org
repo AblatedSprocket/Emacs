@@ -93,7 +93,7 @@ These are the general purpose functions I've found or made over my time with Ema
   (global-set-key (kbd "M-B") 'backward-word)
   (global-set-key (kbd "M-f") 'forward-word)
   (global-set-key (kbd "M-F") 'forward-to-word)
-  (global-set-key (kbd "M-m") 'toggle-frame-maximized)
+  ;; (global-set-key (kbd "M-m") 'toggle-frame-maximized) ;; Not necessary in Pop!_os
   (global-set-key (kbd "M-p") 'backward-paragraph)
   (global-set-key (kbd "M-n") 'forward-paragraph)
 #+END_SRC
@@ -661,6 +661,20 @@ Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I
       (special-block . org-html-special-block)))
 #+END_SRC
 
+*** ACTIVE Weblorg
+
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'weblorg)
+  (require 'weblorg)
+#+END_SRC
+
+*** ACTIVE Simple-HTTPd
+
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'simple-httpd)
+  (require 'simple-httpd)
+  (setq httpd-root "~/nothingissimple/public")
+#+END_SRC
 ** Prose
 
 I like using Emacs as a code editor and for creative writing. Emacs doesn't have a lot of the things a standard word processor does (especially by default), but I've found the packages that provide a better experience for me than Word or any other word processor. To use Auctex you need to install a few things:
@@ -1159,8 +1173,15 @@ I've proofed out this slack integration and got it to a working state.
           :user "andrewwburch@gmail.com"))
 (slack-start)
 #+END_SRC
-*** DISABLED Discordn
+*** DISABLED Discord
 **** Discord Dependencies
+
+Let's make Emacs show up in Discord
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'elcord)
+  (require 'elcord)
+  (elcord-mode)
+#+END_SRC
 
 First install Bitlbee:
 

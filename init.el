@@ -101,7 +101,7 @@ Note the weekly scope of the command's precision.")
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(cl-lib web-mode ts treemacs-magit svg sqlup-mode smex slack rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-jira ox-hugo org-roam-server org-journal org-jira olivetti ob-restclient mw-thesaurus multiple-cursors lsp-ui latex-preview-pane language-detection langtool ivy hl-todo flycheck-rust dap-mode company-quickhelp company-lsp company-auctex blacken bind-key all-the-icons)))
+   '(simple-httpd elcord cl-lib web-mode ts treemacs-magit svg sqlup-mode smex slack rust-mode rg rainbow-delimiters pyvenv ox-slimhtml ox-jira ox-hugo org-roam-server org-journal org-jira olivetti ob-restclient mw-thesaurus multiple-cursors lsp-ui latex-preview-pane language-detection langtool ivy hl-todo flycheck-rust dap-mode company-quickhelp company-lsp company-auctex blacken bind-key all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
