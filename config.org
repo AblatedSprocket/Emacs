@@ -38,7 +38,7 @@ These are the general purpose functions I've found or made over my time with Ema
           (replace-match "" nil nil)))
   (set-cursor-color "#ffff00")
   ;; (set-face-attribute 'default nil :font "Inconsolata" :height 120)
-  (set-face-attribute 'default nil :font "Hack" :height 100)
+  (set-face-attribute 'default nil :font "Hack" :height 120)
   (setq apropos-do-all t
         auto-save-default nil
         backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
