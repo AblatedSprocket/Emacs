@@ -455,6 +455,10 @@ I only have one function, which is meant to change the status of a parent task t
 
 #+BEGIN_SRC emacs-lisp :padline no
   (require 'org)
+  (defun generate-post ()
+    (setq post-title (read-string "Title: "))
+    (setq post-file-name (replace-regexp-in-string " " "-" (downcase post-title)))
+    (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/posts"))
   (defun org-summary-todo (n-done n-not-done)
     "Switch entry to DONE when all subentries are done, to TODO otherwise."
     (let (org-log-done org-log-states)    ; turn off logging
@@ -462,27 +466,27 @@ I only have one function, which is meant to change the status of a parent task t
   (define-prefix-command 'ring-map)
   (global-set-key (kbd "C-o") 'ring-map)
   (setq org-capture-templates
-            '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
-                ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n"))
-              org-directory "~/org"
-              org-highest-priority ?A
-            org-lowest-priority ?E)
-
-
-      (org-load-modules-maybe t)
-      (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
-      (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
-      (define-key org-mode-map (kbd "C-c C-w") nil)
-      (define-key org-mode-map (kbd "<M-return>") nil)
-      (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
-      (global-set-key (kbd "C-o c") 'org-capture)
-      (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
-      (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-      (add-hook 'org-mode-hook (lambda ()
-                                 (org-indent-mode)
-                                 (setq truncate-lines t)))
+        '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
+          ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
+          ("p" "post" plain (file generate-post)
+           "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title)"))
+        org-directory "~/org"
+        org-highest-priority ?A
+        org-lowest-priority ?E)
+  (org-load-modules-maybe t)
+  (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
+  (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
+  (define-key org-mode-map (kbd "C-c C-w") nil)
+  (define-key org-mode-map (kbd "<M-return>") nil)
+  (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
+  (global-set-key (kbd "C-o c") 'org-capture)
+  (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+  (add-hook 'org-mode-hook (lambda ()
+                             (org-indent-mode)
+                             (setq truncate-lines t)))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
