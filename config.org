@@ -79,7 +79,7 @@ These are the general purpose functions I've found or made over my time with Ema
   (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
   (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
   (global-set-key (kbd "C-c c") 'list-colors-display)
-  (global-set-key (kbd "C-c l") 'toggle-truncate-lines)
+  (global-set-key (kbd "<C-tab>") 'toggle-truncate-lines)
   (global-set-key (kbd "C-r") 'isearch-backward-regexp)
   (global-set-key (kbd "C-s") 'isearch-forward-regexp)
   (global-set-key (kbd "C-x k") 'kill-buffer-and-window)
@@ -457,7 +457,7 @@ I only have one function, which is meant to change the status of a parent task t
   (require 'org)
   (defun generate-post ()
     (setq post-title (read-string "Title: "))
-    (setq post-file-name (replace-regexp-in-string " " "-" (downcase post-title)))
+    (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
     (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/posts"))
   (defun org-summary-todo (n-done n-not-done)
     "Switch entry to DONE when all subentries are done, to TODO otherwise."
@@ -471,12 +471,12 @@ I only have one function, which is meant to change the status of a parent task t
           ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
           ("p" "post" plain (file generate-post)
-           "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title)"))
+           "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)"))
         org-directory "~/org"
         org-highest-priority ?A
         org-lowest-priority ?E)
   (org-load-modules-maybe t)
-  (define-key org-mode-map (kbd "C-c i") 'org-insert-link)
+  (define-key org-mode-map (kbd "C-c l") 'org-insert-link)
   (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
   (define-key org-mode-map (kbd "C-c C-w") nil)
   (define-key org-mode-map (kbd "<M-return>") nil)
@@ -630,25 +630,6 @@ Org-Roam Server provides a novel way of interacting with your Org-Roam files. Mo
 
 #+BEGIN_SRC shell
 sudo apt install graphviz
-#+END_SRC
-
-*** ACTIVE Ox-Hugo
-
-Currently, I'm using Ox-Hugo to manage my personal website. Most of the custom configuration for that is in the site's org file as local variables so it doesn't show up here. That site is in a separate repository [[https://gitlab.com/AblatedSprocket/nothingissimple][here]].
-
-*NOTE:* Ox-Hugo has [[* Ox-Hugo Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'ox-hugo)
-  (require 'ox-hugo)
-  (add-to-list 'org-capture-templates `("p" "post" entry (file+headline "~/NothingIsSimple/site.org" "Posts")
-                                         "* TODO %?\n:PROPERTIES:\n:EXPORT_FILE_NAME: \n:END:\n"))
-#+END_SRC
-
-**** Ox-Hugo Dependencies
-
-#+BEGIN_SRC shell
-sudo apt install hugo
 #+END_SRC
 
 *** ACTIVE Ox-SlimHTML
