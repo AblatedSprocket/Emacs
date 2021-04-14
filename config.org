@@ -61,9 +61,10 @@ These are the general purpose functions I've found or made over my time with Ema
         TeX-PDF-mode nil
         x-select-enable-clipboard t
         x-select-enable-primary t)
-  (setq-default save-place t
-                word-wrap t
-                cursor-type 'bar)
+  (setq-default cursor-type 'bar
+                display-line-numbers-width-start t
+                save-place t
+                word-wrap t)
   (blink-cursor-mode 1)
   (column-number-mode 1)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -1161,11 +1162,10 @@ I've proofed out this slack integration and got it to a working state.
 *** DISABLED Discord
 **** Discord Dependencies
 
-Let's make Emacs show up in Discord
+Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elcord-mode=. If you're not on Discord and the mode's active, you'll keep getting notifications that Elcord is trying to connect. I'm not always on Discord, so this gets annoying.
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'elcord)
   (require 'elcord)
-  (elcord-mode)
 #+END_SRC
 
 First install Bitlbee:
