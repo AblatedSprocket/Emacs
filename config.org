@@ -6,6 +6,16 @@
 
 Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings.
 
+** ACTIVE Atom One Dark
+
+Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in favor of Nord, but I always find myself coming back to the colors that I wish Nord would use more.
+
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'atom-one-dark-theme)
+  (require 'atom-one-dark-theme)
+  (load-theme 'atom-one-dark t)
+#+END_SRC
+
 ** ACTIVE General Configuration
 
 These are the general purpose functions I've found or made over my time with Emacs. I have found =beginning-of-line-or-indentation= and =whack-whitespace= very useful as keybindings, but I almost never use =switch-to-previous-buffer=. I actually haven't used Apropos much, but after investigating it while writing this, I've discovered it is a very useful tool for discovering! It functions similarly to the =C-h= keybindings, but it's a bit more accessible in my opinion. The other big thing I want to point out is I disabled minor modes showing up in the modeline using the =mode-line-modes= setting. To use the Inconsolata font, you may have to install it first.
@@ -138,14 +148,34 @@ I miss having auto-completions for certain pairs. Every mode is a little differe
   (let (parens-require-spaces) (insert-pair)))
 #+END_SRC
 
+*** DISABLED ERC
+
+*** ACTIVE Evil
+
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'evil)
+  (require-package 'evil-collection)
+  (require 'evil)
+  (require 'evil-collection)
+  (evil-collection-init)
+  (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+  (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+  (setq-default evil-cross-lines t
+                evil-respect-visual-line-mode t)
+  (evil-mode)
+
+#+END_SRC
+
 *** ACTIVE Flycheck
 
 Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't fi have any modes where I don't want Flycheck, so I enabled them globally.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'flycheck)
-(require 'flycheck)
-(add-hook 'after-init-hook 'global-flycheck-mode)
+  (require-package 'flycheck)
+  (require 'flycheck)
+  (add-hook 'after-init-hook 'global-flycheck-mode)
 #+END_SRC
 
 *** ACTIVE Flyspell
@@ -253,7 +283,7 @@ For now, sanityinc is my go-to for themes. I'm a big fan of their night and day 
   (load-theme 'sanityinc-tomorrow-night t)))
 #+END_SRC
 
-*** ACTIVE Nord Theme
+*** DISABLED Nord Theme
 
 I really like the Nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however the workarounds are a little unwieldy. The only grievance I have with Nord is that source blocks don't have any distinguishing background faces, so I set the =backgrond= property on the =org-block= face to =nord1= and the =background= property for =org-block-begin-line= and =org-block-end-line= faces to =nord2=. Hopefully, I'll figure out how to make those changes from my config here, but for now, they're in the Nord package I downloaded from MELPA. One caveat to this configuration is that the =:extend= property is only valid in Emacs 27+, so my configuration is getting increasingly unfriendly toward Emacs 26-.
 
@@ -455,39 +485,39 @@ My keybindings for org are mostly unnecessary remappings to better integrate wit
 I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
 
 #+BEGIN_SRC emacs-lisp :padline no
-  (require 'org)
-  (defun generate-post ()
-    (setq post-title (read-string "Title: "))
-    (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
-    (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/posts"))
-  (defun org-summary-todo (n-done n-not-done)
-    "Switch entry to DONE when all subentries are done, to TODO otherwise."
-    (let (org-log-done org-log-states)    ; turn off logging
-      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-  (define-prefix-command 'ring-map)
-  (global-set-key (kbd "C-o") 'ring-map)
-  (setq org-capture-templates
-        '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
-          ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
-          ("p" "post" plain (file generate-post)
-           "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)"))
-        org-directory "~/org"
-        org-highest-priority ?A
-        org-lowest-priority ?E)
-  (org-load-modules-maybe t)
-  (define-key org-mode-map (kbd "C-c l") 'org-insert-link)
-  (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
-  (define-key org-mode-map (kbd "C-c C-w") nil)
-  (define-key org-mode-map (kbd "<M-return>") nil)
-  (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
-  (global-set-key (kbd "C-o c") 'org-capture)
-  (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
-  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-  (add-hook 'org-mode-hook (lambda ()
-                             (org-indent-mode)
-                             (setq truncate-lines t)))
+    (require 'org)
+    (defun generate-post ()
+      (setq post-title (read-string "Title: "))
+      (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
+      (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/posts"))
+    (defun org-summary-todo (n-done n-not-done)
+      "Switch entry to DONE when all subentries are done, to TODO otherwise."
+      (let (org-log-done org-log-states)    ; turn off logging
+        (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+    (define-prefix-command 'ring-map)
+    (global-set-key (kbd "C-o") 'ring-map)
+    (setq org-capture-templates
+          '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+             "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
+            ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+             "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
+            ("p" "post" plain (file generate-post)
+             "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)"))
+          org-directory "~/org"
+          org-highest-priority ?A
+          org-lowest-priority ?E)
+    (org-load-modules-maybe t)
+    (define-key org-mode-map (kbd "C-c l") 'org-insert-link)
+    (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
+    (define-key org-mode-map (kbd "C-c C-w") nil)
+    (define-key org-mode-map (kbd "<M-return>") nil)
+    (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
+    (global-set-key (kbd "C-o c") 'org-capture)
+    (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
+    (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+    (add-hook 'org-mode-hook (lambda ()
+                               (org-indent-mode)
+                               (setq truncate-lines t)))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
