@@ -6,7 +6,9 @@
 
 Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings.
 
-** ACTIVE Atom One Dark
+** Themes
+
+*** ACTIVE Atom One Dark
 
 Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in favor of Nord, but I always find myself coming back to the colors that I wish Nord would use more.
 
@@ -14,6 +16,39 @@ Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in 
   (require-package 'atom-one-dark-theme)
   (require 'atom-one-dark-theme)
   (load-theme 'atom-one-dark t)
+#+END_SRC
+
+*** DISABLED Nord Theme
+
+I really like the Nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however the workarounds are a little unwieldy. The only grievance I have with Nord is that source blocks don't have any distinguishing background faces, so I set the =backgrond= property on the =org-block= face to =nord1= and the =background= property for =org-block-begin-line= and =org-block-end-line= faces to =nord2=. Hopefully, I'll figure out how to make those changes from my config here, but for now, they're in the Nord package I downloaded from MELPA. One caveat to this configuration is that the =:extend= property is only valid in Emacs 27+, so my configuration is getting increasingly unfriendly toward Emacs 26-.
+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'nord-theme)
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame)  
+                  (with-selected-frame frame (load-theme 'nord t))
+                  (dolist (face '(org-block
+                                    org-block-begin-line
+                                    org-block-end-line
+                                    org-level-1))
+                                    (set-face-attribute face nil :extend t))))
+    (load-theme 'nord t)
+    (with-eval-after-load 'org
+      (dolist (face '(org-block
+                      org-block-begin-line
+                      org-block-end-line
+                      org-level-1))
+        (set-face-attribute face nil :extend t))))
+#+END_SRC
+
+*** DISABLED SanityInc Tomorrow Themes
+
+For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
+
+#+BEGIN_SRC emacs-lisp :padline no
+(add-hook 'after-init-hook (lambda ()
+  (load-theme 'sanityinc-tomorrow-night t)))
 #+END_SRC
 
 ** ACTIVE General Configuration
@@ -109,7 +144,7 @@ These are the general purpose functions I've found or made over my time with Ema
   (global-set-key (kbd "M-n") 'forward-paragraph)
 #+END_SRC
 
-*** General Configuration Dependencies
+**** General Configuration Dependencies
 
 #+BEGIN_SRC shell
 sudo apt install fonts-inconsolata fonts-hack
@@ -147,8 +182,6 @@ I miss having auto-completions for certain pairs. Every mode is a little differe
   (interactive)
   (let (parens-require-spaces) (insert-pair)))
 #+END_SRC
-
-*** DISABLED ERC
 
 *** ACTIVE Evil
 
@@ -272,39 +305,6 @@ I use Ripgrep for searching through files for text when a language-server can't 
 
 #+BEGIN_SRC shell
 sudo apt install ripgrep
-#+END_SRC
-
-*** DISABLED SanityInc Tomorrow Themes
-
-For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(add-hook 'after-init-hook (lambda ()
-  (load-theme 'sanityinc-tomorrow-night t)))
-#+END_SRC
-
-*** DISABLED Nord Theme
-
-I really like the Nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however the workarounds are a little unwieldy. The only grievance I have with Nord is that source blocks don't have any distinguishing background faces, so I set the =backgrond= property on the =org-block= face to =nord1= and the =background= property for =org-block-begin-line= and =org-block-end-line= faces to =nord2=. Hopefully, I'll figure out how to make those changes from my config here, but for now, they're in the Nord package I downloaded from MELPA. One caveat to this configuration is that the =:extend= property is only valid in Emacs 27+, so my configuration is getting increasingly unfriendly toward Emacs 26-.
-
-#+BEGIN_SRC emacs-lisp
-  (require-package 'nord-theme)
-  (if (daemonp)
-      (add-hook 'after-make-frame-functions
-                (lambda (frame)  
-                  (with-selected-frame frame (load-theme 'nord t))
-                  (dolist (face '(org-block
-                                    org-block-begin-line
-                                    org-block-end-line
-                                    org-level-1))
-                                    (set-face-attribute face nil :extend t))))
-    (load-theme 'nord t)
-    (with-eval-after-load 'org
-      (dolist (face '(org-block
-                      org-block-begin-line
-                      org-block-end-line
-                      org-level-1))
-        (set-face-attribute face nil :extend t))))
 #+END_SRC
 
 *** ACTIVE Smex
@@ -1122,7 +1122,7 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
 ;; (add-hook 'sql-login-hook 'my-sql-login-hook)
 #+END_SRC
 
-** ACTIVE SQLUp
+*** ACTIVE SQLUp
 
 SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs as well.
 
