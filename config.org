@@ -4,8 +4,45 @@
 
 * Emacs Config
 
-Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings.
+Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings. As mentioned in the README, my configuration also comes with a shell script to install most dependencies. I suggest taking care of that first.
 
+*NOTE:* Emacs has [[* Emacs Dependencies][depedencies]]
+
+** Emacs Dependencies
+
+For my own sake, I alphabetized the dependencies, I've tabulated their purpose for posterity so I can remember what's going on:
+
+| Package           | Function                                                                      |
+|-------------------+-------------------------------------------------------------------------------|
+| autoconf          | Building from source                                                          |
+| fonts-hack        | Adds hack font, maybe my favorite monospace option                            |
+| fonts-inconsolata | Adds inconsolata font, my second favorite monospace option                    |
+| fonts-sil-gentium | My favorite serif font so far                                                 |
+| gnupg2            | I use this in my Mu4e config and Gnus Authinfo for managing logins for things |
+| graphviz          | Provides neat visualization of org-roam trees                                 |
+| isync             | Provides mbsync as Mu4e mail synchronization application                      |
+| libgif-dev        | GIF file support                                                              |
+| libgnutls28-dev   | Suggested during the configure step, seemed legit                             |
+| libgtk-3-dev      | Suggested for prividing display support, seemed legit                         |
+| libjpeg-dev       | JPG file support                                                              |
+| libncurses5-dev   | Suggested during the configure step, seemed legit                             |
+| libotf-dev        | OTF file support                                                              |
+| libpng-dev        | PNG file support                                                              |
+| librsvg2-dev      | SVG file support                                                              |
+| libtiff-dev       | TIFF file support                                                             |
+| libxml2-dev       | XML file support                                                              |
+| libxpm-dev        | XPM file support                                                              |
+| mu4e              | Mail client                                                                   |
+| postgresql        | RDBMS (Used to SQL server, felt like I needed an alternative)                 |
+| python3-pip       | Python package manager                                                        |
+| python3-venv      | Python virtual environment system                                             |
+| ripgrep           | grep alternative                                                              |
+| sqlite3           | SQLite RDBMS                                                                  |
+| texinfo           | Suggested for doc support (I think) during the configure step, seemed legit   |
+
+#+BEGIN_SRC shell :padline no
+  sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
+#+END_SRC
 ** Themes
 
 *** ACTIVE Atom One Dark
@@ -47,8 +84,8 @@ I really like the Nord theme, but it's kind of hard to use with daemon mode. Luc
 For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(add-hook 'after-init-hook (lambda ()
-  (load-theme 'sanityinc-tomorrow-night t)))
+  (add-hook 'after-init-hook (lambda ()
+    (load-theme 'sanityinc-tomorrow-night t)))
 #+END_SRC
 
 ** ACTIVE General Configuration
@@ -147,7 +184,7 @@ These are the general purpose functions I've found or made over my time with Ema
 **** General Configuration Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install fonts-inconsolata fonts-hack
+  sudo apt install fonts-inconsolata fonts-hack
 #+END_SRC
 
 *** ACTIVE All the Icons
@@ -304,7 +341,7 @@ I use Ripgrep for searching through files for text when a language-server can't 
 **** Ripgrep Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install ripgrep
+  sudo apt install ripgrep
 #+END_SRC
 
 *** ACTIVE Smex
@@ -330,6 +367,23 @@ I use Treemacs mostly to get a visual on project structure. Its integration with
 (define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
 (define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
 (define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
+#+END_SRC
+
+*** ACTIVE Vterm
+
+I've been tinkering in the command line and documenting things in Emacs lately, so I've been using ~shell~ to make it easier to get command line output into documents. It works well enough, but I've wanted to try ~vterm~ to see what difference it makes. It's supposed to be a lot faster for commands with a lot of output, but I feel like I notice a difference even with simple commands. It also has better support for things like ~fish~ and themes.
+
+*NOTE:* Vterm has [[* Vterm Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp :padline no
+(require-package 'vterm)
+#+END_SRC
+
+**** Vterm Dependencies
+
+#+BEGIN_SRC shell :padline no
+  sudo apt install cmake
+  sudo apt install libtool-bin
 #+END_SRC
 
 *** ACTIVE Yasnippet
@@ -358,13 +412,13 @@ machine smtp.gmail.com login USERNAME password PASSWORD port 587
 
 Now, encrypt the file with the following command:
 
-#+BEGIN_SRC shell :padline no
+#+BEGIN_SRC shell :padline no :tangle no
   gpg2 --symmetric .authinfo
 #+END_SRC
 
 To decrypt later just enter the following:
 
-#+BEGIN_SRC shell :padline no
+#+BEGIN_SRC shell :padline no :tangle no
   gpg2 --decrypt .authinfo.gpg
 #+END_SRC
 
@@ -376,7 +430,7 @@ Now, mail can be synced using the config file. First, create your mail directory
 
 The last step is to index the messages with mu:
 
-#+BEGIN_SRC shell :padline no
+#+BEGIN_SRC shell :padline no :tangle no
   mu init --maildir=~/Mail=
   mu index
 #+END_SRC
@@ -473,7 +527,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 *** Mu4e Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install mu4e isync html2text gnupg2
+  sudo apt install mu4e isync html2text gnupg2
 #+END_SRC 
 
 ** ACTIVE Org
@@ -631,7 +685,7 @@ Org Roam is great for managing information about things I'm learning about.
 **** Org-Roam Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install sqlite3
+  sudo apt install sqlite3
 #+END_SRC
 
 *** DISABLED Org-Roam Server
@@ -660,7 +714,7 @@ Org-Roam Server provides a novel way of interacting with your Org-Roam files. Mo
 **** Org-Roam Server Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install graphviz
+  sudo apt install graphviz
 #+END_SRC
 
 *** ACTIVE Ox-SlimHTML
@@ -706,7 +760,7 @@ I like using Emacs as a code editor and for creative writing. Emacs doesn't have
 *** Prose Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install fonts-sil-gentium
+  sudo apt install fonts-sil-gentium
 #+END_SRC
 
 *** ACTIVE Auctex
@@ -722,7 +776,7 @@ LaTeX support is provided by Auctex. In general I use Org for writing, but if I 
 **** Auctex Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install texinfo auctex
+  sudo apt install texinfo auctex
 #+END_SRC
 
 *** ACTIVE Company-Auctex
@@ -761,7 +815,7 @@ If you want to use LanguageTool outside of Emacs, the configuration is a little 
 **** Langtool Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install openjdk-14-jre-headless
+  sudo apt install openjdk-14-jre-headless
 #+END_SRC
 
 *** ACTIVE Merriam-Webster Thesaurus
@@ -826,27 +880,6 @@ For code, =toggle-comment-on-line= has been an invaluable function that I use al
                             (setq indent-tabs-mode nil)))
 #+END_SRC
 
-*** ACTIVE Blacken
-
-Currently, I use Blacken for Python code formatting.
-
-*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
-
-*NOTE:* Blacken has [[* Blacken Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'blacken)
-(require 'blacken)
-(require 'python)
-(define-key python-mode-map (kbd "C-c f") 'blacken-buffer)
-#+END_SRC
-
-**** Blacken Dependencies
-
-#+BEGIN_SRC shell
-pip3 install black
-#+END_SRC
-
 *** DISABLED Debug Adapter Protocol
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'dap-mode)
@@ -869,24 +902,6 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
   (define-key lsp-mode-map (kbd "C-c s") 'rg)
   (define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
   (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
-#+END_SRC
-
-*** ACTIVE LSP-Pyls
-
-Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. 
-
-*NOTE* Assumes you have installed packages for [[* Python Dependencies][Python]]
-
-*NOTE* LSP-Pyls has [[* LSP-Pyls Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
-#+END_SRC
-
-**** LSP-Pyls Dependencies
-
-#+BEGIN_SRC shell
-pip3 install 'python-language-server[all]'
 #+END_SRC
 
 *** ACTIVE HL-Todo
@@ -923,16 +938,6 @@ MHTML is par for every other package I've used for HTML templates. I don't have 
 (add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
 #+END_SRC
 
-*** ACTIVE OB-Restclient
-
-OB-Restclient has been a joy to use. If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. I'm debating using Org-Babel to add literate programming to all of my source code and tangling it out for compiling and running. My only reservation with this is that this is not commonplace, meaning 1) I would have to live without it on projects that I don't own and 2) anyone who might want to contribute to a project of mine would have to deal with org-babel-tangle.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'ob-restclient)
-(require 'restclient)
-(org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
-#+END_SRC
-
 *** ACTIVE Python
 
 If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
@@ -954,10 +959,49 @@ For the most part, the keybindings I like for Python development are covered by 
 **** Python Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install python3.8 python3-pip
+  sudo apt install python3.8 python3-pip
 #+END_SRC
 
-*** ACTIVE Pyvenv
+**** ACTIVE Blacken
+
+Currently, I use Blacken for Python code formatting.
+
+*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
+
+*NOTE:* Blacken has [[* Blacken Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp :padline no
+(require-package 'blacken)
+(require 'blacken)
+(require 'python)
+(define-key python-mode-map (kbd "C-c f") 'blacken-buffer)
+#+END_SRC
+
+***** Blacken Dependencies
+
+#+BEGIN_SRC shell
+  pip3 install black
+#+END_SRC
+
+**** ACTIVE LSP-Pyls
+
+Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. 
+
+*NOTE* Assumes you have installed packages for [[* Python Dependencies][Python]]
+
+*NOTE* LSP-Pyls has [[* LSP-Pyls Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp :padline no
+(setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
+#+END_SRC
+
+***** LSP-Pyls Dependencies
+
+#+BEGIN_SRC shell
+  pip3 install 'python-language-server[all]'
+#+END_SRC
+
+**** ACTIVE Pyvenv
 
 I use Pyvenv to interface with my projects' virtual environments. 
 
@@ -975,10 +1019,10 @@ I use Pyvenv to interface with my projects' virtual environments.
 (add-hook 'python-mode-hook 'pyvenv-mode)
 #+END_SRC
 
-**** Pyvenv Dependencies
+***** Pyvenv Dependencies
 
 #+BEGIN_SRC shell
-sudo apt install python3-venv
+  sudo apt install python3-venv
 #+END_SRC
 
 *** ACTIVE Rainbow Delimiters
@@ -997,6 +1041,16 @@ I'm hoping to use Restclient as a stand-in for Postman. I found an integration w
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'restclient)
 (require 'restclient)
+#+END_SRC
+
+**** ACTIVE OB-Restclient
+
+OB-Restclient has been a joy to use. If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. I'm debating using Org-Babel to add literate programming to all of my source code and tangling it out for compiling and running. My only reservation with this is that this is not commonplace, meaning 1) I would have to live without it on projects that I don't own and 2) anyone who might want to contribute to a project of mine would have to deal with org-babel-tangle.
+
+#+BEGIN_SRC emacs-lisp :padline no
+(require-package 'ob-restclient)
+(require 'restclient)
+(org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
 #+END_SRC
 
 *** ACTIVE Rust
@@ -1045,22 +1099,21 @@ Development for Rust is pretty low-level at this point. If you're not interested
 **** Rust Dependencies
 If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]]. Once that's done, install Rust-Analyzer by cloning the repository:
 
-#+BEGIN_SRC shell
-git clone https://github.com/rust-analyzer/rust-analyzer.git
-cd rust-analyzer
-cargo xtask install --server
+#+BEGIN_SRC shell :tangle no
+  git clone https://github.com/rust-analyzer/rust-analyzer.git
+  cd rust-analyzer
+  cargo xtask install --server
 #+END_SRC
 
 Now you should see the =rust-analyzer= binary under =~/.cargo/bin/=. Make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in your [[* Rust][Rust]] config.
 
 To enable various IDE features, you will want to install =rust-src=:
 
-#+BEGIN_SRC shell
-
-rustup component add rust-src
+#+BEGIN_SRC shell :tangle no
+  rustup component add rust-src
 #+END_SRC
 
-*** ACTIVE Rust Flycheck
+**** ACTIVE Rust Flycheck
 
 Rust Flycheck provides syntax highlighting. I need to make sure this is required.
 
@@ -1071,15 +1124,7 @@ Rust Flycheck provides syntax highlighting. I need to make sure this is required
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)
 #+END_SRC
 
-*** ACTIVE Treemacs-Magit
-
-I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'treemacs-magit)
-#+END_SRC
-
-** ACTIVE SQL Client Configuration
+*** ACTIVE SQL
 
 My configuration also provides some customization of Emacs' SQL mode. My workflow for SQL usually consists of two buffers: one of a SQL file and the other is the SQL interactive buffer. The SQL file is helpful because I can save and track my queries easily without thinking about it and the keeping the SQLi buffer separate is nice because I can disable font-lock so query results don't have silly distracting faces. The first function disables font-lock for SQL Interactive mode and the second sets up the SQL Interactive-mode buffer automatically when SQL mode is enabled (either by opening a SQL buffer or manually activating SQL mode). Here, I've set up a list of connections I use frequently. I was surprised by how much of a quality-of-life improvement this was. I made a couple of keybindings for sending region and the whole buffer to the SQL Interactive mode buffer. I believe there are existing bindings for this, but I wanted something more in keeping with the rest of my keybinding setup. 
 
@@ -1122,7 +1167,7 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
 ;; (add-hook 'sql-login-hook 'my-sql-login-hook)
 #+END_SRC
 
-*** ACTIVE SQLUp
+***** ACTIVE SQLUp
 
 SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs as well.
 
@@ -1131,6 +1176,14 @@ SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs a
 (require 'sql)
 (add-hook 'sql-mode-hook 'sqlup-mode)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+#+END_SRC
+
+*** ACTIVE Treemacs-Magit
+
+I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
+
+#+BEGIN_SRC emacs-lisp :padline no
+(require-package 'treemacs-magit)
 #+END_SRC
 
 ** Work
@@ -1201,7 +1254,7 @@ Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elc
 First install Bitlbee:
 
 #+BEGIN_SRC shell :padline no
-sudo apt install bitlbee-dev
+  sudo apt install bitlbee-dev
 #+END_SRC
 
 Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
