@@ -13,11 +13,11 @@ The first step is to install the dependencies. This repository comes with a scri
   sudo dependencies.sh
 #+END_SRC
 
-Download the [[http://git.savannah.gnu.org/cgit/emacs.git][source code]] and untar files with =tar -xzvf emacs-27.1.tar.gz=. Navigate to the directory of the unzipped source code and enter the following to get the configuration files ready for the install:
+Download the [[http://git.savannah.gnu.org/cgit/emacs.git][source code]] and untar files with =tar -xzvf emacs-27.1.tar.gz= (or clone the repository with =git clone https://git.savannah.gnu.org/git/emacs.git=). Navigate to the directory of the unzipped source code and enter the following to get the configuration files ready for the install:
 
 #+BEGIN_SRC shell
   ./autogen.sh
-  ./configure --with-json --with-modules --with-rsvg --without-pop
+  ./configure --with-json --with-modules --with-rsvg --without-pop --with-native-compilation
 #+END_SRC
 
 Sometimes, =./configure= suggests more packages to install. I don't really know any better so I typically look up the application it wants (I've found deb packages often don't quite match what Emacs is looking for) and install it. Anyway, once that's all done, it's install time:
