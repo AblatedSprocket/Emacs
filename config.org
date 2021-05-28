@@ -45,7 +45,7 @@ For my own sake, I alphabetized the dependencies, I've tabulated their purpose f
 #+END_SRC
 ** Themes
 
-*** ACTIVE Atom One Dark
+*** DISABLED Atom One Dark
 
 Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in favor of Nord, but I always find myself coming back to the colors that I wish Nord would use more.
 
@@ -55,37 +55,14 @@ Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in 
   (load-theme 'atom-one-dark t)
 #+END_SRC
 
-*** DISABLED Nord Theme
+*** ACTIVE VS Code Dark Plus
 
-I really like the Nord theme, but it's kind of hard to use with daemon mode. Luckily, I'm not the only one to run into this issue and there are workarounds, however the workarounds are a little unwieldy. The only grievance I have with Nord is that source blocks don't have any distinguishing background faces, so I set the =backgrond= property on the =org-block= face to =nord1= and the =background= property for =org-block-begin-line= and =org-block-end-line= faces to =nord2=. Hopefully, I'll figure out how to make those changes from my config here, but for now, they're in the Nord package I downloaded from MELPA. One caveat to this configuration is that the =:extend= property is only valid in Emacs 27+, so my configuration is getting increasingly unfriendly toward Emacs 26-.
-
-#+BEGIN_SRC emacs-lisp
-  (require-package 'nord-theme)
-  (if (daemonp)
-      (add-hook 'after-make-frame-functions
-                (lambda (frame)  
-                  (with-selected-frame frame (load-theme 'nord t))
-                  (dolist (face '(org-block
-                                    org-block-begin-line
-                                    org-block-end-line
-                                    org-level-1))
-                                    (set-face-attribute face nil :extend t))))
-    (load-theme 'nord t)
-    (with-eval-after-load 'org
-      (dolist (face '(org-block
-                      org-block-begin-line
-                      org-block-end-line
-                      org-level-1))
-        (set-face-attribute face nil :extend t))))
-#+END_SRC
-
-*** DISABLED SanityInc Tomorrow Themes
-
-For now, sanityinc is my go-to for themes. I'm a big fan of their night and day themes.
+I don't particularly like much about VS Code, but it sure does have good default themes. Luckily ports exist
 
 #+BEGIN_SRC emacs-lisp :padline no
-  (add-hook 'after-init-hook (lambda ()
-    (load-theme 'sanityinc-tomorrow-night t)))
+  (require-package 'vscode-dark-plus)
+  (require 'vscode-dark-plus)
+  (load-theme 'vscode-dark-plus t)
 #+END_SRC
 
 ** ACTIVE General Configuration
@@ -95,6 +72,7 @@ These are the general purpose functions I've found or made over my time with Ema
 *NOTE:* General configuration has [[* General Configuration Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
+  (require 'dired)
   (defun beginning-of-line-or-indentation ()
     "Move to beginning of line or indentation."
     (interactive)
@@ -125,6 +103,7 @@ These are the general purpose functions I've found or made over my time with Ema
         auto-save-default nil
         backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
         create-lockfiles nil
+        dired-dwim-target t
         inhibit-startup-message t
         mode-line-modes
         (mapcar (lambda (elem)
@@ -211,6 +190,7 @@ I use Company as my go-to completion engine. I have it enabled globally because 
 #+END_SRC
 
 *** ACTIVE Electric-Pair
+
 I miss having auto-completions for certain pairs. Every mode is a little different
 
 #+BEGIN_SRC emacs-lisp :padline no
@@ -222,6 +202,8 @@ I miss having auto-completions for certain pairs. Every mode is a little differe
 
 *** ACTIVE Evil
 
+I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I've made for all of the other modes I've added.
+
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'evil)
   (require-package 'evil-collection)
@@ -232,6 +214,8 @@ I miss having auto-completions for certain pairs. Every mode is a little differe
   (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+  (define-key evil-normal-state-map "gf" 'find-file)
+  (define-key evil-normal-state-map "gF" 'find-file-at-point)
   (setq-default evil-cross-lines t
                 evil-respect-visual-line-mode t)
   (evil-mode)
@@ -444,6 +428,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 
 #+BEGIN_SRC emacs-lisp :padline no
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/ox-rss/")
 (require 'mu4e)
 (require 'smtpmail)
 (require 'org-mu4e)
@@ -543,7 +528,7 @@ I only have one function, which is meant to change the status of a parent task t
     (defun generate-post ()
       (setq post-title (read-string "Title: "))
       (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
-      (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/posts"))
+      (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
     (defun org-summary-todo (n-done n-not-done)
       "Switch entry to DONE when all subentries are done, to TODO otherwise."
       (let (org-log-done org-log-states)    ; turn off logging
@@ -551,12 +536,15 @@ I only have one function, which is meant to change the status of a parent task t
     (define-prefix-command 'ring-map)
     (global-set-key (kbd "C-o") 'ring-map)
     (setq org-capture-templates
-          '(("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-             "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")
+          '(("j" "journal" plain (file+datetree "~/org/journal.org")
+             "")
             ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
              "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
             ("p" "post" plain (file generate-post)
-             "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)"))
+             "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)")
+            ("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+             "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
+
           org-directory "~/org"
           org-highest-priority ?A
           org-lowest-priority ?E)
@@ -724,26 +712,16 @@ Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'ox-slimhtml)
 (require 'ox-slimhtml)
-(org-export-define-derived-backend 'custom-html-exporter
-    'slimhtml
-    :translate-alist
-    '((bold . ox-slimhtml-bold)
-      (special-block . org-html-special-block)))
-#+END_SRC
-
-*** ACTIVE Weblorg
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'weblorg)
-  (require 'weblorg)
 #+END_SRC
 
 *** ACTIVE Simple-HTTPd
 
+I use Simple-HTTPd to host my website for local debugging.
+
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'simple-httpd)
   (require 'simple-httpd)
-  (setq httpd-root "~/nothingissimple/public")
+  (setq httpd-root "~/nothingissimple/site")
 #+END_SRC
 ** Prose
 
@@ -781,7 +759,7 @@ LaTeX support is provided by Auctex. In general I use Org for writing, but if I 
 
 *** ACTIVE Company-Auctex
 
-I just love Company and want to use it wherever I can. Feel free to disable this.
+I just love Company and want to use it wherever I can.
 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'company-auctex)
@@ -851,6 +829,8 @@ I kind of fiddled around with different widths in Olivetti mode to see what felt
 
 *** DISABLED LSP-LaTeX
 
+WIP
+
 *NOTE:* LSP-LaTeX has 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'lsp-latex)
@@ -861,7 +841,6 @@ I kind of fiddled around with different widths in Olivetti mode to see what felt
 Requires installing TeXLab. Releases can be found [[https://github.com/latex-lsp/texlab/releases][here]]. Extract the file and copy to =~/.local/bin/=.
 
 ** ACTIVE Code Configuration
-
 
 For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding. I have the various binaries that Emacs needs access to for programming languages (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here.
 
@@ -881,6 +860,9 @@ For code, =toggle-comment-on-line= has been an invaluable function that I use al
 #+END_SRC
 
 *** DISABLED Debug Adapter Protocol
+
+WIP
+
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'dap-mode)
 (require 'dap-gdb-lldb)
@@ -918,6 +900,7 @@ HL-Todo highlights to-do items in buffers where the mode is active. Previously, 
 
 I haven't actually used Treemacs-Magit yet. It was a package I read about and was convinced I needed. I am only just starting to get comfortable with Magit after spending many months using the CLI. I imagine I will have more to say about Treemacs-Magit soon.
 I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
+
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'lsp-treemacs)
 #+END_SRC
@@ -1228,7 +1211,7 @@ I'm working on a couple of programming projects outside of work, one with anothe
 
 *** DISABLED Slack
 
-I've proofed out this slack integration and got it to a working state.
+I've proved out this slack integration and got it to a working state.
 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'slack)
@@ -1242,8 +1225,8 @@ I've proofed out this slack integration and got it to a working state.
           :user "andrewwburch@gmail.com"))
 (slack-start)
 #+END_SRC
+
 *** DISABLED Discord
-**** Discord Dependencies
 
 Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elcord-mode=. If you're not on Discord and the mode's active, you'll keep getting notifications that Elcord is trying to connect. I'm not always on Discord, so this gets annoying.
 #+BEGIN_SRC emacs-lisp :padline no
@@ -1251,6 +1234,7 @@ Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elc
   (require 'elcord)
 #+END_SRC
 
+**** Discord Dependencies
 First install Bitlbee:
 
 #+BEGIN_SRC shell :padline no
