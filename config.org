@@ -1,9 +1,10 @@
 # -*- mode: org; coding: utf-8; -*-
-#+TODO: DISABLED | ACTIVE
+#+TODO: ACTIVE | DISABLED
 #+STARTUP: indent
 
 * Emacs Config
 
+/real/ *talk*
 Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings. As mentioned in the README, my configuration also comes with a shell script to install most dependencies. I suggest taking care of that first.
 
 *NOTE:* Emacs has [[* Emacs Dependencies][depedencies]]
@@ -44,6 +45,16 @@ For my own sake, I alphabetized the dependencies, I've tabulated their purpose f
   sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
 #+END_SRC
 ** Themes
+*** ACTIVE Doom Themes
+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'doom-themes)
+  (require 'doom-themes)
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (doom-themes-org-config)
+  (load-theme 'doom-snazzy t)
+#+END_SRC
 
 *** DISABLED Atom One Dark
 
@@ -55,7 +66,7 @@ Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in 
   (load-theme 'atom-one-dark t)
 #+END_SRC
 
-*** ACTIVE VS Code Dark Plus
+*** DISABLED VS Code Dark Plus
 
 I don't particularly like much about VS Code, but it sure does have good default themes. Luckily ports exist
 
@@ -91,14 +102,13 @@ These are the general purpose functions I've found or made over my time with Ema
         (comment-or-uncomment-region (region-beginning) (region-end))
       (toggle-comment-on-line)))
   (defun whack-whitespace (arg)
-      "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
-        (interactive "P")
-        (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
-          (re-search-forward regexp nil t)
-          (replace-match "" nil nil)))
+    "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
+    (interactive "P")
+    (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+      (re-search-forward regexp nil t)
+      (replace-match "" nil nil)))
   (set-cursor-color "#ffff00")
-  ;; (set-face-attribute 'default nil :font "Inconsolata" :height 120)
-  (set-face-attribute 'default nil :font "Hack" :height 120)
+  (add-to-list 'default-frame-alist '(font . "JetBrains Mono"))
   (setq apropos-do-all t
         auto-save-default nil
         backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
@@ -118,7 +128,7 @@ These are the general purpose functions I've found or made over my time with Ema
         ring-bell-function 'ignore
         save-interprogram-paste-before-kill t
         save-place-file (concat user-emacs-directory "places")
-
+        sentence-end "[\\.\\?\\!] +"
         TeX-PDF-mode nil
         x-select-enable-clipboard t
         x-select-enable-primary t)
@@ -164,7 +174,10 @@ These are the general purpose functions I've found or made over my time with Ema
 
 #+BEGIN_SRC shell
   sudo apt install fonts-inconsolata fonts-hack
+  wget download.jetbrains.com/fonts/JetBrainsMono-2.225.zip
 #+END_SRC
+
+To use JetBrains Mono, extract the archive, copy ~.ttf~ files to ~/usr/local/share/fonts/~, and run =fc-cache -f=.
 
 *** ACTIVE All the Icons
 
@@ -191,7 +204,7 @@ I use Company as my go-to completion engine. I have it enabled globally because 
 
 *** ACTIVE Electric-Pair
 
-I miss having auto-completions for certain pairs. Every mode is a little different
+I miss having auto-completions for certain pairs. Every mode is a little different.
 
 #+BEGIN_SRC emacs-lisp :padline no
 (defun electric-pair ()
@@ -202,29 +215,33 @@ I miss having auto-completions for certain pairs. Every mode is a little differe
 
 *** ACTIVE Evil
 
-I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I've made for all of the other modes I've added.
+I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I've made for all of the other modes I've added. ~global-undo-tree-mode~ isn't registering quite right, I need to re-enable it when Emacs loads.
 
 #+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'evil)
-  (require-package 'evil-collection)
-  (require 'evil)
-  (require 'evil-collection)
-  (evil-collection-init)
-  (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-  (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-  (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-  (define-key evil-normal-state-map "gf" 'find-file)
-  (define-key evil-normal-state-map "gF" 'find-file-at-point)
-  (setq-default evil-cross-lines t
-                evil-respect-visual-line-mode t)
-  (evil-mode)
-
+    (require-package 'evil)
+    (require-package 'evil-collection)
+    (require-package 'undo-tree)
+    (require 'evil)
+    (require 'evil-collection)
+    (require 'undo-tree)
+    (evil-collection-init)
+    (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    (define-key evil-normal-state-map "gf" 'find-file)
+    (define-key evil-normal-state-map "gF" 'find-file-at-point)
+    (setq-default evil-cross-lines t
+                  evil-respect-visual-line-mode t)
+    (evil-mode)
+    (setq evil-undo-system 'undo-tree
+          evil-want-fine-undo t
+          global-undo-tree-mode t)
 #+END_SRC
 
 *** ACTIVE Flycheck
 
-Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't fi have any modes where I don't want Flycheck, so I enabled them globally.
+Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't have any modes where I don't want Flycheck, so I enabled them globally.
 
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'flycheck)
@@ -529,6 +546,13 @@ I only have one function, which is meant to change the status of a parent task t
       (setq post-title (read-string "Title: "))
       (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
       (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
+    (defun org-toggle-emphasis-markers ()
+      "Toggle hiding/showing of org emphasis markers."
+      (interactive)
+      (if org-hide-emphasis-markers
+          (set-variable 'org-hide-emphasis-markers nil)
+        (set-variable 'org-hide-emphasis-markers t))
+      (org-mode-restart))
     (defun org-summary-todo (n-done n-not-done)
       "Switch entry to DONE when all subentries are done, to TODO otherwise."
       (let (org-log-done org-log-states)    ; turn off logging
@@ -546,6 +570,7 @@ I only have one function, which is meant to change the status of a parent task t
              "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
 
           org-directory "~/org"
+          org-hide-emphasis-markers t
           org-highest-priority ?A
           org-lowest-priority ?E)
     (org-load-modules-maybe t)
@@ -559,7 +584,7 @@ I only have one function, which is meant to change the status of a parent task t
     (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
     (add-hook 'org-mode-hook (lambda ()
                                (org-indent-mode)
-                               (setq truncate-lines t)))
+                               (setq truncate-lines nil)))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
@@ -590,7 +615,7 @@ I'm not good about using it, but the intention here is to have Org-Agenda manage
 (global-set-key (kbd "C-o a") 'org-agenda)
 #+END_SRC
 
-*** ACTIVE Org-Gantt
+*** DISABLED Org-Gantt
 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'svg)
