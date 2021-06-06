@@ -4,7 +4,6 @@
 
 * Emacs Config
 
-/real/ *talk*
 Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings. As mentioned in the README, my configuration also comes with a shell script to install most dependencies. I suggest taking care of that first.
 
 *NOTE:* Emacs has [[* Emacs Dependencies][depedencies]]
@@ -44,6 +43,7 @@ For my own sake, I alphabetized the dependencies, I've tabulated their purpose f
 #+BEGIN_SRC shell :padline no
   sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
 #+END_SRC
+
 ** Themes
 *** ACTIVE Doom Themes
 
@@ -56,26 +56,6 @@ For my own sake, I alphabetized the dependencies, I've tabulated their purpose f
   (load-theme 'doom-snazzy t)
 #+END_SRC
 
-*** DISABLED Atom One Dark
-
-Atom One Dark is the theme I started using Emacs with. I've gotten rid of it in favor of Nord, but I always find myself coming back to the colors that I wish Nord would use more.
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'atom-one-dark-theme)
-  (require 'atom-one-dark-theme)
-  (load-theme 'atom-one-dark t)
-#+END_SRC
-
-*** DISABLED VS Code Dark Plus
-
-I don't particularly like much about VS Code, but it sure does have good default themes. Luckily ports exist
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'vscode-dark-plus)
-  (require 'vscode-dark-plus)
-  (load-theme 'vscode-dark-plus t)
-#+END_SRC
-
 ** ACTIVE General Configuration
 
 These are the general purpose functions I've found or made over my time with Emacs. I have found =beginning-of-line-or-indentation= and =whack-whitespace= very useful as keybindings, but I almost never use =switch-to-previous-buffer=. I actually haven't used Apropos much, but after investigating it while writing this, I've discovered it is a very useful tool for discovering! It functions similarly to the =C-h= keybindings, but it's a bit more accessible in my opinion. The other big thing I want to point out is I disabled minor modes showing up in the modeline using the =mode-line-modes= setting. To use the Inconsolata font, you may have to install it first.
@@ -83,7 +63,9 @@ These are the general purpose functions I've found or made over my time with Ema
 *NOTE:* General configuration has [[* General Configuration Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'undo-tree)
   (require 'dired)
+  (require 'undo-tree)
   (defun beginning-of-line-or-indentation ()
     "Move to beginning of line or indentation."
     (interactive)
@@ -108,7 +90,7 @@ These are the general purpose functions I've found or made over my time with Ema
       (re-search-forward regexp nil t)
       (replace-match "" nil nil)))
   (set-cursor-color "#ffff00")
-  (add-to-list 'default-frame-alist '(font . "JetBrains Mono"))
+  (add-to-list 'default-frame-alist '(font . "Hack"))
   (setq apropos-do-all t
         auto-save-default nil
         backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
@@ -135,12 +117,13 @@ These are the general purpose functions I've found or made over my time with Ema
   (setq-default cursor-type 'bar
                 display-line-numbers-width-start t
                 save-place t
+                truncate-lines nil
                 word-wrap t)
   (blink-cursor-mode 1)
   (column-number-mode 1)
   (fset 'yes-or-no-p 'y-or-n-p)
-  (global-display-line-numbers-mode 1)
   (global-eldoc-mode -1)
+  (global-undo-tree-mode)
   (menu-bar-mode -1)
   (when (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
@@ -220,10 +203,8 @@ I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I'
 #+BEGIN_SRC emacs-lisp :padline no
     (require-package 'evil)
     (require-package 'evil-collection)
-    (require-package 'undo-tree)
     (require 'evil)
     (require 'evil-collection)
-    (require 'undo-tree)
     (evil-collection-init)
     (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
     (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
@@ -235,8 +216,7 @@ I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I'
                   evil-respect-visual-line-mode t)
     (evil-mode)
     (setq evil-undo-system 'undo-tree
-          evil-want-fine-undo t
-          global-undo-tree-mode t)
+          evil-want-fine-undo t)
 #+END_SRC
 
 *** ACTIVE Flycheck
@@ -444,86 +424,90 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 *NOTE:* Mu4e has [[* Mu4e Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/ox-rss/")
-(require 'mu4e)
-(require 'smtpmail)
-(require 'org-mu4e)
-(defun search-for-sender (msg)
-  "Search for MSG messages sent by the sender of the message at point."
-  (mu4e-headers-search
-    (concat "from:" (cdar (mu4e-message-field msg :from)))))
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
-(setq message-kill-buffer-on-exit t
-      mu4e-attachment-dir "~/Downloads"
-      mu4e-change-filenames-when-moving t
-      mu4e-compose-context-policy 'always-ask
-      mu4e-compose-dont-reply-to-self t
-      mu4e-compose-in-new-frame t
-      mu4e-compose-format-flowed t
-      mu4e-compose-signature-auto-include nil
-      mu4e-confirm-quit t
-      mu4e-context-policy 'pick-first
-      mu4e-contexts
-      (list
-       (make-mu4e-context
-        :name "general"
-        :enter-func (lambda () (mu4e-message "Entering general context"))
-        :leave-func (lambda () (mu4e-message "Leaving general context"))
-        :match-func (lambda (msg)
-                      (when msg
-                            (mu4e-message-contact-field-matches
-                             msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
-        :vars '((user-mail-address . "andrewwburch@gmail.com")
-                (user-full-name . "Andrew Burch")
-                (mu4e-sent-folder . "/Sent")
-                (mu4e-refile-folder . "/All")
-                (mu4e-drafts-folder . "/Drafts")
-                (mu4e-trash-folder . "/Trash")
-                (mu4e-compose-signature . (concat "Cheers,\n Andrew"))
-                (mu4e-compose-format-flowed . t)
-                (smtpmail-queue-dir . "~/Mail/gmail/queue/cur")
-                (message-send-mail-function . smtpmail-send-it)
-                (smtpmail-smtp-user . "andrewwburch")
-                (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
-                (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
-                (smtpmail-default-smtp-server . "smtp.gmail.com")
-                (smtpmail-smtp-server . "smtp.gmail.com")
-                (smtpmail-smtp-service . 587)
-                (smtpmail-debug-info . t)
-                (smtpmail-debug-verbose . t))))
-      mu4e-headers-auto-update t
-      mu4e-headers-date-format "%H:%M %d-%m-%Y"
-      ;; mu4e-html2text-command "html2text -utf8"
-      ;; mu4e-html2text-command 'my-render-html-message
-      mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
-      mu4e-maildir (expand-file-name "~/Mail")
-      mu4e-sent-messages-behavior 'delete
-      mu4e-update-interval 180
-      mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
-      mu4e-view-prefer-html nil
-      mu4e-view-show-images t
-      mu4e-view-show-addresses 't
-      smtpmail-queue-mail nil)
-(add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
-(add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-(add-hook 'message-mode-hook (lambda ()
-          (use-hard-newlines -1)))
-(add-hook 'mu4e-headers-mode-hook
-          (defun mu4e-change-head()
-            (interactive)
-            (setq mu4e-headers-fields `((:date . 22)
-                                        (:flags . 6)
-                                        (:from . 22)
-                                        (:thread-subject . ,(- (window-body-width) 70))
-                                        (:size . 7)))))
-(add-hook 'mu4e-view-mode-hook
-          (lambda()
-            (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
-            (local-set-key (kbd "<tab>") 'shr-next-link)
-            (local-set-key (kbd "<backtab>") 'shr-previous-link)
-            (setq truncate-lines t)))
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/ox-rss/")
+  (require 'mu4e)
+  (require 'smtpmail)
+  (require 'org-mu4e)
+  (defun search-for-sender (msg)
+    "Search for MSG messages sent by the sender of the message at point."
+    (mu4e-headers-search
+      (concat "from:" (cdar (mu4e-message-field msg :from)))))
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+  (setq message-kill-buffer-on-exit t
+        mu4e-attachment-dir "~/Downloads"
+        mu4e-change-filenames-when-moving t
+        mu4e-compose-context-policy 'always-ask
+        mu4e-compose-dont-reply-to-self t
+        mu4e-compose-in-new-frame t
+        mu4e-compose-format-flowed t
+        mu4e-compose-signature-auto-include nil
+        mu4e-confirm-quit t
+        mu4e-context-policy 'pick-first
+        mu4e-contexts
+        (list
+         (make-mu4e-context
+          :name "general"
+          :enter-func (lambda () (mu4e-message "Entering general context"))
+          :leave-func (lambda () (mu4e-message "Leaving general context"))
+          :match-func (lambda (msg)
+                        (when msg
+                              (mu4e-message-contact-field-matches
+                               msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
+          :vars '((user-mail-address . "andrewwburch@gmail.com")
+                  (user-full-name . "Andrew Burch")
+                  (mu4e-sent-folder . "/Sent")
+                  (mu4e-refile-folder . "/All")
+                  (mu4e-drafts-folder . "/Drafts")
+                  (mu4e-trash-folder . "/Trash")
+                  (mu4e-compose-signature . (concat "Cheers,\n Andrew"))
+                  (mu4e-compose-format-flowed . t)
+                  (smtpmail-queue-dir . "~/Mail/gmail/queue/cur")
+                  (message-send-mail-function . smtpmail-send-it)
+                  (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+                  (smtpmail-debug-info . t)
+                  (smtpmail-default-smtp-server . "smtp.gmail.com")
+                  (smtpmail-local-domain . "gmail.com")
+                  (smtpmail-smtp-user . "andrewwburch")
+                  (smtpmail-smtp-server . "smtp.gmail.com")
+                  (smtpmail-smtp-service . 587)
+                  (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+                  (smtpmail-debug-verbose . t))))
+        mu4e-headers-auto-update t
+        mu4e-headers-date-format "%H:%M %d-%m-%Y"
+        ;; mu4e-html2text-command "html2text -utf8"
+        ;; mu4e-html2text-command 'my-render-html-message
+        mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
+        mu4e-maildir (expand-file-name "~/Mail")
+        mu4e-sent-messages-behavior 'delete
+        mu4e-update-interval 180
+        mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
+        mu4e-view-prefer-html nil
+        mu4e-view-show-images t
+        mu4e-view-show-addresses 't
+        smtpmail-queue-mail nil)
+  (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
+  (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+  (add-hook 'message-mode-hook (lambda ()
+            (use-hard-newlines -1)))
+  (add-hook 'mu4e-headers-mode-hook
+            (defun mu4e-change-head()
+              (interactive)
+              (setq mu4e-headers-fields `((:date . 22)
+                                          (:flags . 6)
+                                          (:from . 22)
+                                          (:thread-subject . ,(- (window-body-width) 70))
+                                          (:size . 7)))))
+  (add-hook 'mu4e-headers-mode-hook
+            (lambda ()
+           (setq display-line-numbers nil)))
+  (add-hook 'mu4e-view-mode-hook
+            (lambda()
+              (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
+              (local-set-key (kbd "<tab>") 'shr-next-link)
+              (local-set-key (kbd "<backtab>") 'shr-previous-link)
+              ))
 #+END_SRC
 
 *** Mu4e Dependencies
@@ -650,7 +634,6 @@ One of the things I've always wished I were better at keeping was a journal. Sin
 (add-to-list 'org-capture-templates `("d" "dream" entry (file "~/org/dreams/Dreams.org")
                                        "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
 (global-set-key (kbd "C-o j") 'org-journal-new-entry)
-(add-hook 'org-journal-mode-hook (lambda () (setq truncate-lines t)))
 #+END_SRC
 
 *** ACTIVE Org-Roam
@@ -839,17 +822,17 @@ I like the idea of keeping code and more creative writing separate, so I wanted 
 I kind of fiddled around with different widths in Olivetti mode to see what felt right for a typical document. I go back and forth on which file types to trigger Olivetti on. I've put in Markdown and org, but those don't feel right a lot of the time. I always go back to plain old .txt files, though.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'olivetti)
-(require 'olivetti)
-(setq olivetti-body-width 77)
-(add-to-list 'auto-mode-alist '("\\.txt\\'" . olivetti-mode))
-(add-hook 'olivetti-mode-hook
-         (lambda()
-           (setq display-line-numbers nil)))
-(add-hook 'olivetti-mode-hook 'set-printing-font)
-(add-hook 'olivetti-mode-hook 'flyspell-mode)
-(add-hook 'olivetti-mode-hook (lambda ()
-  (setq olivetti-body-width 84)))
+  (require-package 'olivetti)
+  (require 'olivetti)
+  (setq olivetti-body-width 77)
+  (add-to-list 'auto-mode-alist '("\\.txt\\'" . olivetti-mode))
+  ;; (add-hook 'olivetti-mode-hook
+  ;;          (lambda()
+  ;;            (setq display-line-numbers nil)))
+  (add-hook 'olivetti-mode-hook 'set-printing-font)
+  (add-hook 'olivetti-mode-hook 'flyspell-mode)
+  (add-hook 'olivetti-mode-hook (lambda ()
+    (setq olivetti-body-width 84)))
 #+END_SRC
 
 *** DISABLED LSP-LaTeX
@@ -870,18 +853,19 @@ Requires installing TeXLab. Releases can be found [[https://github.com/latex-lsp
 For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding. I have the various binaries that Emacs needs access to for programming languages (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(defun toggle-comment-on-line ()
-  "Comment or uncomment current line."
-  (interactive)
-  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
-(add-to-list 'exec-path "~/.local/bin")
-(setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
-(define-key prog-mode-map (kbd "C-c h") 'hs-toggle-hiding)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'hl-line-mode)
-(add-hook 'prog-mode-hook 'hs-minor-mode)
-(add-hook 'prog-mode-hook (lambda ()
-                            (setq indent-tabs-mode nil)))
+  (defun toggle-comment-on-line ()
+    "Comment or uncomment current line."
+    (interactive)
+    (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+  (add-to-list 'exec-path "~/.local/bin")
+  (setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
+  (define-key prog-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  (add-hook 'prog-mode-hook 'hl-line-mode)
+  (add-hook 'prog-mode-hook 'hs-minor-mode)
+  (add-hook 'prog-mode-hook (lambda ()
+                              (setq indent-tabs-mode nil
+                                    display-line-numbers-width-start t)))
 #+END_SRC
 
 *** DISABLED Debug Adapter Protocol
@@ -941,10 +925,6 @@ I am not sure if Magit should be in this section or a more general configuration
 *** ACTIVE MHTML
 
 MHTML is par for every other package I've used for HTML templates. I don't have any real configuration for it, just a bunch of snippets.
-
-#+BEGIN_SRC 
-(add-hook 'mhtml-mode-hook 'toggle-truncate-lines)
-#+END_SRC
 
 *** ACTIVE Python
 

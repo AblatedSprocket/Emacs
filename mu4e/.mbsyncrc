@@ -2,7 +2,7 @@ IMAPAccount gmail
 Host imap.gmail.com
 Port 993
 User andrewwburch
-PassCmd "gpg2 --decrypt ~/.authinfo.gpg | grep Emacs | cut -d ' ' -f6"
+PassCmd "gpg2 --decrypt ~/.authinfo.gpg | grep smtp.gmail.com | cut -d ' ' -f6"
 AuthMechs LOGIN
 SSLType IMAPS
 SSLVersions TLSv1.2
