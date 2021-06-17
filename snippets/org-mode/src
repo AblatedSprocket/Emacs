@@ -2,6 +2,6 @@
 # name: src
 # key: src
 # --
-#+BEGIN_SRC $1
+#+BEGIN_SRC ${1:$$(yas-completing-read "Choose:" '("emacs-lisp" "python" "rust" "shell"))}
 $0
 #+END_SRC

@@ -64,7 +64,9 @@ These are the general purpose functions I've found or made over my time with Ema
 
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'undo-tree)
+  (require-package 'textmate)
   (require 'dired)
+  (require 'textmate)
   (require 'undo-tree)
   (defun beginning-of-line-or-indentation ()
     "Move to beginning of line or indentation."
@@ -72,9 +74,46 @@ These are the general purpose functions I've found or made over my time with Ema
     (if (bolp)
         (back-to-indentation)
       (beginning-of-line)))
+  (defun autopair-insert (arg)
+    (interactive "P")
+    (let (pair)
+      (cond
+       ((assq last-command-event skeleton-pair-alist)
+        (autopair-open arg))
+       (t
+        (autopair-close arg)))))
+  (defun autopair-open (arg)
+    (interactive "P")
+    (let ((pair (assq last-command-event
+                      skeleton-pair-alist)))
+      (cond
+       ((and (not mark-active)
+             (eq (car pair) (car (last pair)))
+             (eq (car pair) (char-after)))
+        (autopair-close arg))
+       (t
+        (skeleton-pair-insert-maybe arg)))))
+  (defun autopair-close (arg)
+    (interactive "P")
+    (cond
+     (mark-active
+      (let (pair open)
+        (dolist (pair skeleton-pair-alist)
+          (when (eq last-command-event (car (last pair)))
+            (setq open (car pair))))
+        (setq last-command-event open)
+        (skeleton-pair-insert-maybe arg)))
+     ((looking-at
+       (concat "[ \t\n]*"
+               (regexp-quote (string last-command-event))))
+      (replace-match (string last-command-event))
+      (indent-according-to-mode))
+     (t
+      (self-insert-command (prefix-numeric-value arg))
+      (indent-according-to-mode))))
   (defun switch-to-previous-buffer()
     "Switch to previously open buffer.
-  Repeated invocations toggle between the two most recently open buffers."
+              Repeated invocations toggle between the two most recently open buffers."
     (interactive)
     (switch-to-buffer (other-buffer (current-buffer) 1)))
   (defun custom-toggle-comment ()
@@ -110,6 +149,11 @@ These are the general purpose functions I've found or made over my time with Ema
         ring-bell-function 'ignore
         save-interprogram-paste-before-kill t
         save-place-file (concat user-emacs-directory "places")
+        skeleton-pair t
+        skeleton-pair-alist '((?\( _ ?\))
+                              (?\[  _ ?\])
+                              (?{  _ ?})
+                              (?\" _ ?\"))
         sentence-end "[\\.\\?\\!] +"
         TeX-PDF-mode nil
         x-select-enable-clipboard t
@@ -130,6 +174,13 @@ These are the general purpose functions I've found or made over my time with Ema
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
   (show-paren-mode 1)
+  (global-set-key "(" 'autopair-insert)
+  (global-set-key ")" 'autopair-insert)
+  (global-set-key "[" 'autopair-insert)
+  (global-set-key "]" 'autopair-insert)
+  (global-set-key "{" 'autopair-insert)
+  (global-set-key "}" 'autopair-insert)
+  (global-set-key "\"" 'autopair-insert)
   (global-set-key (kbd "M-;") 'custom-toggle-comment)
   (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
   (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
@@ -185,38 +236,28 @@ I use Company as my go-to completion engine. I have it enabled globally because 
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
 
-*** ACTIVE Electric-Pair
-
-I miss having auto-completions for certain pairs. Every mode is a little different.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(defun electric-pair ()
-  "Insert pair without spaces."
-  (interactive)
-  (let (parens-require-spaces) (insert-pair)))
-#+END_SRC
-
 *** ACTIVE Evil
 
 I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I've made for all of the other modes I've added. ~global-undo-tree-mode~ isn't registering quite right, I need to re-enable it when Emacs loads.
 
 #+BEGIN_SRC emacs-lisp :padline no
-    (require-package 'evil)
-    (require-package 'evil-collection)
-    (require 'evil)
-    (require 'evil-collection)
-    (evil-collection-init)
-    (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-    (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-    (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-    (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-    (define-key evil-normal-state-map "gf" 'find-file)
-    (define-key evil-normal-state-map "gF" 'find-file-at-point)
-    (setq-default evil-cross-lines t
-                  evil-respect-visual-line-mode t)
-    (evil-mode)
-    (setq evil-undo-system 'undo-tree
-          evil-want-fine-undo t)
+  (require-package 'evil)
+  (require-package 'evil-collection)
+  (setq evil-want-keybindig nil)
+  (require 'evil)
+  (when (require 'evil-collection nil t)
+  (evil-collection-init))
+  (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+  (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+  (define-key evil-normal-state-map "gf" 'find-file)
+  (define-key evil-normal-state-map "gF" 'find-file-at-point)
+  (setq-default evil-cross-lines t
+                evil-respect-visual-line-mode t)
+  (setq evil-undo-system 'undo-tree
+        evil-want-fine-undo t)
+  (evil-mode)
 #+END_SRC
 
 *** ACTIVE Flycheck
@@ -285,11 +326,15 @@ I recently discovered that Flyspell has a Prog Mode version that only looks for 
 Ido provides great minibuffer completion.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require 'ido)
-(setq ido-use-filename-at-point nil
-      ido-auto-merge-work-directories-length -1
-      ido-use-virtual-buffers t)
-(ido-mode t)
+  (require-package 'ido-completing-read+)
+  (require 'ido)
+  (setq ido-use-filename-at-point nil
+        ido-auto-merge-work-directories-length -1
+        ido-use-virtual-buffers t)
+  (ido-mode t)
+  (ido-everywhere t)
+  (require 'ido-completing-read+)
+  (ido-ubiquitous-mode t)
 #+END_SRC
 
 *** ACTIVE Multiple Cursors
@@ -1043,7 +1088,7 @@ OB-Restclient has been a joy to use. If it were up to me, I would never use Post
 
 *** ACTIVE Rust
 
-Development for Rust is pretty low-level at this point. If you're not interested in Rust development, you can change the state of the below subheadings to =DISABLED= with no side-effects.
+Development for Rust is pretty low-level at this point. If Rust development is not desired, the state of the above heading can be changed to =DISABLED= with no side-effects.
 
 *NOTE:* Rust has [[* Rust Dependencies][dependencies]].
 
@@ -1061,11 +1106,6 @@ Development for Rust is pretty low-level at this point. If you're not interested
       lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
       lsp-rust-server 'rust-analyzer)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-(define-key rust-mode-map "\"" 'electric-pair)
-(define-key rust-mode-map "(" 'electric-pair)
-(define-key rust-mode-map "[" 'electric-pair)
-(define-key rust-mode-map "{" 'electric-pair)
-(define-key rust-mode-map "<" 'electric-pair)
 (define-key rust-mode-map (kbd "C-c b") 'cargo-build)
 (define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
 (define-key rust-mode-map (kbd "C-c r")
@@ -1085,7 +1125,8 @@ Development for Rust is pretty low-level at this point. If you're not interested
 #+END_SRC
 
 **** Rust Dependencies
-If you are interested in Rust, the first thing you should do is install [[https://www.rust-lang.org/tools/install][Rust]]. Once that's done, install Rust-Analyzer by cloning the repository:
+
+To use Rust, it must first be [[https://www.rust-lang.org/tools/install][installed]]. Once that's done, install Rust-Analyzer by cloning the repository:
 
 #+BEGIN_SRC shell :tangle no
   git clone https://github.com/rust-analyzer/rust-analyzer.git
@@ -1093,9 +1134,9 @@ If you are interested in Rust, the first thing you should do is install [[https:
   cargo xtask install --server
 #+END_SRC
 
-Now you should see the =rust-analyzer= binary under =~/.cargo/bin/=. Make sure Emacs knows about the path by adding the =add-to-list= and =setenv= configuration items in your [[* Rust][Rust]] config.
+The =rust-analyzer= binary should now be visible under =~/.cargo/bin/=. Ensure Emacs knows about the path by adding the proper paths to the =add-to-list= and =setenv= configuration items in [[* Rust][Rust]] config.
 
-To enable various IDE features, you will want to install =rust-src=:
+To enable various IDE features, =rust-src= is required:
 
 #+BEGIN_SRC shell :tangle no
   rustup component add rust-src
@@ -1103,7 +1144,7 @@ To enable various IDE features, you will want to install =rust-src=:
 
 **** ACTIVE Rust Flycheck
 
-Rust Flycheck provides syntax highlighting. I need to make sure this is required.
+Rust Flycheck provides syntax highlighting.
 
 #+BEGIN_SRC emacs-lisp :padline no
 (require-package 'flycheck-rust)
