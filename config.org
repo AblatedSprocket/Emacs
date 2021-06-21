@@ -174,34 +174,15 @@ These are the general purpose functions I've found or made over my time with Ema
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
   (show-paren-mode 1)
-  (global-set-key "(" 'autopair-insert)
-  (global-set-key ")" 'autopair-insert)
-  (global-set-key "[" 'autopair-insert)
-  (global-set-key "]" 'autopair-insert)
-  (global-set-key "{" 'autopair-insert)
-  (global-set-key "}" 'autopair-insert)
-  (global-set-key "\"" 'autopair-insert)
   (global-set-key (kbd "M-;") 'custom-toggle-comment)
-  (global-set-key (kbd "C-a") 'beginning-of-line-or-indentation)
-  (global-set-key (kbd "C-c b") 'switch-to-previous-buffer)
-  (global-set-key (kbd "C-c c") 'list-colors-display)
   (global-set-key (kbd "<C-tab>") 'toggle-truncate-lines)
-  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
-  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
   (global-set-key (kbd "C-x k") 'kill-buffer-and-window)
   (global-set-key (kbd "C-z") nil)
   (global-set-key (kbd "C-c C-w") 'whack-whitespace)
   (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (global-set-key (kbd "C-M-s") 'isearch-forward)
-  (global-set-key (kbd "C-M-r") 'isearch-backward)
   (global-set-key (kbd "<M-return>") 'open-line)
-  (global-set-key (kbd "M-b") 'backward-to-word)
-  (global-set-key (kbd "M-B") 'backward-word)
-  (global-set-key (kbd "M-f") 'forward-word)
-  (global-set-key (kbd "M-F") 'forward-to-word)
-  ;; (global-set-key (kbd "M-m") 'toggle-frame-maximized) ;; Not necessary in Pop!_os
-  (global-set-key (kbd "M-p") 'backward-paragraph)
-  (global-set-key (kbd "M-n") 'forward-paragraph)
+
+  (define-key minibuffer-inactive-mode-map (kbd ")") nil)
 #+END_SRC
 
 **** General Configuration Dependencies
@@ -243,21 +224,34 @@ I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I'
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'evil)
   (require-package 'evil-collection)
+  (require-package 'evil-leader)
   (setq evil-want-keybindig nil)
   (require 'evil)
+  (require 'evil-leader)
   (when (require 'evil-collection nil t)
   (evil-collection-init))
   (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
   (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-  (define-key evil-normal-state-map "gf" 'find-file)
+  (define-key evil-normal-state-map "gf" 'helm-find-files)
   (define-key evil-normal-state-map "gF" 'find-file-at-point)
   (setq-default evil-cross-lines t
                 evil-respect-visual-line-mode t)
   (setq evil-undo-system 'undo-tree
-        evil-want-fine-undo t)
+        evil-want-fine-undo t
+        evil-leader/in-all-states t)
+  (evil-leader/set-key
+       "z" 'zap-to-char
+       "cd" 'downcase-dwim
+       "cc" 'capitalize-dwim
+       "wl" 'windmove-right
+       "wh" 'windmove-left
+       "wj" 'windmove-down
+       "wk" 'windmove-up)
+  (global-evil-leader-mode)
   (evil-mode)
+  (evil-leader/set-leader "<SPC>")
 #+END_SRC
 
 *** ACTIVE Flycheck
@@ -313,12 +307,19 @@ I recently discovered that Flyspell has a Prog Mode version that only looks for 
             (setq arg 0))
         (forward-word)))))
 (require 'flyspell)
-(define-key flyspell-mode-map (kbd "C-;") nil)
-(define-key flyspell-mode-map (kbd "C-<") 'flyspell-goto-previous-error)
-(define-key flyspell-mode-map (kbd "C-,") 'flyspell-auto-correct-previous-word)
-(global-set-key (kbd "C->") 'forward-paragraph)
 (add-hook 'org-mode-hook 'flyspell-mode)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+#+END_SRC
+
+*** ACTIVE Helm
+
+#+BEGIN_SRC emacs-lisp :padline no
+  (require-package 'helm)
+  (require-package 'helm-flycheck)
+  (require-package 'helm-flyspell)
+  (require 'helm)
+  (require 'helm-flyspell)
+  (require 'helm-flycheck)
 #+END_SRC
 
 *** ACTIVE Ido
@@ -328,8 +329,9 @@ Ido provides great minibuffer completion.
 #+BEGIN_SRC emacs-lisp :padline no
   (require-package 'ido-completing-read+)
   (require 'ido)
-  (setq ido-use-filename-at-point nil
+  (setq ido-enable-flex-matching t
         ido-auto-merge-work-directories-length -1
+        ido-use-filename-at-point nil
         ido-use-virtual-buffers t)
   (ido-mode t)
   (ido-everywhere t)
@@ -563,57 +565,60 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 
 ** ACTIVE Org
 
-For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-return=. I also had a bit of time one winter visiting in-laws, so I decided to make a bunch of icons to customize the look of my Org-Agenda. For tasks and habits, I sync my phone with my files on my computer. The app I use is called Orgzly, which stores completion events in a LOGBOOK= drawer. Luckily org-mode has an =org-log-into-drawer= setting to create the same functionality so my app and desktop work together seamlessly.
-
-My keybindings for org are mostly unnecessary remappings to better integrate with my workflow.
-
-I only have one function, which is meant to change the status of a parent task to =DONE= when all child tasks are set to =DONE=. I forgot about it and haven't really used it. Need to make sure it works.
+For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-return=. I also had a bit of time one winter visiting in-laws, so I decided to make a bunch of icons to customize the look of my Org-Agenda. For tasks and habits, I sync my phone with my files on my computer. The app I use is called Orgzly, which stores completion events in a LOGBOOK= drawer. Luckily org-mode has an =org-log-into-drawer= setting to create the same functionality so my app and desktop work together seamlessly. Another thing to note is that I've set =org-export-allow-bind-keywords= to =t= so I can use =#+BIND= properties in org files, mostly for custom hooks that I only want to run for a specific file.
 
 #+BEGIN_SRC emacs-lisp :padline no
-    (require 'org)
-    (defun generate-post ()
-      (setq post-title (read-string "Title: "))
-      (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
-      (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
-    (defun org-toggle-emphasis-markers ()
-      "Toggle hiding/showing of org emphasis markers."
-      (interactive)
-      (if org-hide-emphasis-markers
-          (set-variable 'org-hide-emphasis-markers nil)
-        (set-variable 'org-hide-emphasis-markers t))
-      (org-mode-restart))
-    (defun org-summary-todo (n-done n-not-done)
-      "Switch entry to DONE when all subentries are done, to TODO otherwise."
-      (let (org-log-done org-log-states)    ; turn off logging
-        (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-    (define-prefix-command 'ring-map)
-    (global-set-key (kbd "C-o") 'ring-map)
-    (setq org-capture-templates
-          '(("j" "journal" plain (file+datetree "~/org/journal.org")
-             "")
-            ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-             "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
-            ("p" "post" plain (file generate-post)
-             "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)")
-            ("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-             "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
+  (require 'org)
+  (defun generate-post ()
+    (setq post-title (read-string "Title: "))
+    (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
+    (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
+  (defun org-toggle-emphasis-markers ()
+    "Toggle hiding/showing of org emphasis markers."
+    (interactive)
+    (if org-hide-emphasis-markers
+        (set-variable 'org-hide-emphasis-markers nil)
+      (set-variable 'org-hide-emphasis-markers t))
+    (org-mode-restart))
+  (defun org-summary-todo (n-done n-not-done)
+    "Switch entry to DONE when all subentries are done, to TODO otherwise."
+    (let (org-log-done org-log-states)    ; turn off logging
+      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+  (define-prefix-command 'ring-map)
+  (global-set-key (kbd "C-o") 'ring-map)
+  (setq org-capture-templates
+        '(("j" "journal" plain (file+datetree "~/org/journal.org")
+           "")
+          ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:Item: %a\n:END:\n")
+          ("p" "post" plain (file generate-post)
+           "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)")
+          ("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
 
-          org-directory "~/org"
-          org-hide-emphasis-markers t
-          org-highest-priority ?A
-          org-lowest-priority ?E)
-    (org-load-modules-maybe t)
-    (define-key org-mode-map (kbd "C-c l") 'org-insert-link)
-    (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
-    (define-key org-mode-map (kbd "C-c C-w") nil)
-    (define-key org-mode-map (kbd "<M-return>") nil)
-    (define-key org-mode-map (kbd "<C-return>") 'org-insert-heading)
-    (global-set-key (kbd "C-o c") 'org-capture)
-    (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
-    (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-    (add-hook 'org-mode-hook (lambda ()
-                               (org-indent-mode)
-                               (setq truncate-lines nil)))
+        org-directory "~/org"
+        org-export-allow-bind-keywords t
+        org-hide-emphasis-markers t
+        org-highest-priority ?A
+        org-lowest-priority ?E)
+  (org-load-modules-maybe t)
+  (define-key org-mode-map (kbd "C-c l") 'org-insert-link)
+  (define-key org-mode-map (kbd "C-c o") 'org-open-at-point)
+  (define-key org-mode-map (kbd "C-c C-w") nil)
+  (define-key org-mode-map (kbd "<M-return>") nil)
+  (define-key org-mode-map (kbd "(") 'autopair-insert)
+  (define-key org-mode-map (kbd ")") 'autopair-insert)
+  (define-key org-mode-map (kbd "[") 'autopair-insert)
+  (define-key org-mode-map (kbd "]") 'autopair-insert)
+  (define-key org-mode-map (kbd "{") 'autopair-insert)
+  (define-key org-mode-map (kbd "}") 'autopair-insert)
+  (define-key org-mode-map (kbd "\"") 'autopair-insert)
+  (global-set-key (kbd "C-o c") 'org-capture)
+  (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+  (add-hook 'org-mode-hook (lambda ()
+                             (org-indent-mode)
+                             (setq truncate-lines nil)))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
