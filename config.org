@@ -199,8 +199,8 @@ To use JetBrains Mono, extract the archive, copy ~.ttf~ files to ~/usr/local/sha
 I'm using All the Icons to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'all-the-icons)
-(require 'all-the-icons)
+  (require-package 'all-the-icons)
+  (require 'all-the-icons)
 #+END_SRC
 
 *** ACTIVE Company
@@ -208,13 +208,13 @@ I'm using All the Icons to get unicode support for most images. I still see a fe
 I use Company as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. I had had trouble with Company taking a long time to list completions, it turned out =company-idle-delay= was the setting I needed for this. It took me too long to figure that out. Set it if you want to change how long you have to wait for Company completions to appear.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'company)
-(require 'company)
-(setq company-idle-delay 0
-      company-minimum-prefix-length 2
-      company-selection-wrap-around nil
-      company-tooltip-align-annotations t)
-(add-hook 'after-init-hook 'global-company-mode)
+  (require-package 'company)
+  (require 'company)
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 2
+        company-selection-wrap-around nil
+        company-tooltip-align-annotations t)
+  (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
 
 *** ACTIVE Evil
@@ -229,26 +229,27 @@ I've moved to Evil mode! Maybe someday I'll transition all of the keybindings I'
   (require 'evil)
   (require 'evil-leader)
   (when (require 'evil-collection nil t)
-  (evil-collection-init))
+    (evil-collection-init))
   (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
   (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
   (define-key evil-normal-state-map "gf" 'helm-find-files)
   (define-key evil-normal-state-map "gF" 'find-file-at-point)
+  (define-key evil-normal-state-map "z=" 'helm-flyspell-correct)
   (setq-default evil-cross-lines t
                 evil-respect-visual-line-mode t)
   (setq evil-undo-system 'undo-tree
         evil-want-fine-undo t
         evil-leader/in-all-states t)
   (evil-leader/set-key
-       "z" 'zap-to-char
-       "cd" 'downcase-dwim
-       "cc" 'capitalize-dwim
-       "wl" 'windmove-right
-       "wh" 'windmove-left
-       "wj" 'windmove-down
-       "wk" 'windmove-up)
+    "z" 'zap-to-char
+    "cd" 'downcase-dwim
+    "cc" 'capitalize-dwim
+    "wl" 'windmove-right
+    "wh" 'windmove-left
+    "wj" 'windmove-down
+    "wk" 'windmove-up)
   (global-evil-leader-mode)
   (evil-mode)
   (evil-leader/set-leader "<SPC>")
@@ -269,46 +270,46 @@ Almost every buffer uses Flycheck either for code syntax or spelling via Flyspel
 I recently discovered that Flyspell has a Prog Mode version that only looks for spelling errors in strings, and I'm liking it so far.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(defun flyspell-goto-previous-error (arg)
-  "Go to arg previous spelling error."
-  (interactive "p")
-  (while (not (= 0 arg))
-    (let ((pos (point))
-          (min (point-min)))
-      (if (and (eq (current-buffer) flyspell-old-buffer-error)
-               (eq pos flyspell-old-pos-error))
-          (progn
-            (if (= flyspell-old-pos-error min)
-                ;; goto beginning of buffer
-                (progn
-                  (message "Restarting from end of buffer")
-                  (goto-char (point-max)))
-              (backward-word 1))
-            (setq pos (point))))
-      ;; seek the next error
-      (while (and (> pos min)
-                  (let ((ovs (overlays-at pos))
-                        (r '()))
-                    (while (and (not r) (consp ovs))
-                      (if (flyspell-overlay-p (car ovs))
-                          (setq r t)
-                        (setq ovs (cdr ovs))))
-                    (not r)))
-        (backward-word 1)
-        (setq pos (point)))
-      ;; save the current location for next invocation
-      (setq arg (1- arg))
-      (setq flyspell-old-pos-error pos)
-      (setq flyspell-old-buffer-error (current-buffer))
-      (goto-char pos)
-      (if (= pos min)
-          (progn
-            (message "No more miss-spelled word!")
-            (setq arg 0))
-        (forward-word)))))
-(require 'flyspell)
-(add-hook 'org-mode-hook 'flyspell-mode)
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  (defun flyspell-goto-previous-error (arg)
+    "Go to arg previous spelling error."
+    (interactive "p")
+    (while (not (= 0 arg))
+      (let ((pos (point))
+            (min (point-min)))
+        (if (and (eq (current-buffer) flyspell-old-buffer-error)
+                 (eq pos flyspell-old-pos-error))
+            (progn
+              (if (= flyspell-old-pos-error min)
+                  ;; goto beginning of buffer
+                  (progn
+                    (message "Restarting from end of buffer")
+                    (goto-char (point-max)))
+                (backward-word 1))
+              (setq pos (point))))
+        ;; seek the next error
+        (while (and (> pos min)
+                    (let ((ovs (overlays-at pos))
+                          (r '()))
+                      (while (and (not r) (consp ovs))
+                        (if (flyspell-overlay-p (car ovs))
+                            (setq r t)
+                          (setq ovs (cdr ovs))))
+                      (not r)))
+          (backward-word 1)
+          (setq pos (point)))
+        ;; save the current location for next invocation
+        (setq arg (1- arg))
+        (setq flyspell-old-pos-error pos)
+        (setq flyspell-old-buffer-error (current-buffer))
+        (goto-char pos)
+        (if (= pos min)
+            (progn
+              (message "No more miss-spelled word!")
+              (setq arg 0))
+          (forward-word)))))
+  (require 'flyspell)
+  (add-hook 'org-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
 *** ACTIVE Helm
@@ -344,16 +345,16 @@ Ido provides great minibuffer completion.
 Multiple cursors was one thing I missed from Sublime Text, so Multiple-Cursors was a happy discovery.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'multiple-cursors)
-(require 'multiple-cursors)
-(global-set-key (kbd "C-c m") 'mc/edit-lines)
+  (require-package 'multiple-cursors)
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-c m") 'mc/edit-lines)
 #+End_SRC
 
 *** ACTIVE Recentf
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require 'recentf)
-(recentf-mode 1)
+  (require 'recentf)
+  (recentf-mode 1)
 #+END_SRC
 
 *** ACTIVE Ripgrep
@@ -363,7 +364,7 @@ I use Ripgrep for searching through files for text when a language-server can't 
 *NOTE:* Ripgrep has [[Ripgrep Dependencies][dependencies]]
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'rg)
+  (require-package 'rg)
 #+END_SRC
 
 **** Ripgrep Dependencies
@@ -377,10 +378,10 @@ I use Ripgrep for searching through files for text when a language-server can't 
 I always forget what Smex does, it's a valuable addition to Ido that gives precedence to most frequently used completions.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'smex)
-(smex-initialize)
-(setq smex-save-file (concat user-emacs-directory ".smex-items"))
-(global-set-key (kbd "M-x") 'smex)
+  (require-package 'smex)
+  (smex-initialize)
+  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  (global-set-key (kbd "M-x") 'smex)
 #+END_SRC
 
 *** ACTIVE Treemacs
@@ -388,13 +389,13 @@ I always forget what Smex does, it's a valuable addition to Ido that gives prece
 I use Treemacs mostly to get a visual on project structure. Its integration with LSP mode is also nice for viewing project symbol information.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'treemacs)
-(require 'treemacs)
-(global-set-key (kbd "C-x D") 'treemacs)
-(global-set-key (kbd "C-x p") 'treemacs-display-current-project-exclusively)
-(define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
-(define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
-(define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
+  (require-package 'treemacs)
+  (require 'treemacs)
+  (global-set-key (kbd "C-x D") 'treemacs)
+  (global-set-key (kbd "C-x p") 'treemacs-display-current-project-exclusively)
+  (define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
+  (define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
+  (define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
 #+END_SRC
 
 *** ACTIVE Vterm
@@ -404,7 +405,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 *NOTE:* Vterm has [[* Vterm Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'vterm)
+  (require-package 'vterm)
 #+END_SRC
 
 **** Vterm Dependencies
@@ -419,9 +420,9 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 I am slowly using YASnippet more, I'm considering adding an integration with Company for snippet completion, but part of me thinks that at that point I have a bigger problem.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'yasnippet)
-(yas-global-mode 1)
-(global-set-key (kbd "C-c x") 'yas-expand)
+  (require-package 'yasnippet)
+  (yas-global-mode 1)
+  (global-set-key (kbd "C-c x") 'yas-expand)
 #+END_SRC
 
 ** ACTIVE Mu4e
@@ -479,7 +480,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
   (defun search-for-sender (msg)
     "Search for MSG messages sent by the sender of the message at point."
     (mu4e-headers-search
-      (concat "from:" (cdar (mu4e-message-field msg :from)))))
+     (concat "from:" (cdar (mu4e-message-field msg :from)))))
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
   (setq message-kill-buffer-on-exit t
@@ -500,8 +501,8 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
           :leave-func (lambda () (mu4e-message "Leaving general context"))
           :match-func (lambda (msg)
                         (when msg
-                              (mu4e-message-contact-field-matches
-                               msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
+                          (mu4e-message-contact-field-matches
+                           msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
           :vars '((user-mail-address . "andrewwburch@gmail.com")
                   (user-full-name . "Andrew Burch")
                   (mu4e-sent-folder . "/Sent")
@@ -537,7 +538,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
   (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
   (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
   (add-hook 'message-mode-hook (lambda ()
-            (use-hard-newlines -1)))
+                                 (use-hard-newlines -1)))
   (add-hook 'mu4e-headers-mode-hook
             (defun mu4e-change-head()
               (interactive)
@@ -548,7 +549,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
                                           (:size . 7)))))
   (add-hook 'mu4e-headers-mode-hook
             (lambda ()
-           (setq display-line-numbers nil)))
+              (setq display-line-numbers nil)))
   (add-hook 'mu4e-view-mode-hook
             (lambda()
               (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
@@ -563,7 +564,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
   sudo apt install mu4e isync html2text gnupg2
 #+END_SRC 
 
-** ACTIVE Org
+*** ACTIVE Org
 
 For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-return=. I also had a bit of time one winter visiting in-laws, so I decided to make a bunch of icons to customize the look of my Org-Agenda. For tasks and habits, I sync my phone with my files on my computer. The app I use is called Orgzly, which stores completion events in a LOGBOOK= drawer. Luckily org-mode has an =org-log-into-drawer= setting to create the same functionality so my app and desktop work together seamlessly. Another thing to note is that I've set =org-export-allow-bind-keywords= to =t= so I can use =#+BIND= properties in org files, mostly for custom hooks that I only want to run for a specific file.
 
@@ -573,6 +574,9 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
     (setq post-title (read-string "Title: "))
     (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
     (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
+  (defun org-export-latex-remove-labels (s backend info)
+    (when (org-export-derived-backend-p org-export-current-backend 'latex)
+    (replace-regexp-in-string "\\\\label{sec:org[a-z0-9]+}\n" "" s)))
   (defun org-toggle-emphasis-markers ()
     "Toggle hiding/showing of org emphasis markers."
     (interactive)
@@ -597,7 +601,6 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
 
         org-directory "~/org"
-        org-export-allow-bind-keywords t
         org-hide-emphasis-markers t
         org-highest-priority ?A
         org-lowest-priority ?E)
@@ -619,6 +622,8 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
   (add-hook 'org-mode-hook (lambda ()
                              (org-indent-mode)
                              (setq truncate-lines nil)))
+
+  (setq org-export-filter-final-output-functions '(org-export-latex-remove-labels))
 #+END_SRC
 
 *** ACTIVE Org-Agenda
@@ -626,35 +631,35 @@ For org, I wanted to use =C-o= as a leader key, so I remapped =open-line= to =M-
 I'm not good about using it, but the intention here is to have Org-Agenda manage the tasks I set for myself every day. It works in conjunction with the Orgzly app for mobile. Orgzly logs task completions in a =LOGBOOK= drawer, so to make org-mode compatible, I added the =org-log-into-drawer= setting.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require 'org)
-(require 'org-agenda)
-(setq org-agenda-breadcrumbs-separator " ❱ "
-      org-agenda-category-icon-alist '(("Appointment" "~/.config/emacs/icons/bell.svg" nil nil :ascent center)
-                                       ("Cleaning" "~/.config/emacs/icons/house.svg" nil nil :ascent center)
-                                       ("Contractor" "~/.config/emacs/icons/tools.svg" nil nil :ascent center)
-                                       ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
-                                       ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
-                                       ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
-                                       ("Learning" "~/.config/emacs/icons/flask.svg" nil nil :ascent center)
-                                       ("Life" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
-                                       ("Maintenance" "~/.config/emacs/icons/wrench.svg" nil nil :ascent center)
-                                       ("Organizing" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
-                                       ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
-                                       ("Todo" "~/.config/emacs/icons/gears.svg" nil nil :ascent center))
-      org-agenda-files '("~/org/tasks/Todo.org")
-      org-log-into-drawer "LOGBOOK")
-(add-to-list 'org-agenda-custom-commands
+  (require 'org)
+  (require 'org-agenda)
+  (setq org-agenda-breadcrumbs-separator " ❱ "
+        org-agenda-category-icon-alist '(("Appointment" "~/.config/emacs/icons/bell.svg" nil nil :ascent center)
+                                         ("Cleaning" "~/.config/emacs/icons/house.svg" nil nil :ascent center)
+                                         ("Contractor" "~/.config/emacs/icons/tools.svg" nil nil :ascent center)
+                                         ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
+                                         ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
+                                         ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
+                                         ("Learning" "~/.config/emacs/icons/flask.svg" nil nil :ascent center)
+                                         ("Life" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
+                                         ("Maintenance" "~/.config/emacs/icons/wrench.svg" nil nil :ascent center)
+                                         ("Organizing" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
+                                         ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
+                                         ("Todo" "~/.config/emacs/icons/gears.svg" nil nil :ascent center))
+        org-agenda-files '("~/org/tasks/Todo.org")
+        org-log-into-drawer "LOGBOOK")
+  (add-to-list 'org-agenda-custom-commands
                '("x" "Testing tags for negating DONE" tags "-TODO=\"DONE\"" nil nil ))
-(define-key org-agenda-mode-map (kbd "M-m") nil)
-(global-set-key (kbd "C-o a") 'org-agenda)
+  (define-key org-agenda-mode-map (kbd "M-m") nil)
+  (global-set-key (kbd "C-o a") 'org-agenda)
 #+END_SRC
 
 *** DISABLED Org-Gantt
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'svg)
-(require-package 'ts)
-(require 'org-gantt-mode)
+  (require-package 'svg)
+  (require-package 'ts)
+  (require 'org-gantt-mode)
 #+END_SRC
 
 *** ACTIVE Org Habit
@@ -662,8 +667,8 @@ I'm not good about using it, but the intention here is to have Org-Agenda manage
 Org habit is useful for recurring todos. The main component to habits is that they be scheduled ideally using the =org-schedule= command (=C-c C-s=), and within that schedule date, before the closing angle bracket, set a reminder interval and an optional due date interval separated by a slash: =.+2d= or =.+2d/4d=.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require 'org-habit)
-(setq org-modules '(org-habit))
+  (require 'org-habit)
+  (setq org-modules '(org-habit))
 #+END_SRC
 
 *** ACTIVE Org Journal
@@ -671,20 +676,20 @@ Org habit is useful for recurring todos. The main component to habits is that th
 One of the things I've always wished I were better at keeping was a journal. Since I use Emacs all of the time, my hope is that making a journal more accessible will help me be more consistent.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'org-journal)
-(require 'org-agenda)
-(require 'org-journal)
-(setq org-journal-date-format "%A, %B %d %Y"
-      org-journal-dir "~/org/journal/"
-      org-journal-enable-agenda-integration t
-      org-journal-file-format "%Y.org"
-      org-journal-file-type "yearly"
-      org-journal-skip-carryover-drawers t)
-(add-to-list 'org-agenda-files org-journal-dir)
-(add-to-list 'org-capture-templates `("d" "dream" entry (file "~/org/dreams/Dreams.org")
-                                       "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
-(global-set-key (kbd "C-o j") 'org-journal-new-entry)
-#+END_SRC
+  (require-package 'org-journal)
+  (require 'org-agenda)
+  (require 'org-journal)
+  (setq org-journal-date-format "%A, %B %d %Y"
+        org-journal-dir "~/org/journal/"
+        org-journal-enable-agenda-integration t
+        org-journal-file-format "%Y.org"
+        org-journal-file-type "yearly"
+        org-journal-skip-carryover-drawers t)
+  (add-to-list 'org-agenda-files org-journal-dir)
+  (add-to-list 'org-capture-templates `("d" "dream" entry (file "~/org/dreams/Dreams.org")
+                                        "* %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%?"))
+  (global-set-key (kbd "C-o j") 'org-journal-new-entry)
+  #+END_SRC
 
 *** ACTIVE Org-Roam
 
@@ -693,40 +698,40 @@ Org Roam is great for managing information about things I'm learning about.
 *NOTE:* Org-Roam has [[* Org-Roam Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'org-roam)
-(require 'org)
-(setq org-roam-capture--file-name-default "%<%Y%m%d>"
-      org-roam-completion-system 'ido
-      org-roam-capture-templates
-      '(("d" "default" plain (function org-roam--capture-get-point)
-         "%?"
-         :file-name "%<%Y%m%d>-${slug}"
-         :head "#+title: ${title}\n"
-         :unnarrowed t))
-      org-roam-graph-edge-extra-config '(
-      ("color" . "green")
-      ("fillcolor" . "green"))
-      org-roam-graph-extra-config '(
-      ("bgcolor" . "lightgray"))
-      org-roam-graph-node-extra-config '(
-      ("color" . "skyblue")
-      ("fillcolor" . "skyblue")
-      ("fontname" . "Arial")
-      ("style" . "filled")))
-(define-key org-mode-map (kbd "C-c i") 'org-roam-insert)
-(global-set-key (kbd "C-o r") 'org-roam-capture)
-(add-hook 'after-init-hook 'org-roam-mode)
-(global-set-key (kbd "C-o f") 'org-roam-find-file)
-(global-set-key (kbd "C-o g") 'org-roam-graph)
-(global-set-key (kbd "C-o i") 'org-roam-insert)
+  (require-package 'org-roam)
+  (require 'org)
+  (setq org-roam-capture--file-name-default "%<%Y%m%d>"
+        org-roam-completion-system 'ido
+        org-roam-capture-templates
+        '(("d" "default" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "%<%Y%m%d>-${slug}"
+           :head "#+title: ${title}\n"
+           :unnarrowed t))
+        org-roam-graph-edge-extra-config '(
+                                           ("color" . "green")
+                                           ("fillcolor" . "green"))
+        org-roam-graph-extra-config '(
+                                      ("bgcolor" . "lightgray"))
+        org-roam-graph-node-extra-config '(
+                                           ("color" . "skyblue")
+                                           ("fillcolor" . "skyblue")
+                                           ("fontname" . "Arial")
+                                           ("style" . "filled")))
+  (define-key org-mode-map (kbd "C-c i") 'org-roam-insert)
+  (global-set-key (kbd "C-o r") 'org-roam-capture)
+  (add-hook 'after-init-hook 'org-roam-mode)
+  (global-set-key (kbd "C-o f") 'org-roam-find-file)
+  (global-set-key (kbd "C-o g") 'org-roam-graph)
+  (global-set-key (kbd "C-o i") 'org-roam-insert)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :padline no
-(setq org-roam-directory "~/org-roam")
+  (setq org-roam-directory "~/org-roam")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :padline no :tangle no
-(setq org-roam-directory "~/Documents/WorldApart")
+  (setq org-roam-directory "~/Documents/WorldApart")
 #+END_SRC
 **** Org-Roam Dependencies
 
@@ -741,20 +746,20 @@ Org-Roam Server provides a novel way of interacting with your Org-Roam files. Mo
 *NOTE:* Org-Roam Server has [[* Org-Roam Server Dependencies][dependencies]].
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'org-roam-server)
-(require 'org-roam-protocol)
-(setq org-roam-server-host "127.0.0.1"
-      org-roam-server-port 8000
-      org-roam-server-authenticate nil
-      org-roam-server-export-inline-images t
-      org-roam-server-serve-files nil
-      org-roam-server-served-file-extensions '("pdf")
-      org-roam-server-network-poll t
-      org-roam-server-network-arrows nil
-      org-roam-server-network-label-truncate t
-      org-roam-server-network-label-truncate-length 60
-      org-roam-server-network-label-wrap-length 20)
-(org-roam-server-mode)
+  (require-package 'org-roam-server)
+  (require 'org-roam-protocol)
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8000
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20)
+  (org-roam-server-mode)
 #+END_SRC
 
 **** Org-Roam Server Dependencies
@@ -768,8 +773,75 @@ Org-Roam Server provides a novel way of interacting with your Org-Roam files. Mo
 Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I'm trying out storing my bookmarks in an Org file so I can add notes. I don't know if this is a useful workflow yet so this might go on the chopping block.
 
 #+BEGIN_SRC emacs-lisp :padline no
-(require-package 'ox-slimhtml)
-(require 'ox-slimhtml)
+  (require-package 'ox-slimhtml)
+  (require 'ox-slimhtml)
+  (defun ab/org-html-table (table contents info)
+    "Transcodes a TABLE from Org to HTML.
+          CONTENTS is the contents of the table.
+          INFO is a plist used as a communication channel."
+    (let ((caption (car (car (car (org-element-property :caption table))))))
+      (concat "<table>\n"
+              (when caption
+                (format "<caption>%s</caption>\n" caption))
+              contents
+              "</tbody>\n</table>")))
+
+  (defun ab/org-html-table-row (table-row contents info)
+    "Transcodes a TABLE-ROW from Org to HTML.
+          CONTENTS is the contents of the row.
+          INFO is a plist used as a communication channel."
+    (if contents
+        (concat (when (eq 1 (org-export-table-row-group table-row info))
+                  "<thead>\n")
+                "<tr>\n"
+                contents
+                "</tr>"
+                (when (eq 1 (org-export-table-row-group table-row info))
+                  "</thead>\n<tbody>\n"))))
+
+  (defun ab/export-as-html
+      (&optional async subtreep visible-only body-only ext-plist)
+    (interactive)
+    (org-export-to-buffer 'trimhtml "*Org SLIMHTML Export*"
+      async subtreep visible-only body-only ext-plist
+      (lambda () (set-auto-mode t))))
+
+  (defun ab/export-to-html (&optional async subtreep visible-only body-only ext-plist)
+    (interactive)
+    (let* ((extension (concat "." (or (plist-get ext-plist :html-extension)
+                                      org-html-extension
+                                      "html")))
+           (file (org-export-output-file-name extension subtreep))
+           (org-export-coding-system org-html-coding-system))
+      (org-export-to-file 'trimhtml file
+        async subtreep visible-only body-only ext-plist ())))
+
+  (defun ab/org-html-table-cell (table-cell contents info)
+    "Transcodes a TABLE-CELL from Org to HTML.
+          CONTENTS is the contents of the cell.
+          INFO is a plist used as a communication channel."
+    (if (eq 1 (org-export-table-row-group (org-element-property :parent table-cell) info))
+        (concat "<th>" contents "</th>")
+      (concat "<td>" contents "</td>\n")))
+
+  (org-export-define-derived-backend 'trimhtml
+      'slimhtml
+    :menu-entry '(?a "trimhtml" 
+                     ((?H "As trimhtml buffer" ab/export-as-html)
+                      (?h "As trimhtml file" ab/export-to-html)))
+    :translate-alist
+    '((template . ox-slimhtml-template)
+      (link . ox-slimhtml-link)
+      (code . ox-slimhtml-verbatim)
+      (headline . ox-slimhtml-headline)
+      (table . ab/org-html-table)
+      (table-cell . ab/org-html-table-cell)
+      (table-row . ab/org-html-table-row))
+    :options-alist
+    '((:page-type "PAGE-TYPE" nil nil nil)
+      (:html-use-infojs nil nil nil)
+      (:description nil nil nil)
+      (:category nil nil nil)))
 #+END_SRC
 
 *** ACTIVE Simple-HTTPd
