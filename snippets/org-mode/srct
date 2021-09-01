@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: srct
+# key: srct
+# --
+#+BEGIN_SRC ${1:$$(yas-completing-read "Choose:" '("emacs-lisp" "python" "rust" "sh"))} :tangle yes :padline no
+$0
+#+END_SRC
