@@ -1,739 +1,766 @@
-# -*- mode: org; coding: utf-8; -*-
-#+TODO: ACTIVE | DISABLED
-
 * Emacs Configuration
+  #+startup: overview
 
-  Everything in my Emacs configuration can be found here. I have broken it down into workflows, and each workflow is broken down into its comprising packages. Note that marking a heading as =ACTIVE= or =DISABLED= has no effect on its subheadings. As mentioned in the README, my configuration also comes with a shell script to install most dependencies. I suggest taking care of that first. 
+For my own sake, I've tabulated my Emacs dependencies and their purpose so I can remember what's going on:
 
-  *NOTE:* Emacs has [[* Emacs Dependencies][dependencies]]
+| Package           | Function                                                                      |
+|-------------------+-------------------------------------------------------------------------------|
+| autoconf          | Building from source                                                          |
+| fonts-hack        | Adds hack font, maybe my favorite monospace option                            |
+| fonts-inconsolata | Adds inconsolata font, my second favorite monospace option                    |
+| fonts-sil-gentium | My favorite serif font so far                                                 |
+| gnupg2            | I use this in my Mu4e config and Gnus Authinfo for managing logins for things |
+| graphviz          | Provides neat visualization of org-roam trees                                 |
+| isync             | Provides mbsync as Mu4e mail synchronization application                      |
+| libgif-dev        | GIF file support                                                              |
+| libgnutls28-dev   | Suggested during the configure step, seemed legit                             |
+| libgtk-3-dev      | Suggested for prividing display support, seemed legit                         |
+| libjpeg-dev       | JPG file support                                                              |
+| libncurses5-dev   | Suggested during the configure step, seemed legit                             |
+| libotf-dev        | OTF file support                                                              |
+| libpng-dev        | PNG file support                                                              |
+| librsvg2-dev      | SVG file support                                                              |
+| libtiff-dev       | TIFF file support                                                             |
+| libxml2-dev       | XML file support                                                              |
+| libxpm-dev        | XPM file support                                                              |
+| mu4e              | Mail client                                                                   |
+| postgresql        | RDBMS (Used to SQL server, felt like I needed an alternative)                 |
+| python3-pip       | Python package manager                                                        |
+| python3-venv      | Python virtual environment system                                             |
+| ripgrep           | grep alternative                                                              |
+| sqlite3           | SQLite RDBMS                                                                  |
+| texinfo           | Suggested for doc support (I think) during the configure step, seemed legit   |
 
-** Emacs Dependencies
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+;;; config.el --- Summary
+;;; Commentary:
+;;; Don't edit this file, edit 'config.org' instead!
+;;; Code:
+#+END_SRC
 
-   For my own sake, I alphabetized the dependencies, I've tabulated their purpose for posterity so I can remember what's going on:
+#+BEGIN_SRC sh :tangle yes :padline no
+sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
+#+END_SRC
 
-   | Package           | Function                                                                      |
-   |-------------------+-------------------------------------------------------------------------------|
-   | autoconf          | Building from source                                                          |
-   | fonts-hack        | Adds hack font, maybe my favorite monospace option                            |
-   | fonts-inconsolata | Adds inconsolata font, my second favorite monospace option                    |
-   | fonts-sil-gentium | My favorite serif font so far                                                 |
-   | gnupg2            | I use this in my Mu4e config and Gnus Authinfo for managing logins for things |
-   | graphviz          | Provides neat visualization of org-roam trees                                 |
-   | isync             | Provides mbsync as Mu4e mail synchronization application                      |
-   | libgif-dev        | GIF file support                                                              |
-   | libgnutls28-dev   | Suggested during the configure step, seemed legit                             |
-   | libgtk-3-dev      | Suggested for prividing display support, seemed legit                         |
-   | libjpeg-dev       | JPG file support                                                              |
-   | libncurses5-dev   | Suggested during the configure step, seemed legit                             |
-   | libotf-dev        | OTF file support                                                              |
-   | libpng-dev        | PNG file support                                                              |
-   | librsvg2-dev      | SVG file support                                                              |
-   | libtiff-dev       | TIFF file support                                                             |
-   | libxml2-dev       | XML file support                                                              |
-   | libxpm-dev        | XPM file support                                                              |
-   | mu4e              | Mail client                                                                   |
-   | postgresql        | RDBMS (Used to SQL server, felt like I needed an alternative)                 |
-   | python3-pip       | Python package manager                                                        |
-   | python3-venv      | Python virtual environment system                                             |
-   | ripgrep           | grep alternative                                                              |
-   | sqlite3           | SQLite RDBMS                                                                  |
-   | texinfo           | Suggested for doc support (I think) during the configure step, seemed legit   |
+* Packages
+
+  All packages are installed up front to allow more flexibility with configuration organization.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(straight-use-package 'all-the-icons)
+(straight-use-package 'auctex)
+(straight-use-package 'company)
+(straight-use-package 'company-box)
+(straight-use-package 'consult)
+(straight-use-package 'doom-themes)
+(straight-use-package 'elcord)
+(straight-use-package 'evil)
+(straight-use-package 'evil-collection)
+(straight-use-package 'evil-leader)
+(straight-use-package 'flycheck)
+(straight-use-package 'flycheck-rust)
+(straight-use-package 'hl-todo)
+(straight-use-package 'htmlize)
+(straight-use-package 'langtool)
+(straight-use-package 'latex-preview-pane)
+(straight-use-package 'lsp-mode)
+(straight-use-package 'lsp-treemacs)
+(straight-use-package 'magit)
+(straight-use-package 'mw-thesaurus)
+(straight-use-package 'ob-restclient)
+(straight-use-package 'org-contrib)
+(straight-use-package 'org-roam)
+(straight-use-package 'rainbow-delimiters)
+(straight-use-package 'restclient)
+(straight-use-package 'rg)
+(straight-use-package 'rust-mode)
+(straight-use-package 'simple-httpd)
+(straight-use-package 'sqlup-mode)
+(straight-use-package 'treemacs-magit)
+(straight-use-package 'undo-tree)
+(straight-use-package 'vertico)
+(straight-use-package 'vterm)
+(straight-use-package 'yasnippet)
+(straight-use-package '(ox-slimhtml :host github :repo "ablatedsprocket/ox-slimhtml"))
+#+END_SRC
+
+* Themes
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'doom-themes)
+(setq doom-themes-enable-bold t
+      doom-themes-enable-italic t)
+(doom-themes-org-config)
+(load-theme 'doom-snazzy t)
+#+END_SRC
+
+* General
+
+  This section contains all of the configuration related to built-in packages.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'remember)
+(defun apply-post-frame-config ()
+  (set-cursor-color "#ffff00"))
+(defun autopair-insert (arg)
+  (interactive "P")
+  (let (pair)
+    (cond
+     ((assq last-command-event skeleton-pair-alist)
+      (autopair-open arg))
+     (t
+      (autopair-close arg)))))
+(defun autopair-open (arg)
+  (interactive "P")
+  (let ((pair (assq last-command-event
+		    skeleton-pair-alist)))
+    (cond
+     ((and (not mark-active)
+	   (eq (car pair) (car (last pair)))
+	   (eq (car pair) (char-after)))
+      (autopair-close arg))
+     (t
+      (skeleton-pair-insert-maybe arg)))))
+(defun autopair-close (arg)
+  (interactive "P")
+  (cond
+   (mark-active
+    (let (pair open)
+      (dolist (pair skeleton-pair-alist)
+	(when (eq last-command-event (car (last pair)))
+	  (setq open (car pair))))
+      (setq last-command-event open)
+      (skeleton-pair-insert-maybe arg)))
+   ((looking-at
+     (concat "[ \t\n]*"
+	     (regexp-quote (string last-command-event))))
+    (replace-match (string last-command-event))
+    (indent-according-to-mode))
+   (t
+    (self-insert-command (prefix-numeric-value arg))
+    (indent-according-to-mode))))
+(setq )
+
+(defun custom-toggle-comment ()
+  "Toggle comment on region if region is active else toggle comment on line."
+  (interactive)
+  (if (use-region-p)
+      (comment-or-uncomment-region (region-beginning) (region-end))
+    (toggle-comment-on-line)))
+(defun whack-whitespace (arg)
+  "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
+  (interactive "P")
+  (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+    (re-search-forward regexp nil t)
+    (replace-match "" nil nil)))
+(setq auto-save-default nil ;; don't autosave
+      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+      completion-styles '(basic partial-completion flex) ;; Provide fuzzy search matching.
+      create-lockfiles nil
+      custom-file (expand-file-name "custom.el")
+      dired-dwim-target t
+      dired-listing-switches "-al --group-directories-first"
+      inhibit-startup-message t
+      initial-major-mode 'org-mode
+      mode-line-modes
+      (mapcar (lambda (elem)
+		(pcase elem
+		  (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
+		   "")
+		  (t elem)))
+	      mode-line-modes)
+      mouse-yank-at-point t
+      read-file-name-completion-ignore-case t
+      recentf-save-file (concat user-emacs-directory ".recentf")
+      recentf-max-menu-items 40
+      ring-bell-function 'ignore
+      save-interprogram-paste-before-kill t
+      save-place-file (concat user-emacs-directory "places")
+      sentence-end "[\\.\\?\\!] +" ;; By default, Emacs recognizes a period (or question mark, exclamation mark, etc.) followed by two spaces as the end of a sentence. I only ever use one space.
+      skeleton-pair t
+      skeleton-pair-alist '((?\( _ ?\))
+			    (?\[  _ ?\])
+			    (?{  _ ?})
+			    (?\" _ ?\"))
+      TeX-PDF-mode nil
+      x-select-enable-clipboard t
+      x-select-enable-primary t)
+(setq-default cursor-type 'bar
+	      display-line-numbers-width-start t
+	      save-place t
+	      truncate-lines nil
+	      word-wrap t)
+(add-to-list 'default-frame-alist '(font . "Hack"))
+(custom-theme-set-faces
+ 'user
+ '(fixed-pitch ((t (:family "Hack"))))
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit fixed-pitch))))
+ '(org-done ((t (:inherit fixed-pitch))))
+ '(org-drawer ((t (:foreground "LightSkyBlue" :inherit fixed-pitch))))
+ `(org-level-1 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.75))))
+ `(org-level-2 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.5))))
+ `(org-level-3 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.25))))
+ `(org-level-4 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.1))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit fixed-pitch))))
+ '(org-table ((t (:inherit fixed-pitch))))
+ '(org-todo ((t (:inherit fixed-pitch))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+ '(variable-pitch ((t  (:family "Alegreya")))))
+(blink-cursor-mode 1)
+(column-number-mode 1) ;; Show column number in modeline
+(defun highlight-todo-semicolon ()
+  (font-lock-add-keywords nil
+			  '(("^;;+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
+(add-hook 'elisp-mode-hook 'highlight-todo)
+(defun highlight-todo-slash()
+  (font-lock-add-keywords nil
+			  '(("^//+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
+(fset 'yes-or-no-p 'y-or-n-p) ;; Use 'y' or 'n' instead of 'yes' or 'no' in relevant prompts.
+(global-eldoc-mode -1) ;; Disable showing function arguments in echo area.
+(global-undo-tree-mode) ;; Enable this to provide decent undo functionality for Evil.
+(menu-bar-mode -1) ;; Disable menu bar UI.
+(tool-bar-mode -1) ;; Disable tool bar UI.
+(savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
+(scroll-bar-mode -1) ;; Disable scroll bars.
+(show-paren-mode 1) ;; Highlight matching parens.
+(define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
+(add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
+#+END_SRC
+
+** General Dependencies
+
+When you use fonts installed from the Linux repositories, they don't have the metadata that allows Emacs to recognize italic and bold versions of a font, so they don't render. Instead, download the bold, italic, regular, and bolditalic versions of Alegreya and Hack and place the =.ttf= files in =/usr/local/share/fonts/=
+
+* All the Icons
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'all-the-icons)
+#+END_SRC
+
+* Company
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'company)
+(setq company-idle-delay 0
+      company-minimum-prefix-length 2 ;; Keys required for completions to appear
+      company-selection-wrap-around nil ;; Disable completions wrapping to next line and making the tooltip look weird.
+      company-tooltip-align-annotations t) ;; Align annotations to right tooltip borer
+(add-hook 'after-init-hook 'global-company-mode)
+#+END_SRC
+
+* Company Box
+
+Company Box provides a better tooltip for displaying completions.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'company)
+(require 'company-box)
+(add-hook 'company-mode-hook 'company-box-mode)
+#+END_SRC
+
+* Discord
+
+Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elcord-mode=. If you're not on Discord and the mode's active, you'll keep getting notifications that Elcord is trying to connect. I'm not always on Discord, so this gets annoying.
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
+(require 'elcord)
+#+END_SRC
+
+** Discord Dependencies
+ 
+   First install Bitlbee:
 
    #+BEGIN_SRC shell :padline no
-     sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg-dev libncurses5-dev libotf-dev libpng-dev librsvg2-dev libtiff-dev libxml2-dev libxpm-dev
+   sudo apt install bitlbee-dev
    #+END_SRC
 
-** Themes
-*** ACTIVE Doom Themes
-
-    #+BEGIN_SRC emacs-lisp
-      (require-package 'doom-themes)
-      (require 'doom-themes)
-      (setq doom-themes-enable-bold t
-	    doom-themes-enable-italic t)
-      (doom-themes-org-config)
-      (load-theme 'doom-snazzy t)
-    #+END_SRC
-
-** ACTIVE General Configuration
-
-   These are the general-purpose functions I've found or made over my time with Emacs. I have found =whack-whitespace= very useful as a keybinding. I actually haven't used Apropos much, but after investigating it while writing this, I've discovered it is a very useful tool for discovering! It functions similarly to the =C-h= keybindings, but it's a bit more accessible in my opinion. The other big thing I want to point out is I disabled minor modes showing up in the modeline using the =mode-line-modes= setting.
-
-   *NOTE:* General configuration has [[* General Configuration Dependencies][dependencies]].
-
-   #+BEGIN_SRC emacs-lisp :padline no
-     (require-package 'undo-tree)
-     (require-package 'textmate)
-     (require 'dired)
-     (require 'textmate)
-     (require 'undo-tree)
-     (defun autopair-insert (arg)
-       (interactive "P")
-       (let (pair)
-	 (cond
-	  ((assq last-command-event skeleton-pair-alist)
-	   (autopair-open arg))
-	  (t
-	   (autopair-close arg)))))
-     (defun autopair-open (arg)
-       (interactive "P")
-       (let ((pair (assq last-command-event
-			 skeleton-pair-alist)))
-	 (cond
-	  ((and (not mark-active)
-		(eq (car pair) (car (last pair)))
-		(eq (car pair) (char-after)))
-	   (autopair-close arg))
-	  (t
-	   (skeleton-pair-insert-maybe arg)))))
-     (defun autopair-close (arg)
-       (interactive "P")
-       (cond
-	(mark-active
-	 (let (pair open)
-	   (dolist (pair skeleton-pair-alist)
-	     (when (eq last-command-event (car (last pair)))
-	       (setq open (car pair))))
-	   (setq last-command-event open)
-	   (skeleton-pair-insert-maybe arg)))
-	((looking-at
-	  (concat "[ \t\n]*"
-		  (regexp-quote (string last-command-event))))
-	 (replace-match (string last-command-event))
-	 (indent-according-to-mode))
-	(t
-	 (self-insert-command (prefix-numeric-value arg))
-	 (indent-according-to-mode))))
-     (defun switch-to-previous-buffer()
-       "Switch to previously open buffer.
-		 Repeated invocations toggle between the two most recently open buffers."
-       (interactive)
-       (switch-to-buffer (other-buffer (current-buffer) 1)))
-     (defun custom-toggle-comment ()
-       "Toggle comment on region if region is active else toggle comment on line."
-       (interactive)
-       (if (use-region-p)
-	   (comment-or-uncomment-region (region-beginning) (region-end))
-	 (toggle-comment-on-line)))
-     (defun whack-whitespace (arg)
-       "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
-       (interactive "P")
-       (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
-	 (re-search-forward regexp nil t)
-	 (replace-match "" nil nil)))
-     (set-cursor-color "#ffff00")
-     (add-to-list 'default-frame-alist '(font . "Hack"))
-     (custom-theme-set-faces
-      'user
-      '(fixed-pitch ((t (:family "Hack"))))
-      '(org-block ((t (:inherit fixed-pitch))))
-      '(org-code ((t (:inherit fixed-pitch))))
-      '(org-done ((t (:inherit fixed-pitch))))
-      '(org-drawer ((t (:foreground "LightSkyBlue" :inherit fixed-pitch))))
-      '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-      `(org-level-1 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.75))))
-      `(org-level-2 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.5))))
-      `(org-level-3 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.25))))
-      `(org-level-4 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.1))))
-      '(org-property-value ((t (:inherit fixed-pitch))) t)
-      '(org-special-keyword ((t (:inherit fixed-pitch))))
-      '(org-table ((t (:inherit fixed-pitch))))
-      '(org-todo ((t (:inherit fixed-pitch))))
-      '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
-      '(variable-pitch ((t  (:family "Alegreya")))))
-     (setq apropos-do-all t
-	   auto-save-default nil
-	   backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-	   create-lockfiles nil
-	   custom-file (expand-file-name "custom.el")
-	   dired-dwim-target t
-	   inhibit-startup-message t
-	   initial-major-mode 'org-mode
-	   mode-line-modes
-	   (mapcar (lambda (elem)
-		     (pcase elem
-		       (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
-			"")
-		       (t elem)))
-		   mode-line-modes)
-	   mouse-yank-at-point t
-	   recentf-save-file (concat user-emacs-directory ".recentf")
-	   recentf-max-menu-items 40
-	   ring-bell-function 'ignore
-	   save-interprogram-paste-before-kill t
-	   save-place-file (concat user-emacs-directory "places")
-	   skeleton-pair t
-	   skeleton-pair-alist '((?\( _ ?\))
-				 (?\[  _ ?\])
-				 (?{  _ ?})
-				 (?\" _ ?\"))
-	   sentence-end "[\\.\\?\\!] +"
-	   TeX-PDF-mode nil
-	   x-select-enable-clipboard t
-	   x-select-enable-primary t)
-     (setq-default cursor-type 'bar
-		   display-line-numbers-width-start t
-		   save-place t
-		   truncate-lines nil
-		   word-wrap t)
-     (blink-cursor-mode 1)
-     (column-number-mode 1)
-     (fset 'yes-or-no-p 'y-or-n-p)
-     (global-eldoc-mode -1)
-     (global-undo-tree-mode)
-     (menu-bar-mode -1)
-     (tool-bar-mode -1)
-     (scroll-bar-mode -1)
-     (show-paren-mode 1)
-     (define-key minibuffer-inactive-mode-map (kbd ")") nil)
-   #+END_SRC
-
-**** General Configuration Dependencies
-
-     #+BEGIN_SRC shell
-       sudo apt install fonts-inconsolata fonts-hack
-     #+END_SRC
-
-     To use JetBrains Mono, extract the archive, copy ~.ttf~ files to ~/usr/local/share/fonts/~, and run =fc-cache -f=.
-
-*** ACTIVE All the Icons
-
-    I'm using All the Icons to get unicode support for most images. I still see a few unicode strings in emails that can't be converted to images, though.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'all-the-icons)
-      (require 'all-the-icons)
-    #+END_SRC
-
-*** ACTIVE Company
-
-    I use Company as my go-to completion engine. I have it enabled globally because I can't think of a time where I /don't/ want completion. I had had trouble with Company taking a long time to list completions, it turned out =company-idle-delay= was the setting I needed for this. It took me too long to figure that out. Set it if you want to change how long you have to wait for Company completions to appear.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'company)
-      (require-package 'company-box)
-      (require 'company)
-      (require 'company-box)
-      (setq company-idle-delay 0
-	    company-minimum-prefix-length 2
-	    company-selection-wrap-around nil
-	    company-tooltip-align-annotations t)
-      (add-hook 'after-init-hook 'global-company-mode)
-      (add-hook 'company-mode-hook 'company-box-mode)
-    #+END_SRC
-
-*** ACTIVE Evil
-
-    I've moved to Evil mode!
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'evil)
-      (require-package 'evil-collection)
-      (require-package 'evil-leader)
-      (setq evil-collection-setup-minibuffer t)
-      (require 'evil)
-      (require 'evil-leader)
-      (require 'evil-keybindings)
-      (when (require 'evil-collection nil t)
-	(evil-collection-init))
-      (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-      (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-      (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-      (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-      (define-key evil-normal-state-map "gf" 'helm-find-files)
-      (define-key evil-normal-state-map "gF" 'find-file-at-point)
-      (define-key evil-normal-state-map "z=" 'helm-flyspell-correct)
-      (define-key evil-window-map "q" 'kill-current-buffer)
-      (setq-default evil-cross-lines t
-		    evil-respect-visual-line-mode t)
-      (setq evil-undo-system 'undo-tree
-	    evil-want-fine-undo t
-	    evil-leader/in-all-states t)
-      (evil-leader/set-key
-	";" 'custom-toggle-comment
-	"<tab>" 'toggle-truncate-lines
-	"b" 'helm-buffers-list
-	"z" 'zap-to-char
-	"cd" 'downcase-dwim
-	"cc" 'capitalize-dwim
-	"dh" 'hs-toggle-hiding
-	"ht" 'mw-thesaurus-lookup-dwim
-	"k" 'kill-current-buffer
-	"K" 'kill-buffer
-	"l" 'mw-thesaurus-lookup-at-point
-	"oa" 'org-agenda
-	"oc" 'org-capture
-	"ol" 'org-insert-link
-	"oo" 'org-open-at-point
-	"t" 'treemacs
-	"T" 'treemacs-display-current-project-exclusively
-	"x" 'yas-expand
-	"wl" 'windmove-right
-	"wh" 'windmove-left
-	"wj" 'windmove-down
-	"wk" 'windmove-up
-	"ww" 'whack-whitespace)
-      (global-evil-leader-mode)
-      (evil-mode)
-      (evil-leader/set-leader "<SPC>")
-    #+END_SRC
-
-*** ACTIVE Flycheck
-
-    Almost every buffer uses Flycheck either for code syntax or spelling via Flyspell. I don't have any modes where I don't want Flycheck, so I enabled them globally.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'flycheck)
-      (require 'flycheck)
-      (add-hook 'after-init-hook 'global-flycheck-mode)
-    #+END_SRC
-
-*** ACTIVE Flyspell
-
-    I recently discovered that Flyspell has a Prog Mode version that only looks for spelling errors in strings, and I'm liking it so far.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (defun flyspell-goto-previous-error (arg)
-	"Go to arg previous spelling error."
-	(interactive "p")
-	(while (not (= 0 arg))
-	  (let ((pos (point))
-		(min (point-min)))
-	    (if (and (eq (current-buffer) flyspell-old-buffer-error)
-		     (eq pos flyspell-old-pos-error))
-		(progn
-		  (if (= flyspell-old-pos-error min)
-		      ;; goto beginning of buffer
-		      (progn
-			(message "Restarting from end of buffer")
-			(goto-char (point-max)))
-		    (backward-word 1))
-		  (setq pos (point))))
-	    ;; seek the next error
-	    (while (and (> pos min)
-			(let ((ovs (overlays-at pos))
-			      (r '()))
-			  (while (and (not r) (consp ovs))
-			    (if (flyspell-overlay-p (car ovs))
-				(setq r t)
-			      (setq ovs (cdr ovs))))
-			  (not r)))
-	      (backward-word 1)
-	      (setq pos (point)))
-	    ;; save the current location for next invocation
-	    (setq arg (1- arg))
-	    (setq flyspell-old-pos-error pos)
-	    (setq flyspell-old-buffer-error (current-buffer))
-	    (goto-char pos)
-	    (if (= pos min)
-		(progn
-		  (message "No more miss-spelled word!")
-		  (setq arg 0))
-	      (forward-word)))))
-      (require 'flyspell)
-      (add-hook 'org-mode-hook 'flyspell-mode)
-      (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-    #+END_SRC
-
-*** ACTIVE Helm
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'helm)
-      (require-package 'helm-flycheck)
-      (require-package 'helm-flyspell)
-      (require 'helm)
-      (require 'helm-flyspell)
-      (require 'helm-flycheck)
-      (global-set-key (kbd "M-x") 'helm-M-x)
-      (helm-mode)
-    #+END_SRC
-
-*** DISABLED Ido
-
-    Ido provides great minibuffer completion.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'ido-completing-read+)
-      (require 'ido)
-      (setq ido-enable-flex-matching t
-	    ido-auto-merge-work-directories-length -1
-	    ido-use-filename-at-point nil
-	    ido-use-virtual-buffers t)
-      (ido-mode t)
-      (ido-everywhere t)
-      (require 'ido-completing-read+)
-      (ido-ubiquitous-mode t)
-    #+END_SRC
-
-*** ACTIVE Recentf
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require 'recentf)
-      (recentf-mode 1)
-    #+END_SRC
-
-*** ACTIVE Ripgrep
-
-    I use Ripgrep for searching through files for text when a language-server can't do the job.
-
-    *NOTE:* Ripgrep has [[Ripgrep Dependencies][dependencies]]
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'rg)
-    #+END_SRC
-
-**** Ripgrep Dependencies
-
-     #+BEGIN_SRC shell
-       sudo apt install ripgrep
-     #+END_SRC
-
-*** ACTIVE Treemacs
-
-    I use Treemacs mostly to get a visual on project structure. Its integration with LSP mode is also nice for viewing project symbol information.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'treemacs)
-      (require 'treemacs)
-      ;;  (define-key treemacs-mode-map (kbd "C-d") 'treemacs-remove-project-from-workspace)
-      ;;  (define-key treemacs-mode-map (kbd "M-f") 'treemacs-next-project)
-      ;;  (define-key treemacs-mode-map (kbd "M-p") 'treemacs-previous-project)
-    #+END_SRC
-
-*** ACTIVE Vterm
-
-    I've been tinkering in the command line and documenting things in Emacs lately, so I've been using ~shell~ to make it easier to get command line output into documents. It works well enough, but I've wanted to try ~vterm~ to see what difference it makes. It's supposed to be a lot faster for commands with a lot of output, but I feel like I notice a difference even with simple commands. It also has better support for things like ~fish~ and themes.
-
-    *NOTE:* Vterm has [[* Vterm Dependencies][dependencies]].
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'vterm)
-    #+END_SRC
-
-**** Vterm Dependencies
-
-     #+BEGIN_SRC shell :padline no
-       sudo apt install cmake
-       sudo apt install libtool-bin
-     #+END_SRC
-
-*** ACTIVE Yasnippet
-
-    I am slowly using YASnippet more, I'm considering adding an integration with Company for snippet completion, but part of me thinks that at that point I have a bigger problem.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'yasnippet)
-      (yas-global-mode 1)
-    #+END_SRC
-
-** ACTIVE Mu4e
-
-   One of the main drivers for me to use Mu4e (or another Emacs package) for email management is to provide access to email in Org mode. This really shines when you need to make a =TODO= item from an email. You simply use a capture template, insert a link to the email, flesh out the =TODO= tasks, and save. If you leave and have to come back, there is no need to go to your inbox and find the email, everything is in your =TODO=.
-
-   If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. Be sure to install the [[* Mu4e Dependencies][dependencies]] before moving ahead.
-
-   With everything installed we need to perform an initial sync using the =mbsync= command. Before that, a mail directory must be created: =mkdir ~/Mail= 
-
-   My =.mbsyncrc= is set up to use Gnus Authinfo, so we need to set that up as well. It's not too bad, simply create a file named =~/.authinfo= and add this line:
-
-   #+BEGIN_SRC shell :tangle no
-     machine smtp.gmail.com login USERNAME password PASSWORD port 587
-   #+END_SRC
-
-   Now, encrypt the file with the following command:
-
-   #+BEGIN_SRC shell :tangle no
-     gpg2 --symmetric .authinfo
-   #+END_SRC
-
-   To decrypt later just enter the following:
-
-   #+BEGIN_SRC shell :tangle no
-     gpg2 --decrypt .authinfo.gpg
-   #+END_SRC
-
-   I have Mu4e hooked up to my gmail account so that's how the example is laid out. Of course, you will need to substitute your username and password for the capitalized words, but other than that you should be good.
-
-   As an aside, Gnus Authinfo can be used in a variety of ways in Emacs: many packages support it. I recommend looking into it for any packages interfacing with a service you log into like Slack or Gitlab.
-
-   Now, mail can be synced using the config file. First, create your mail directory at =~/Mail=. A different location will require configuration changes. Since the config is in an unconventional directory, it must be specified explicitly. First, navigate to =~/.config/emacs/mu4e= and run =mbsync -c .mbsyncrc -a= 
-
-   The last step is to index the messages with mu:
-
-   #+BEGIN_SRC shell :tangle no
-     mu init --maildir=~/Mail=
-     mu index
-   #+END_SRC
-
-   I've defined a convenience function called =search-for-sender= which I've never had occasion to use, but it seems like a basic function that any email client should have.
-
-   I have a lot of customization for Mu4e. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of Mu4e contexts, which can be associated with an email address. This provides separation between work and home, for example.
-
-   *NOTE:* Mu4e has [[* Mu4e Dependencies][dependencies]].
-
-   #+BEGIN_SRC emacs-lisp :padline no
-     (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
-     (add-to-list 'load-path "/usr/share/emacs/site-lisp/ox-rss/")
-     (require 'mu4e)
-     (require 'smtpmail)
-     (require 'org-mu4e)
-     (defun search-for-sender (msg)
-       "Search for MSG messages sent by the sender of the message at point."
-       (mu4e-headers-search
-	(concat "from:" (cdar (mu4e-message-field msg :from)))))
-     (when (fboundp 'imagemagick-register-types)
-       (imagemagick-register-types))
-     (setq message-kill-buffer-on-exit t
-	   mu4e-attachment-dir "~/Downloads"
-	   mu4e-change-filenames-when-moving t
-	   mu4e-compose-context-policy 'always-ask
-	   mu4e-compose-dont-reply-to-self t
-	   mu4e-compose-in-new-frame t
-	   mu4e-compose-format-flowed t
-	   mu4e-compose-signature-auto-include nil
-	   mu4e-confirm-quit t
-	   mu4e-context-policy 'pick-first
-	   mu4e-contexts
-	   (list
-	    (make-mu4e-context
-	     :name "general"
-	     :enter-func (lambda () (mu4e-message "Entering general context"))
-	     :leave-func (lambda () (mu4e-message "Leaving general context"))
-	     :match-func (lambda (msg)
-			   (when msg
-			     (mu4e-message-contact-field-matches
-			      msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
-	     :vars '((user-mail-address . "andrewwburch@gmail.com")
-		     (user-full-name . "Andrew Burch")
-		     (mu4e-sent-folder . "/Sent")
-		     (mu4e-refile-folder . "/All")
-		     (mu4e-drafts-folder . "/Drafts")
-		     (mu4e-trash-folder . "/Trash")
-		     (mu4e-compose-signature . (concat "Cheers,\n Andrew"))
-		     (mu4e-compose-format-flowed . t)
-		     (smtpmail-queue-dir . "~/Mail/gmail/queue/cur")
-		     (message-send-mail-function . smtpmail-send-it)
-		     (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
-		     (smtpmail-debug-info . t)
-		     (smtpmail-default-smtp-server . "smtp.gmail.com")
-		     (smtpmail-local-domain . "gmail.com")
-		     (smtpmail-smtp-user . "andrewwburch")
-		     (smtpmail-smtp-server . "smtp.gmail.com")
-		     (smtpmail-smtp-service . 587)
-		     (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
-		     (smtpmail-debug-verbose . t))))
-	   mu4e-headers-auto-update t
-	   mu4e-headers-date-format "%H:%M %d-%m-%Y"
-	   ;; mu4e-html2text-command "html2text -utf8"
-	   ;; mu4e-html2text-command 'my-render-html-message
-	   mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
-	   mu4e-maildir (expand-file-name "~/Mail")
-	   mu4e-sent-messages-behavior 'delete
-	   mu4e-update-interval 180
-	   mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
-	   mu4e-view-prefer-html nil
-	   mu4e-view-show-images t
-	   mu4e-view-show-addresses 't
-	   smtpmail-queue-mail nil)
-     (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
-     (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-     (add-hook 'message-mode-hook (lambda ()
-				    (use-hard-newlines -1)))
-     (add-hook 'mu4e-headers-mode-hook
-	       (defun mu4e-change-head()
-		 (interactive)
-		 (setq mu4e-headers-fields `((:date . 22)
-					     (:flags . 6)
-					     (:from . 22)
-					     (:thread-subject . ,(- (window-body-width) 70))
-					     (:size . 7)))))
-     (add-hook 'mu4e-headers-mode-hook
-	       (lambda ()
-		 (setq display-line-numbers nil)))
-     (add-hook 'mu4e-view-mode-hook
-	       (lambda()
-		 (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
-		 (local-set-key (kbd "<tab>") 'shr-next-link)
-		 (local-set-key (kbd "<backtab>") 'shr-previous-link)
-		 ))
-   #+END_SRC
-
-*** Mu4e Dependencies
-
-    #+BEGIN_SRC shell
-      sudo apt install mu4e isync html2text gnupg2
-    #+END_SRC 
-
-*** ACTIVE Org
-
-    Another thing to note is that I've set =org-export-allow-bind-keywords= to =t= so I can use =#+BIND= properties in org files, mostly for custom hooks that I only want to run for a specific file. I avoid using =#+BIND= where possible. I used it in one file but ended up finding a better way to add the hook in my configuration. It seems like it could be useful though, so I'm keeping it around for now.
-
-    I also put a fair amount of work into making Org documents prettier. I'm using variable-pitch mode to make certain faces use a monospace fixed-pitch font while the rest of the document uses a variable-pitch font. This has worked well so far and has made Org a lot more friendly. The documents look a lot different when exported to PDF, of course.I might eventually sink some time into unifying that.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require 'org)
-      (require 'org-protocol)
-      (defun generate-post ()
-	(setq post-title (read-string "Title: "))
-	(setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
-	(expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
-      (defun generate-reference (title url body))
-      (defun org-export-latex-remove-labels (s backend info)
-	(when (org-export-derived-backend-p org-export-current-backend 'latex)
-	  (replace-regexp-in-string "\\\\label{sec:org[a-z0-9]+}\n" "" s)))
-      (defun org-toggle-emphasis-markers ()
-	"Toggle hiding/showing of org emphasis markers."
-	(interactive)
-	(if org-hide-emphasis-markers
-	    (set-variable 'org-hide-emphasis-markers nil)
-	  (set-variable 'org-hide-emphasis-markers t))
-	(org-mode-restart))
-      (defun org-summary-todo (n-done n-not-done)
-	"Switch entry to DONE when all subentries are done, to TODO otherwise."
-	(let (org-log-done org-log-states)    ; turn off logging
-	  (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-      (define-prefix-command 'ring-map)
-      (setq org-capture-templates
-	    '(("e" "reference" plain (function (lambda ()
-						 (let ((path (read-file-name "Select file:")))
-						   (find-file path)
-						   (goto-char 0)
-						   (if (search-forward "* Reference" nil t)
-						       (progn
-							 (org-end-of-subtree)
-							 (newline))
-						     (progn
-						       (goto-char (point-max))
-						       (newline)
-						       (insert "* Reference")
-						       (newline))
-						     ))))
-	       "** %:description\n:PROPERTIES:\n:REF: %l\n:END:\n\n%(unless (string= (string-trim \"${body}\") \"\")(format \"#+begin_quote\n%s\n#+end_quote\" \"%i\"))")
-	      ("j" "journal" plain (file+datetree "~/org/journal.org")
-	       "")
-	      ("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-	       "* %a\n")
-	      ("p" "post" plain (file generate-post)
-	       "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)")
-	      ("r" "recipe" entry (file+headline "~/org/recipes.org" "Recipes")
-	       "%(format \"* %s\n\n|Quantity|Unit|Ingredient|Notes|\n|----\n\" (read-string \"Recipe name:\"))")
-	      ("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-	       "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
-
-	    org-directory "~/org"
-	    org-hide-emphasis-markers t
-	    org-hide-leading-stars t
-	    org-highest-priority ?A
-	    org-lowest-priority ?E)
-      (org-load-modules-maybe t)
-      (define-key org-mode-map (kbd "<M-return>") nil)
-      (define-key org-mode-map (kbd "(") 'autopair-insert)
-      (define-key org-mode-map (kbd ")") 'autopair-insert)
-      (define-key org-mode-map (kbd "[") 'autopair-insert)
-      (define-key org-mode-map (kbd "]") 'autopair-insert)
-      (define-key org-mode-map (kbd "{") 'autopair-insert)
-      (define-key org-mode-map (kbd "}") 'autopair-insert)
-      (define-key org-mode-map (kbd "\"") 'autopair-insert)
-      (add-hook 'mu4e-compose-mode-hook 'org-mu4e-compose-org-mode)
-      (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-      (add-hook 'org-mode-hook (lambda ()
-				 (variable-pitch-mode)
-				 (setq truncate-lines nil)))
-      ;; (font-lock-add-keywords 'org-mode '(("^\\*+ " (0 (compose-region (match-beginning 0) (match-end 0) "\u200b")))))
-      (setq org-export-filter-final-output-functions '(org-export-latex-remove-labels))
-    #+END_SRC
-    
-*** ACTIVE Org-Agenda
-
-    I'm not good about using it, but the intention here is to have Org-Agenda manage the tasks I set for myself every day. It works in conjunction with the Orgzly app for mobile and SyncThing to keep everything synchronized. This works well for tasks and habits, which store completion events in a =LOGBOOK= drawer on Orgzly. Luckily org-mode has an =org-log-into-drawer= setting to create the same functionality so my app and desktop work together seamlessly.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require 'org)
-      (require 'org-agenda)
-      (setq org-agenda-breadcrumbs-separator " ❱ "
-	    org-agenda-category-icon-alist '(("Appointment" "~/.config/emacs/icons/bell.svg" nil nil :ascent center)
-					     ("Cleaning" "~/.config/emacs/icons/house.svg" nil nil :ascent center)
-					     ("Contractor" "~/.config/emacs/icons/tools.svg" nil nil :ascent center)
-					     ("Exercise" "~/.config/emacs/icons/barbell.svg" nil nil :ascent center)
-					     ("Finance" "~/.config/emacs/icons/columns.svg" nil nil :ascent center)
-					     ("Journal" "~/.config/emacs/icons/journal.svg" nil nil :ascent center)
-					     ("Learning" "~/.config/emacs/icons/flask.svg" nil nil :ascent center)
-					     ("Life" "~/.config/emacs/icons/leaf.svg" nil nil :ascent center)
-					     ("Maintenance" "~/.config/emacs/icons/wrench.svg" nil nil :ascent center)
-					     ("Organizing" "~/.config/emacs/icons/folder.svg" nil nil :ascent center)
-					     ("Party" "~/.config/emacs/icons/beer.svg" nil nil :ascent center)
-					     ("Todo" "~/.config/emacs/icons/gears.svg" nil nil :ascent center))
-	    org-agenda-files '("~/org/tasks/Todo.org" "~/org/recipes.org")
-	    org-log-into-drawer "LOGBOOK")
-      (define-key org-agenda-mode-map (kbd "h") 'evil-backward-char)
-      (define-key org-agenda-mode-map (kbd "j") 'evil-next-line)
-      (define-key org-agenda-mode-map (kbd "k") 'evil-previous-line)
-      (define-key org-agenda-mode-map (kbd "l") 'evil-forward-char)
-      (add-to-list 'org-agenda-custom-commands
-		   '("x" "Testing tags for negating DONE" tags "-TODO=\"DONE\"" nil nil ))
-
-    #+END_SRC
-
-*** ACTIVE Org-Gantt
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'svg)
-      (require-package 'ts)
-      (require 'org-gantt-mode)
-    #+END_SRC
-
-*** ACTIVE Org Habit
-
-    Org habit is useful for recurring todos. The main component to habits is that they be scheduled ideally using the =org-schedule= command (=C-c C-s=), and within that schedule date, before the closing angle bracket, set a reminder interval and an optional due date interval separated by a slash: =.+2d= or =.+2d/4d=.
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require 'org-habit)
-      (setq org-modules '(org-habit))
-    #+END_SRC
-
-*** ACTIVE Org-Roam
-
-    Org Roam is great for managing information about things I'm learning about. 
-
-    *NOTE:* Org-Roam has [[* Org-Roam Dependencies][dependencies]].
-
-    #+BEGIN_SRC emacs-lisp :padline no
-      (require-package 'org-roam)
-      (setq org-roam-v2-ack t)
-      (require 'org)
-      (require 'org-roam)
-      (require 'org-roam-protocol)
-      (setq org-roam-capture--file-name-default "%<%Y%m%d>"
-	    org-roam-capture-templates '(("d" "default" plain "%?"
-					  :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							     "#+title: ${title}\n")
-					  :unnarrowed t))
-	    org-roam-completion-system 'ido
-	    org-roam-graph-edge-extra-config '(
-					       ("color" . "green")
-					       ("fillcolor" . "green"))
-	    org-roam-graph-extra-config '(
-					  ("bgcolor" . "lightgray"))
-	    org-roam-graph-node-extra-config '(
-					       ("color" . "skyblue")
-					       ("fillcolor" . "skyblue")
-					       ("fontname" . "Arial")
-					       ("style" . "filled")))
-      (setq org-roam-directory "/home/andy/nothingissimple")
-      (org-roam-setup)
-
+   Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
+* Ejira
+
+I'm working on a couple of programming projects outside of work, one with another person. He wanted to use Jira, and I noticed that there are a couple of Jira integrations for Emacs, Org-Jira and Ejira. I chose Ejira because it takes advantage of Jira's REST API, as opposed to Org-Jira which is SOAP-based. It's much easier for me to debug JSON payloads as opposed to XML. Currently, the Ejira files are included with my config for two reasons: one is that Ejira is not on MELPA yet, and the second is that there's some deal-breaking functionality missing from the maintained branch, mostly mentioning users.
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
+(require-package 'cl-lib)
+(require-package 'dash)
+(require-package 'dash-functional)
+(require-package 'language-detection)
+(require-package 'ox-jira)
+(require-package 's)
+(require 'ejira)
+(setq jiralib2-url "https://jasonandandybuildsomething.atlassian.net"
+      jiralib2-auth 'token
+      jiralib2-user-login-name "andrewwburch@gmail.com"
+      jiralib2-token (auth-source-pick-first-password
+		      :host "jasonandandybuildsomething.atlassian.net"
+		      :user "andrewwburch@gmail.com")
+      ejira-org-directory "~/.jira"
+      ejira-projects '("SB")
+      ejira-priorities-alist '(("Highest" . ?A)
+			       ("High"    . ?B)
+			       ("Medium"  . ?C)
+			       ("Low"     . ?D)
+			       ("Lowest"  . ?E))
+      ejira-todo-states-alist '(("To Do"  . 1)
+				("Doing" . 2)
+				("Test"  . 3)
+				("Done"  . 4))
+      ejira-org-todo-keywords-alist '(("SB" . ("TODO"
+					       "DOING"
+					       "TEST"
+					       "DONE")))
+      org-id-track-globally t)
 #+END_SRC
-**** Org-Roam Dependencies
 
-     Org-Roam manages nodes in a SQLite database, so that needs to be installed:
+* ERC
+
+Obligatory change =irc.freenode.net= to =irc.libera.chat=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(setq erc-default-server "irc.libera.chat")
+#+END_SRC
+  
+* Evil
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(setq evil-want-keybinding nil) ;; This needs to be set before requiring evil when using evil-collection.
+(require 'evil)
+(define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+(define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+(define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+(define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+;; (define-key evil-normal-state-map "gF" 'find-file-at-point)
+;; (define-key evil-normal-state-map "z=" 'helm-flyspell-correct) ;
+(define-key evil-window-map "q" 'kill-current-buffer)
+(setq-default evil-cross-lines t
+	      evil-respect-visual-line-mode t)
+(setq evil-undo-system 'undo-tree
+      evil-want-fine-undo t
+      evil-want-keybinding nil)
+#+END_SRC
+
+* Evil Collection
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'evil-collection)
+(evil-collection-init)
+#+END_SRC
+
+* Evil Leader
+ 
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'evil-leader)
+(setq evil-leader/in-all-states t)
+(evil-leader/set-key
+  ";" 'custom-toggle-comment
+  "<tab>" 'toggle-truncate-lines
+  "b" 'consult-buffer-other-window
+  "z" 'zap-to-char
+  "cd" 'downcase-dwim
+  "cc" 'capitalize-dwim
+  "dh" 'hs-toggle-hiding
+  "ht" 'mw-thesaurus-lookup-dwim
+  "k" 'kill-current-buffer
+  "K" 'kill-buffer
+  "l" 'mw-thesaurus-lookup-at-point
+  "oa" 'org-agenda
+  "oc" 'org-capture
+  "ol" 'org-insert-link
+  "oo" 'org-open-at-point
+  "s" 'forward-sentence
+  "t" 'treemacs
+  "T" 'treemacs-display-current-project-exclusively
+  "x" 'yas-expand
+  "wl" 'windmove-right
+  "wh" 'windmove-left
+  "wj" 'windmove-down
+  "wk" 'windmove-up
+  "ww" 'whack-whitespace)
+(global-evil-leader-mode)
+(evil-leader/set-leader "<SPC>")
+(evil-mode) ;; Needs to be called after global-evil-leader-mode for evil-leader keys to be loaded in messages buffer. Otherwise, put this back up with Evil config.
+#+END_SRC
+
+* Flycheck
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'flycheck)
+(add-hook 'after-init-hook 'global-flycheck-mode)
+#+END_SRC
+
+* Flyspell
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(defun flyspell-goto-previous-error (arg)
+  "Go to arg previous spelling error."
+  (interactive "p")
+  (while (not (= 0 arg))
+    (let ((pos (point))
+	  (min (point-min)))
+      (if (and (eq (current-buffer) flyspell-old-buffer-error)
+	       (eq pos flyspell-old-pos-error))
+	  (progn
+	    (if (= flyspell-old-pos-error min)
+		;; goto beginning of buffer
+		(progn
+		  (message "Restarting from end of buffer")
+		  (goto-char (point-max)))
+	      (backward-word 1))
+	    (setq pos (point))))
+      ;; seek the next error
+      (while (and (> pos min)
+		  (let ((ovs (overlays-at pos))
+			(r '()))
+		    (while (and (not r) (consp ovs))
+		      (if (flyspell-overlay-p (car ovs))
+			  (setq r t)
+			(setq ovs (cdr ovs))))
+		    (not r)))
+	(backward-word 1)
+	(setq pos (point)))
+      ;; save the current location for next invocation
+      (setq arg (1- arg))
+      (setq flyspell-old-pos-error pos)
+      (setq flyspell-old-buffer-error (current-buffer))
+      (goto-char pos)
+      (if (= pos min)
+	  (progn
+	    (message "No more miss-spelled word!")
+	    (setq arg 0))
+	(forward-word)))))
+(require 'flyspell)
+(add-hook 'org-mode-hook 'flyspell-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+#+END_SRC
+
+* HL-Todo
+
+HL-Todo highlights to-do items in buffers where the mode is active.
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
+(require 'hl-todo)
+(add-hook 'prog-mode-hook 'hl-todo-mode)
+#+END_SRC
+  
+* Htmlize
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'htmlize)
+#+END_SRC
+
+* Langtool
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(setq langtool-language-tool-server-jar "~/.local/lib/LanguageTool-5.1/languagetool-server.jar")
+#+END_SRC
+
+* LSP
+
+So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'lsp-mode)
+(setq lsp-modeline-diagnostics-scope :project
+      lsp-signature-doc-lines 1)
+;; TODO Remap these keys to evil-leader variants at some point.
+(define-key lsp-mode-map (kbd "C-c `") 'lsp-restart-workspace)
+(define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
+(define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
+(define-key lsp-mode-map (kbd "C-c s") 'rg)
+(define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
+(define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
+#+END_SRC
+
+* LSP-Treemacs
+
+I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'lsp-treemacs)
+#+END_SRC
+
+* Magit
+
+I am not sure if Magit should be in this section or a more general configuration section. I'm seeing more and more places outside of code where source control would be useful.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'magit)
+#+END_SRC
+
+* Mu4e
+
+One of the main drivers for me to use Mu4e (or another Emacs package) for email management is to provide access to email in Org mode. This really shines when you need to make a =TODO= item from an email. You simply use a capture template, insert a link to the email, flesh out the =TODO= tasks, and save. If you leave and have to come back, there is no need to go to your inbox and find the email, everything is in your =TODO=.
+
+If you don't want this functionality, simply set the state from =ACTIVE= to =DISABLED=. If you do want it, there are a few things to install to make Emacs work as a mail client. Be sure to install the [[* Mu4e Dependencies][dependencies]] before moving ahead.
+
+With everything installed we need to perform an initial sync using the =mbsync= command. Before that, a mail directory must be created: =mkdir ~/Mail= 
+
+My =.mbsyncrc= is set up to use Gnus Authinfo, so we need to set that up as well. It's not too bad, simply create a file named =~/.authinfo= and add this line:
+
+#+BEGIN_SRC shell :tangle no
+machine smtp.gmail.com login USERNAME password PASSWORD port 587
+#+END_SRC
+
+Now, encrypt the file with the following command:
+
+#+BEGIN_SRC shell :tangle no
+gpg2 --symmetric .authinfo
+#+END_SRC
+
+Emacs has support for reading these encrypted files built-in. Just open the file in a buffer. Should you need to decrypt, though, just enter the following:
+
+#+BEGIN_SRC shell :tangle no
+gpg2 --decrypt .authinfo.gpg
+#+END_SRC
+
+I have Mu4e hooked up to my gmail account so that's how the example is laid out. Of course, you will need to substitute your username and password for the capitalized words, but other than that you should be good.
+
+As an aside, Gnus Authinfo can be used in a variety of ways in Emacs: many packages support it. I recommend looking into it for any packages interfacing with a service you log into like Slack or Gitlab.
+
+Now, mail can be synced using the config file. First, create your mail directory at =~/Mail=. A different location will require configuration changes. Since the config is in an unconventional directory, it must be specified explicitly. First, navigate to =~/.config/emacs/mu4e= and run =mbsync -c .mbsyncrc -a= 
+
+The last step is to index the messages with mu:
+
+#+BEGIN_SRC shell :tangle no
+mu init --maildir=~/Mail=
+mu index
+#+END_SRC
+
+I've defined a convenience function called =search-for-sender= which I've never had occasion to use, but it seems like a basic function that any email client should have.
+
+I have a lot of customization for Mu4e. Admittedly, most of it was taken from other peoples' configuration I found online. An interesting aspect of Mu4e contexts, which can be associated with an email address. This provides separation between work and home, for example.
+
+*NOTE:* Mu4e has [[* Mu4e Dependencies][dependencies]].
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/ox-rss/")
+(require 'mu4e)
+(require 'smtpmail)
+(require 'org-mu4e)
+(defun search-for-sender (msg)
+  "Search for MSG messages sent by the sender of the message at point."
+  (mu4e-headers-search
+   (concat "from:" (cdar (mu4e-message-field msg :from)))))
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+(setq message-kill-buffer-on-exit t
+      mu4e-attachment-dir "~/Downloads"
+      mu4e-change-filenames-when-moving t ;; This is supposed to be better for mbsync
+      mu4e-compose-context-policy 'always-ask ;; Ask which email address you want to send from
+      mu4e-compose-dont-reply-to-self t
+      mu4e-compose-in-new-frame t
+      mu4e-compose-format-flowed t ;; Part of sending messages with long lines, I don't want Mu4e inserting linebreaks randomly.
+      mu4e-compose-signature-auto-include nil
+      mu4e-confirm-quit t
+      mu4e-context-policy 'pick-first ;; Pick first available context, change if I eventually add more email addresses.
+      mu4e-contexts
+      (list
+       (make-mu4e-context
+	:name "general"
+	:enter-func (lambda () (mu4e-message "Entering general context"))
+	:leave-func (lambda () (mu4e-message "Leaving general context"))
+	:match-func (lambda (msg)
+		      (when msg
+			(mu4e-message-contact-field-matches
+			 msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
+	:vars '((user-mail-address . "andrewwburch@gmail.com")
+		(user-full-name . "Andrew Burch")
+		(mu4e-sent-folder . "/Sent")
+		(mu4e-refile-folder . "/All")
+		(mu4e-drafts-folder . "/Drafts")
+		(mu4e-trash-folder . "/Trash")
+		(mu4e-compose-signature . (concat "Cheers,\n Andrew"))
+		(mu4e-compose-format-flowed . t)
+		(smtpmail-queue-dir . "~/Mail/gmail/queue/cur")
+		(message-send-mail-function . smtpmail-send-it)
+		(smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+		(smtpmail-debug-info . t)
+		(smtpmail-default-smtp-server . "smtp.gmail.com")
+		(smtpmail-local-domain . "gmail.com")
+		(smtpmail-smtp-user . "andrewwburch")
+		(smtpmail-smtp-server . "smtp.gmail.com")
+		(smtpmail-smtp-service . 587)
+		(smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+		(smtpmail-debug-verbose . t))))
+      mu4e-headers-auto-update t
+      mu4e-headers-date-format "%H:%M %d-%m-%Y"
+      mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
+      mu4e-maildir (expand-file-name "~/Mail")
+      mu4e-sent-messages-behavior 'delete ;; Gmail puts messages in Sent so Mu4e doesn't have to.
+      mu4e-update-interval 300
+      mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum ;; Always prefer plaintext over HTML.
+      mu4e-view-prefer-html nil ;; More dissuasion from using HTML.
+      mu4e-view-show-images t
+      mu4e-view-show-addresses t
+      smtpmail-queue-mail nil)
+(add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
+(add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+(add-hook 'message-mode-hook (lambda () ;; Don't let Mu4e add newlines.
+			       (use-hard-newlines -1)))
+(add-hook 'mu4e-headers-mode-hook
+	  (defun mu4e-change-head()
+	    (interactive)
+	    (setq mu4e-headers-fields `((:date . 22)
+					(:flags . 6)
+					(:from . 22)
+					(:thread-subject . ,(- (window-body-width) 70))
+					(:size . 7)))))
+(add-hook 'mu4e-headers-mode-hook
+	  (lambda ()
+	    (setq display-line-numbers nil)))
+(add-hook 'mu4e-view-mode-hook
+	  (lambda()
+	    (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
+	    (local-set-key (kbd "<tab>") 'shr-next-link)
+	    (local-set-key (kbd "<backtab>") 'shr-previous-link)
+	    ))
+#+END_SRC
+
+** Mu4e Dependencies
 
 #+BEGIN_SRC shell
-  sudo apt install sqlite3
+sudo apt install mu4e isync html2text gnupg2
+#+END_SRC 
+
+* OB-Restclient
+
+OB-Restclient has been a joy to use. If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. I'm debating using Org-Babel to add literate programming to all of my source code and tangling it out for compiling and running. My only reservation with this is that this is not commonplace, meaning that 1) I would have to live without it on projects that I don't own and 2) anyone who might want to contribute to a project of mine would have to deal with org-babel-tangle.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'restclient)
+(org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
 #+END_SRC
 
-Additionally, Org-Roam has nifty protocol support to enable external applications to send information to Emacs. Org has this support as well, but I wasn't able to get it working properly. Org-Roam seems to have gotten this down-pat because it worked straight away and was simpler to set up than Org based on the information I found. First, I created an application for other applications to use to send data to Emacs:
+* Org
 
-#+BEGIN_SRC
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'org)
+(require 'org-protocol)
+(defun generate-post ()
+  (setq post-title (read-string "Title: "))
+  (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
+  (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/drafts"))
+(defun generate-reference (title url body))
+(defun org-export-latex-remove-labels (s backend info)
+  (when (org-export-derived-backend-p org-export-current-backend 'latex)
+    (replace-regexp-in-string "\\\\label{sec:org[a-z0-9]+}\n" "" s)))
+(defun org-toggle-emphasis-markers ()
+  "Toggle hiding/showing of org emphasis markers."
+  (interactive)
+  (if org-hide-emphasis-markers
+      (set-variable 'org-hide-emphasis-markers nil)
+    (set-variable 'org-hide-emphasis-markers t))
+  (org-mode-restart))
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)    ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+(define-prefix-command 'ring-map)
+(setq org-capture-templates
+      '(("e" "event" plain (function (lambda ()
+				       (let ((path (read-file-name "Select file:")))
+					 (find-file path)
+					 (goto-char 0)
+					 (if (search-forward "* Reference" nil t)
+					     (progn
+					       (org-end-of-subtree)
+					       (newline))
+					   (progn
+					     (goto-char (point-max))
+					     (newline)
+					     (insert "* Reference")
+					     (newline))
+					   ))))
+	 "\n** %^{Title}\nSCHEDULED: %(org-insert-timestamp (org-read-date nil t \"+1y\"))\n:PROPERTIES:\n:REF: %l\n:STYLE: habit\n:END:\n\n%(unless (string= (string-trim \"%i\") \"\")(format \"#+begin_quote\n%s\n#+end_quote\" \"%i\"))\n")
+	("j" "journal" plain (file+datetree "~/org/journal.org")
+	 "")
+	("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+	 "* %a\n")
+	("p" "post" plain (file generate-post)
+	 "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)")
+	("r" "recipe" entry (file+headline "~/org/recipes.org" "Recipes")
+	 "%(format \"* %s\nSCHEDULED: %s\n\n|Quantity|Unit|Ingredient|Notes|\n|----%?\n\n\" (read-string \"Recipe name:\") (org-insert-timestamp (org-read-date nil t \"+1y\")))")
+	("s" "skill" plain (function (lambda ()
+				       (let ((path (read-file-name "Select file:")))
+					 (find-file path)
+					 (goto-char 0)
+					 (if (search-forward "* Reference" nil t)
+					     (progn
+					       (org-end-of-subtree)
+					       (newline))
+					   (progn
+					     (goto-char (point-max))
+					     (newline)
+					     (insert "* Reference")
+					     (newline))))))
+	 "\n** %^{Title}\n:PROPERTIES:\n:REF: %l\n:STYLE: habit\n:END:\n\n%(unless (string= (string-trim \"%i\") \"\")(format \"#+begin_quote\n%s\n#+end_quote\" \"%i\"))\n")
+	("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
+	 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
+      org-edit-src-content-indentation 0
+      org-directory "~/org"
+      org-export-allow-bind-keywords t
+      org-hide-emphasis-markers t
+      org-hide-leading-stars t
+      org-highest-priority ?A
+      org-lowest-priority ?E)
+(org-load-modules-maybe t)
+(org-reload) ;; Noticed interactive org-export wasn't working properly unless calling this.
+(define-key org-mode-map (kbd "<M-return>") nil)
+(define-key org-mode-map (kbd "(") 'autopair-insert)
+(define-key org-mode-map (kbd ")") 'autopair-insert)
+(define-key org-mode-map (kbd "[") 'autopair-insert)
+(define-key org-mode-map (kbd "]") 'autopair-insert)
+(define-key org-mode-map (kbd "{") 'autopair-insert)
+(define-key org-mode-map (kbd "}") 'autopair-insert)
+(define-key org-mode-map (kbd "\"") 'autopair-insert)
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+(add-hook 'org-mode-hook (lambda ()
+			   (electric-indent-local-mode -1)
+			   (variable-pitch-mode)
+			   (setq truncate-lines nil)))
+(font-lock-add-keywords 'org-mode '(("^\\*+ " (0 (compose-region (match-beginning 0) (match-end 0) "\u200b")))))
+;; (setq org-export-filter-final-output-functions '(org-export-latex-remove-labels))
+#+END_SRC
+  
+* Org-Roam
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(setq org-roam-v2-ack t)
+(require 'org)
+(require 'org-roam)
+(require 'org-roam-protocol)
+(setq org-roam-capture--file-name-default "%<%Y%m%d>"
+      org-roam-capture-templates '(("d" "default" plain "%?"
+				    :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+						       "#+title: ${title}\n")
+				    :unnarrowed t))
+      org-roam-completion-system 'ido
+      org-roam-graph-edge-extra-config '(
+					 ("color" . "green")
+					 ("fillcolor" . "green"))
+      org-roam-graph-extra-config '(
+				    ("bgcolor" . "lightgray"))
+      org-roam-graph-node-extra-config '(
+					 ("color" . "skyblue")
+					 ("fillcolor" . "skyblue")
+					 ("fontname" . "Arial")
+					 ("style" . "filled")))
+(setq org-roam-directory "/home/andy/nothingissimple")
+(org-roam-setup)
+#+END_SRC
+
+** Org-Roam Dependencies
+
+Org-Roam manages nodes in a SQLite database, so that needs to be installed:
+
+#+BEGIN_SRC sh :tangle yes :padline no
+sudo apt install sqlite3
+#+END_SRC
+
+  Additionally, Org-Roam has nifty protocol support to enable external applications to send information to Emacs. Org has this support as well, but I wasn't able to get it working properly. Org-Roam seems to have gotten this down-pat because it worked straight away and was simpler to set up than Org based on the information I found. First, I created an application for other applications to use to send data to Emacs:
+
+  #+BEGIN_SRC :tangle no
 [Desktop Entry]
 Name=Org-Protocol
 Exec=emacsclient %u
@@ -742,441 +769,119 @@ Type=Application
 Terminal=false
 Categories=System;
 MimeType=x-scheme-handler/org-protocol;
+  #+END_SRC
+
+  Now, other applications just need to be told to use this application. In a browser, for example, creating a bookmarklet lets me send information to Emacs using Roam-Ref:
+
+  #+BEGIN_SRC javascript :tangle no
+  javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)+'&body='+encodeURIComponent(window.getSelection())
+  #+END_SRC
+
+* Ox-SlimHTML
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'ox-slimhtml)
+(defun ab/org-html-table (table contents info)
+  "Transcodes a TABLE from Org to HTML.
+	CONTENTS is the contents of the table.
+	INFO is a plist used as a communication channel."
+  (let ((caption (car (car (car (org-element-property :caption table))))))
+    (concat "<table>\n"
+	    (when caption
+	      (format "<caption>%s</caption>\n" caption))
+	    contents
+	    "</tbody>\n</table>")))
+
+(defun ab/org-html-table-row (table-row contents info)
+  "Transcodes a TABLE-ROW from Org to HTML.
+	CONTENTS is the contents of the row.
+	INFO is a plist used as a communication channel."
+  (if contents
+      (concat (when (eq 1 (org-export-table-row-group table-row info))
+		"<thead>\n")
+	      "<tr>\n"
+	      contents
+	      "</tr>"
+	      (when (eq 1 (org-export-table-row-group table-row info))
+		"</thead>\n<tbody>\n"))))
+
+(defun ab/export-as-html
+    (&optional async subtreep visible-only body-only ext-plist)
+  (interactive)
+  (org-export-to-buffer 'trimhtml "*Org TRIMHTML Export*"
+    async subtreep visible-only body-only ext-plist
+    (lambda () (set-auto-mode t))))
+
+(defun ab/export-to-html (&optional async subtreep visible-only body-only ext-plist)
+  (interactive)
+  (let* ((extension (concat "." (or (plist-get ext-plist :html-extension)
+				    org-html-extension
+				    "html")))
+	 (file (org-export-output-file-name extension subtreep))
+	 (org-export-coding-system org-html-coding-system))
+    (org-export-to-file 'trimhtml file
+      async subtreep visible-only body-only ext-plist ())))
+
+(defun ab/org-html-table-cell (table-cell contents info)
+  "Transcodes a TABLE-CELL from Org to HTML.
+	CONTENTS is the contents of the cell.
+	INFO is a plist used as a communication channel."
+  (if (eq 1 (org-export-table-row-group (org-element-property :parent table-cell) info))
+      (concat "<th>" contents "</th>")
+    (concat "<td>" contents "</td>\n")))
+
+(org-export-define-derived-backend 'trimhtml
+    'slimhtml
+  :menu-entry '(?a "trimhtml" 
+		   ((?H "As trimhtml buffer" ab/export-as-html)
+		    (?h "As trimhtml file" ab/export-to-html)))
+  :translate-alist
+  '((template . ox-slimhtml-template)
+    (link . ox-slimhtml-link)
+    (code . ox-slimhtml-verbatim)
+    (headline . ox-slimhtml-headline)
+    (table . ab/org-html-table)
+    (table-cell . ab/org-html-table-cell)
+    (table-row . ab/org-html-table-row))
+  :options-alist
+  '((:page-type "PAGE-TYPE" nil nil nil)
+    (:html-use-infojs nil nil nil)
+    (:description nil nil nil)
+    (:category nil nil nil)))
 #+END_SRC
+  
+* Rainbow Delimiters
 
-Now, other applications just need to be told to use this application. In a browser, for example, creating a bookmarklet lets me send information to Emacs using Roam-Ref:
+For me, Rainbow Delimiters has saved a lot of time tracking down parentheses and brackets in Rust and what Elisp I am willing to commit to.
 
-#+BEGIN_SRC
-javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)+'&body='+encodeURIComponent(window.getSelection())
-#+END_SRC
-
-*** DISABLED Org-Roam Server
-
-Org-Roam Server provides a novel way of interacting with your Org-Roam files. Most of the appeal is visual to my knowledge, and the functionality it provides is available within Emacs. =org-roam-server-mode= must be called for the server to start.
-
-*NOTE:* Org-Roam Server has [[* Org-Roam Server Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'org-roam-server)
-  (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8000
-        org-roam-server-authenticate nil
-        org-roam-server-export-inline-images t
-        org-roam-server-serve-files nil
-        org-roam-server-served-file-extensions '("pdf")
-        org-roam-server-network-poll t
-        org-roam-server-network-arrows nil
-        org-roam-server-network-label-truncate t
-        org-roam-server-network-label-truncate-length 60
-        org-roam-server-network-label-wrap-length 20)
-  (org-roam-server-mode)
-#+END_SRC
-
-**** Org-Roam Server Dependencies
-
-#+BEGIN_SRC shell
-  sudo apt install graphviz
-#+END_SRC
-
-*** ACTIVE Ox-SlimHTML
-
-Currently, I use SlimHTML to export a =links.org= file I keep as my bookmarks. I'm trying out storing my bookmarks in an Org file so I can add notes. I don't know if this is a useful workflow yet so this might go on the chopping block. I also use a backend derived from Ox-Slimhtml to manage web content, but most of that configuration is in my website's repo. I have a pared down version here for one-off file exports to provide the similar transcoders to the ones I made for my website.
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'ox-slimhtml)
-  (require 'ox-slimhtml)
-  (defun ab/org-html-table (table contents info)
-    "Transcodes a TABLE from Org to HTML.
-          CONTENTS is the contents of the table.
-          INFO is a plist used as a communication channel."
-    (let ((caption (car (car (car (org-element-property :caption table))))))
-      (concat "<table>\n"
-              (when caption
-                (format "<caption>%s</caption>\n" caption))
-              contents
-              "</tbody>\n</table>")))
-
-  (defun ab/org-html-table-row (table-row contents info)
-    "Transcodes a TABLE-ROW from Org to HTML.
-          CONTENTS is the contents of the row.
-          INFO is a plist used as a communication channel."
-    (if contents
-        (concat (when (eq 1 (org-export-table-row-group table-row info))
-                  "<thead>\n")
-                "<tr>\n"
-                contents
-                "</tr>"
-                (when (eq 1 (org-export-table-row-group table-row info))
-                  "</thead>\n<tbody>\n"))))
-
-  (defun ab/export-as-html
-      (&optional async subtreep visible-only body-only ext-plist)
-    (interactive)
-    (org-export-to-buffer 'trimhtml "*Org SLIMHTML Export*"
-      async subtreep visible-only body-only ext-plist
-      (lambda () (set-auto-mode t))))
-
-  (defun ab/export-to-html (&optional async subtreep visible-only body-only ext-plist)
-    (interactive)
-    (let* ((extension (concat "." (or (plist-get ext-plist :html-extension)
-                                      org-html-extension
-                                      "html")))
-           (file (org-export-output-file-name extension subtreep))
-           (org-export-coding-system org-html-coding-system))
-      (org-export-to-file 'trimhtml file
-        async subtreep visible-only body-only ext-plist ())))
-
-  (defun ab/org-html-table-cell (table-cell contents info)
-    "Transcodes a TABLE-CELL from Org to HTML.
-          CONTENTS is the contents of the cell.
-          INFO is a plist used as a communication channel."
-    (if (eq 1 (org-export-table-row-group (org-element-property :parent table-cell) info))
-        (concat "<th>" contents "</th>")
-      (concat "<td>" contents "</td>\n")))
-
-  (org-export-define-derived-backend 'trimhtml
-      'slimhtml
-    :menu-entry '(?a "trimhtml" 
-                     ((?H "As trimhtml buffer" ab/export-as-html)
-                      (?h "As trimhtml file" ab/export-to-html)))
-    :translate-alist
-    '((template . ox-slimhtml-template)
-      (link . ox-slimhtml-link)
-      (code . ox-slimhtml-verbatim)
-      (headline . ox-slimhtml-headline)
-      (table . ab/org-html-table)
-      (table-cell . ab/org-html-table-cell)
-      (table-row . ab/org-html-table-row))
-    :options-alist
-    '((:page-type "PAGE-TYPE" nil nil nil)
-      (:html-use-infojs nil nil nil)
-      (:description nil nil nil)
-      (:category nil nil nil)))
-#+END_SRC
-
-*** ACTIVE Simple-HTTPd
-
-I use Simple-HTTPd to host my website for local debugging.
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'simple-httpd)
-  (require 'simple-httpd)
-  (setq httpd-root "~/nothingissimple/site")
-#+END_SRC
-** Prose
-
-I like using Emacs as a code editor and for creative writing. Emacs doesn't have a lot of the things a standard word processor does (especially by default), but I've found the packages that provide a better experience for me than Word or any other word processor. It's not quite the same and relies on exporting to PDFs for pretty output via Auctex. To use Auctex you need to install a few things:
-
-*NOTE:* Prose has [[* Prose Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(defun set-printing-font ()
-  "Set font to Gentium."
-  (face-remap-add-relative 'default '(:family "Gentium")))
-#+END_SRC
-
-*** Prose Dependencies
-
-#+BEGIN_SRC shell
-  sudo apt install fonts-sil-gentium
-#+END_SRC
-
-*** ACTIVE Auctex
-
-LaTeX support is provided by Auctex. In general I use Org for writing, but if I need something typeset, Auctex is what I use. I like having =C-c r= point to a run-like function, and generating a preview is about as close to "running" a LaTeX file as you can get in my opinion, so that's what I went with.
-
-*NOTE:* Auctex has [[* Auctex Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'auctex)
-#+END_SRC
-
-**** Auctex Dependencies
-
-#+BEGIN_SRC shell
-  sudo apt install texinfo auctex
-#+END_SRC
-
-*** ACTIVE Company-Auctex
-
-I just love Company and want to use it wherever I can.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'company-auctex)
-#+END_SRC
-
-*** ACTIVE LaTeX Preview Pane
-
-I like Latex Preview Pane because it's an easy way to get side-by-side LaTeX editing and PDF previewing, as well as error highlighting. Dynamic inline rendering is often spotty as you add more packages, but the pane seems to work well so far.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'latex-preview-pane)
-#+END_SRC
-
-*** ACTIVE Langtool
-
-Langtool provides some basic spelling and grammar errors. Presently I'm using Flycheck for spelling, so hopefully this proves better than I'm expecting on the grammar front. This package requires [[https://dev.languagetool.org/http-server][LanguageTool]] and Java. Download the LanguageTool library and extract it to =~/.local/lib/= and install Java.
-
-If you want to use LanguageTool outside of Emacs, the configuration is a little different. I'm debating setting up a Systemd service for LanguageTool and configuring Langtool to use that instead of spinning up its own instance. For now, this works.
-
-*NOTE:* Langtool has [[* Langtool Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'langtool)
-(setq langtool-language-tool-server-jar
-"~/.local/lib/LanguageTool-5.1/languagetool-server.jar")
-#+END_SRC
-
-**** Langtool Dependencies
-
-#+BEGIN_SRC shell
-  sudo apt install openjdk-14-jre-headless
-#+END_SRC
-
-*** ACTIVE Merriam-Webster Thesaurus
-
-This marks an important milestone for my view to how I write. This is something I always wanted. I always hated having to break my immersion in my writing to go to a browser to look up a synonym for something. I haven't used this extensively yet, but I think it will make a huge difference for me. 
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'mw-thesaurus)
-#+END_SRC
-
-*** ACTIVE Olivetti
-
-Some parts of a standard word processor I missed until I learned about Olivetti. I mostly wanted the document centered on the page with a fixed width. I'm still exploring its capabilities, but if more is desired, Olivetti might not be the way to go.
-
-I like the idea of keeping code and more creative writing separate, so I wanted a font to enforce that separation.
-
-I kind of fiddled around with different widths in Olivetti mode to see what felt right for a typical document. I go back and forth on which file types to trigger Olivetti on. I've put in Markdown and org, but those don't feel right a lot of the time. I always go back to plain old .txt files, though.
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'olivetti)
-  (require 'olivetti)
-  (setq olivetti-body-width 77)
-  (add-to-list 'auto-mode-alist '("\\.txt\\'" . olivetti-mode))
-  ;; (add-hook 'olivetti-mode-hook
-  ;;          (lambda()
-  ;;            (setq display-line-numbers nil)))
-  (add-hook 'olivetti-mode-hook 'set-printing-font)
-  (add-hook 'olivetti-mode-hook 'flyspell-mode)
-  (add-hook 'olivetti-mode-hook (lambda ()
-    (setq olivetti-body-width 84)))
-#+END_SRC
-
-*** DISABLED LSP-LaTeX
-
-WIP
-
-*NOTE:* LSP-LaTeX has 
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'lsp-latex)
-#+END_SRC
-
-**** LSP-LaTeX Dependencies
-
-Requires installing TeXLab. Releases can be found [[https://github.com/latex-lsp/texlab/releases][here]]. Extract the file and copy to =~/.local/bin/=.
-
-** ACTIVE Code Configuration
-
-For code, =toggle-comment-on-line= has been an invaluable function that I use all of the time as a keybinding. I have the various binaries that Emacs needs access to for programming languages (for linting, LSP connections, etc) installed at =~/.local/bin=, so I have those settings set up here.
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (defun toggle-comment-on-line ()
-    "Comment or uncomment current line."
-    (interactive)
-    (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
-  (add-to-list 'exec-path "~/.local/bin")
-  (setenv "PATH" (concat "~/.local/bin:" (getenv "PATH")))
-  (define-key prog-mode-map (kbd "C-c h") 'hs-toggle-hiding)
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-  (add-hook 'prog-mode-hook 'hl-line-mode)
-  (add-hook 'prog-mode-hook 'hs-minor-mode)
-  (add-hook 'prog-mode-hook (lambda ()
-                              (setq indent-tabs-mode nil
-                                    display-line-numbers-width-start t)))
-#+END_SRC
-
-*** ACTIVE Debug Adapter Protocol
-
-WIP
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'dap-mode)
-(require 'dap-gdb-lldb)
-#+END_SRC
-
-*** ACTIVE LSP
-
-So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
-
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'lsp-mode)
-  (require 'lsp-mode)
-  ;; Previously this required with-eval-after-load lsp
-  (setq lsp-modeline-diagnostics-scope :project
-        lsp-signature-doc-lines 1)
-  (define-key lsp-mode-map (kbd "C-c `") 'lsp-restart-workspace)
-  (define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
-  (define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
-  (define-key lsp-mode-map (kbd "C-c s") 'rg)
-  (define-key lsp-mode-map (kbd "C-c e") 'lsp-rename)
-  (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
-#+END_SRC
-
-*** ACTIVE HL-Todo
-
-HL-Todo highlights to-do items in buffers where the mode is active. Previously, I used a package called FIC mode, which is supposed to only highlight to-dos in strings and comments but it didn't work as advertised.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'hl-todo)
-(require 'hl-todo)
-(add-hook 'prog-mode-hook 'hl-todo-mode)
-#+END_SRC
-
-*** ACTIVE LSP-Treemacs
-
-I haven't actually used Treemacs-Magit yet. It was a package I read about and was convinced I needed. I am only just starting to get comfortable with Magit after spending many months using the CLI. I imagine I will have more to say about Treemacs-Magit soon.
-I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'lsp-treemacs)
-#+END_SRC
-
-*** ACTIVE Magit
-
-I am not sure if Magit should be in this section or a more general configuration section. I'm seeing more and more places outside of code where source control would be useful.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'magit)
-#+END_SRC
-
-*** ACTIVE MHTML
-
-MHTML is par for every other package I've used for HTML templates. I don't have any real configuration for it, just a bunch of snippets.
-
-*** ACTIVE Python
-
-If you are not interested in Python development, you can set the state of all subheadings to =DISABLED= with no side-effects. If you are interested, this configuration uses Python 3. Currently my system is using Python 3.8.
-
-For the most part, the keybindings I like for Python development are covered by LSP, so the only thing here, really, are Electric-Pair completions. Even those are pretty universal and probably better suited for the general code settings section. In order to use Emacs for Python you will of course need Python and pip:
-
-*NOTE:* Python has [[* Python Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require 'python)
-(define-key python-mode-map "'" 'electric-pair)
-(define-key python-mode-map "\"" 'electric-pair)
-(define-key python-mode-map "(" 'electric-pair)
-(define-key python-mode-map "[" 'electric-pair)
-(define-key python-mode-map "{" 'electric-pair)
-(add-hook 'python-mode-hook 'lsp)
-#+END_SRC
-
-**** Python Dependencies
-
-#+BEGIN_SRC shell
-  sudo apt install python3.8 python3-pip
-#+END_SRC
-
-**** ACTIVE Blacken
-
-Currently, I use Blacken for Python code formatting.
-
-*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
-
-*NOTE:* Blacken has [[* Blacken Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'blacken)
-(require 'blacken)
-(require 'python)
-(define-key python-mode-map (kbd "C-c f") 'blacken-buffer)
-#+END_SRC
-
-***** Blacken Dependencies
-
- #+BEGIN_SRC shell
-   pip3 install black
- #+END_SRC
-
-**** ACTIVE LSP-Pyls
-
-Python language server provides the backend for LSP-mode. The one thing I dislike about Python and pep8 in general is the "line too long" suggestions. 
-
-*NOTE* Assumes you have installed packages for [[* Python Dependencies][Python]]
-
-*NOTE* LSP-Pyls has [[* LSP-Pyls Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(setq lsp-pyls-plugins-pycodestyle-ignore '("E501"))
-#+END_SRC
-
-***** LSP-Pyls Dependencies
-
-#+BEGIN_SRC shell
-  pip3 install 'python-language-server[all]'
-#+END_SRC
-
-**** ACTIVE Pyvenv
-
-I use Pyvenv to interface with my projects' virtual environments. 
-
-*NOTE:* Assumes you have installed packages for [[* Python Dependencies][Python]].
-
-*NOTE:* Pyvenv has [[* Pyvenv Dependencies][dependencies]].
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'pyvenv)
-(setq pyvenv-default-virtual-env-name "venv")
-(define-key python-mode-map (kbd "C-c r")
-   (lambda()
-     (interactive)
-     (compile (concat "venv/bin/python3 " (buffer-name)))))
-(add-hook 'python-mode-hook 'pyvenv-mode)
-#+END_SRC
-
-***** Pyvenv Dependencies
-
-#+BEGIN_SRC shell
-  sudo apt install python3-venv
-#+END_SRC
-
-*** ACTIVE Rainbow Delimiters
-
-For me, Rainbow Delimiters has saved me a lot of time tracking down parentheses and brackets in Rust and what Elisp I am willing to commit to.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'rainbow-delimiters)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 #+END_SRC
 
-*** ACTIVE Restclient
+* Restclient
 
 I'm hoping to use Restclient as a stand-in for Postman. I found an integration with Org-Babel that has been great to use. For me, Org-Babel is a must for Restclient.
 
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'restclient)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'restclient)
 #+END_SRC
 
-**** ACTIVE OB-Restclient
+* Ripgrep
 
-OB-Restclient has been a joy to use. If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. I'm debating using Org-Babel to add literate programming to all of my source code and tangling it out for compiling and running. My only reservation with this is that this is not commonplace, meaning that 1) I would have to live without it on projects that I don't own and 2) anyone who might want to contribute to a project of mine would have to deal with org-babel-tangle.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'ob-restclient)
-(require 'restclient)
-(org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'rg)
 #+END_SRC
 
-*** ACTIVE Rust
+** Ripgrep Dependencies
 
-Development for Rust is pretty low-level at this point. If Rust development is not desired, the state of the above heading can be changed to =DISABLED= with no side-effects.
+#+BEGIN_SRC sh :tangle yes :padline no
+sudo apt install ripgrep
+#+END_SRC
 
-*NOTE:* Rust has [[* Rust Dependencies][dependencies]].
+* Rust
 
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'rust-mode)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'rust-mode)
 (require 'lsp-mode)
 (defun cargo-build (arg)
@@ -1205,42 +910,51 @@ Development for Rust is pretty low-level at this point. If Rust development is n
     (compile "cargo test -- --nocapture")))
 (define-key rust-mode-map (kbd "C-c C-f") nil)
 (add-hook 'rust-mode-hook 'lsp)
+(add-hook 'rust-mode-hook 'highlight-todo)
 #+END_SRC
 
-**** Rust Dependencies
+** Rust Dependencies
 
 To use Rust, it must first be [[https://www.rust-lang.org/tools/install][installed]]. Once that's done, install Rust-Analyzer by cloning the repository:
 
-#+BEGIN_SRC shell :tangle no
-  git clone https://github.com/rust-analyzer/rust-analyzer.git
-  cd rust-analyzer
-  cargo xtask install --server
+#+BEGIN_SRC sh :tangle no
+git clone https://github.com/rust-analyzer/rust-analyzer.git
+cd rust-analyzer
+cargo xtask install --server
 #+END_SRC
 
 The =rust-analyzer= binary should now be visible under =~/.cargo/bin/=. Ensure Emacs knows about the path by adding the proper paths to the =add-to-list= and =setenv= configuration items in [[* Rust][Rust]] config.
 
 To enable various IDE features, =rust-src= is required:
 
-#+BEGIN_SRC shell :tangle no
-  rustup component add rust-src
+#+BEGIN_SRC sh :tangle no
+rustup component add rust-src
 #+END_SRC
 
-**** ACTIVE Rust Flycheck
+* Rust Flycheck
 
 Rust Flycheck provides syntax highlighting.
 
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'flycheck-rust)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'flycheck)
 (require 'flycheck-rust)
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)
 #+END_SRC
 
-*** ACTIVE SQL
+* SimpleHTTPd
+
+I use Simple-HTTPd to host my website for local debugging.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'simple-httpd)
+(setq httpd-root "~/nothingissimple/site")
+#+END_SRC
+
+* SQL
 
 My configuration also provides some customization of Emacs' SQL mode. My workflow for SQL usually consists of two buffers: one of a SQL file and the other is the SQL interactive buffer. The SQL file is helpful because I can save and track my queries easily without thinking about it and the keeping the SQLi buffer separate is nice because I can disable font-lock so query results don't have silly distracting faces. The first function disables font-lock for SQL Interactive mode and the second sets up the SQL Interactive-mode buffer automatically when SQL mode is enabled (either by opening a SQL buffer or manually activating SQL mode). Here, I've set up a list of connections I use frequently. I was surprised by how much of a quality-of-life improvement this was. I made a couple of keybindings for sending region and the whole buffer to the SQL Interactive mode buffer. I believe there are existing bindings for this, but I wanted something more in keeping with the rest of my keybinding setup. 
 
-#+BEGIN_SRC emacs-lisp :padline no
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'sql)
 (defun my-sql-disable-font-lock (orig-fun &rest args)
   "Disable syntax highlighting for SQL output."
@@ -1253,121 +967,87 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
       (comint-send-string proc "\\set ECHO queries\n"))))
 (setq sql-connection-alist
       '(
-        (home (sql-product 'postgres)
-              (sql-port 5432)
-              (sql-server "localhost")
-              (sql-user "postgres")
-              (sql-database "savetheglobe"))
-        (savetheglobe_home (sql-product 'postgres)
-                           (sql-port 5432)
-                           (sql-server "localhost")
-                           (sql-user "postgres")
-                           (sql-database "savetheglobe"))
-        (savetheglobe_heroku (sql-product 'postgres)
-                             (sql-port 5432)
-                             (sql-server "ec2-52-87-22-151.compute-1.amazonaws.com")
-                             (sql-user "nrsgquqvfevzbu")
-                             (sql-database "ddpfocn81le95m"))))
+	(home (sql-product 'postgres)
+	      (sql-port 5432)
+	      (sql-server "localhost")
+	      (sql-user "postgres")
+	      (sql-database "savetheglobe"))
+	(savetheglobe_home (sql-product 'postgres)
+			   (sql-port 5432)
+			   (sql-server "localhost")
+			   (sql-user "postgres")
+			   (sql-database "savetheglobe"))
+	(savetheglobe_heroku (sql-product 'postgres)
+			     (sql-port 5432)
+			     (sql-server "ec2-52-87-22-151.compute-1.amazonaws.com")
+			     (sql-user "nrsgquqvfevzbu")
+			     (sql-database "ddpfocn81le95m"))))
 
 (define-key sql-mode-map (kbd "C-c r") 'sql-send-region)
 (define-key sql-mode-map (kbd "C-c R") 'sql-send-buffer)
 (advice-add 'sql-interactive-mode :around 'my-sql-disable-font-lock)
 (add-hook 'sql-mode-hook 'sql-set-sqli-buffer)
 (add-hook 'sql-mode-hook '(lambda ()
-                            (setq truncate-lines t
-                                  word-wrap nil)))
+			    (setq truncate-lines t
+				  word-wrap nil)))
 ;; (add-hook 'sql-login-hook 'my-sql-login-hook)
 #+END_SRC
 
-***** ACTIVE SQLUp
+* SQLUp
 
 SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs as well.
 
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'sqlup-mode)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'sql)
 (add-hook 'sql-mode-hook 'sqlup-mode)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
 #+END_SRC
 
-*** ACTIVE Treemacs-Magit
+* Treemacs-Magit
 
-I haven't had the opportunity to use this extensively yet. Since I'm just getting used to Magit, I'm wondering if this will come in handy. It might not.
+I haven't had the opportunity to use this extensively yet. It might not.
 
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'treemacs-magit)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'treemacs-magit)
+#+END_SRC
+  
+* Vertico
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(vertico-mode)
 #+END_SRC
 
-** Work
+* Vterm
 
-Integrations with Jira and Slack
+I've been tinkering in the command line and documenting things in Emacs lately, so I've been using ~shell~ to make it easier to get command line output into documents. It works well enough, but I've wanted to try ~vterm~ to see what difference it makes. It's supposed to be a lot faster for commands with a lot of output, but I feel like I notice a difference even with simple commands. It also has better support for things like ~fish~ and themes.
 
-*** DISABLED Ejira
+*NOTE:* Vterm has [[* Vterm Dependencies][dependencies]].
 
-I'm working on a couple of programming projects outside of work, one with another person. He wanted to use Jira, and I noticed that there are a couple of Jira integrations for Emacs, Org-Jira and Ejira. I chose Ejira because it takes advantage of Jira's REST API, as opposed to Org-Jira which is SOAP-based. It's much easier for me to debug JSON payloads as opposed to XML. Currently, the Ejira files are included with my config for two reasons: one is that Ejira is not on MELPA yet, and the second is that there's some deal-breaking functionality missing from the maintained branch, mostly mentioning users.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'cl-lib)
-(require-package 'dash)
-(require-package 'dash-functional)
-(require-package 'language-detection)
-(require-package 'ox-jira)
-(require-package 's)
-(require 'ejira)
-(setq jiralib2-url "https://jasonandandybuildsomething.atlassian.net"
-      jiralib2-auth 'token
-      jiralib2-user-login-name "andrewwburch@gmail.com"
-      jiralib2-token (auth-source-pick-first-password
-                      :host "jasonandandybuildsomething.atlassian.net"
-                      :user "andrewwburch@gmail.com")
-      ejira-org-directory "~/.jira"
-      ejira-projects '("SB")
-      ejira-priorities-alist '(("Highest" . ?A)
-                               ("High"    . ?B)
-                               ("Medium"  . ?C)
-                               ("Low"     . ?D)
-                               ("Lowest"  . ?E))
-      ejira-todo-states-alist '(("To Do"  . 1)
-                                ("Doing" . 2)
-                                ("Test"  . 3)
-                                ("Done"  . 4))
-      ejira-org-todo-keywords-alist '(("SB" . ("TODO"
-                                             "DOING"
-                                             "TEST"
-                                             "DONE")))
-      org-id-track-globally t)
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'vterm)
 #+END_SRC
 
-*** DISABLED Slack
-
-I've proved out this slack integration and got it to a working state.
-
-#+BEGIN_SRC emacs-lisp :padline no
-(require-package 'slack)
-(require 'slack)
-(setq slack-prefer-current-team t)
-(slack-register-team
-  :name "Team Engineer"
-  :default t
-  :token (auth-source-pick-first-password
-          :host "teamengineer.slack.com"
-          :user "andrewwburch@gmail.com"))
-(slack-start)
-#+END_SRC
-
-*** DISABLED Discord
-
-Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elcord-mode=. If you're not on Discord and the mode's active, you'll keep getting notifications that Elcord is trying to connect. I'm not always on Discord, so this gets annoying.
-#+BEGIN_SRC emacs-lisp :padline no
-  (require-package 'elcord)
-  (require 'elcord)
-#+END_SRC
-
-**** Discord Dependencies
-First install Bitlbee:
+** Vterm Dependencies
 
 #+BEGIN_SRC shell :padline no
-  sudo apt install bitlbee-dev
+sudo apt install cmake libtool-bin
 #+END_SRC
 
-Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
+* Yasnippet
+
+I am slowly using YASnippet more, I'm considering adding an integration with Company for snippet completion, but part of me thinks that at that point I have a bigger problem.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(yas-global-mode 1)
+#+END_SRC
+
+* Wrapping Up
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(provide 'config)
+;;; config.el ends here
+#+END_SRC
+
+# Local Variables:
+# after-save-hook: org-babel-tangle
+# End:

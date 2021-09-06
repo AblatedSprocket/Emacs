@@ -14,6 +14,7 @@ request/
 transient/
 url/
 var/
+custom.el
 ido.last
 network-security.data
 org-roam.db
