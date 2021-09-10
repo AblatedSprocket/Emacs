@@ -56,7 +56,7 @@ To run an Emacs client, either run:
 emacsclient -create-frame --alternate-editor=""
 #+END_SRC
 
-Or, create a Desktop entry in =~/.local/share/applications/emacsclient.desktop=:
+Or, what I do is create a Desktop entry in =~/.local/share/applications/emacsclient.desktop=:
 
 #+BEGIN_EXAMPLE
 [Desktop Entry]
@@ -65,12 +65,20 @@ GenericName=Text Editor
 Comment=Emacs Editor
 MimeType=text/english;text/plain
 Exec=emacsclient -create-frame --alternate-editor=""
-Icon=emacs
+Icon=/usr/share/icons/custom/emacs-client.png
 Type=Application
 Terminal=false
 Categories=Development;TextEditor;Utility;
 StartupWMClass=Emacs
 #+END_EXAMPLE
+
+I'm using an icon that I shamelessly stole the icon from the Awesome Emacs Keymap extension in Visual Studio Code. I had to copy it to the directory specified in =emacs-client.desktop=:
+
+#+BEGIN_SRC sh
+cd /usr/share/icons
+sudo mkdir custom
+sudo mv ~/.config/emacs/emacs-client.png /usr/share/icons/custom/
+#+END_SRC
 
 * Org as a MIME type
 
