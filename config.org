@@ -91,7 +91,9 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (setq doom-themes-enable-bold t
       doom-themes-enable-italic t)
 (doom-themes-org-config)
-(load-theme 'doom-snazzy t)
+(if (daemonp)
+    (load-theme 'doom-nord t)
+(load-theme 'doom-nord-light t))
 #+END_SRC
 
 * General
@@ -101,7 +103,8 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'remember)
 (defun apply-post-frame-config ()
-  (set-cursor-color "#ffff00"))
+  ;; (set-cursor-color "#ffff00")
+)
 (defun autopair-insert (arg)
   (interactive "P")
   (let (pair)
@@ -191,34 +194,18 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 	      truncate-lines nil
 	      word-wrap t)
 (add-to-list 'default-frame-alist '(font . "Hack"))
-(custom-theme-set-faces
- 'user
- '(fixed-pitch ((t (:family "Hack"))))
- '(org-block ((t (:inherit fixed-pitch))))
- '(org-code ((t (:inherit fixed-pitch))))
- '(org-done ((t (:inherit fixed-pitch))))
- '(org-drawer ((t (:foreground "LightSkyBlue" :inherit fixed-pitch))))
- `(org-level-1 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.75))))
- `(org-level-2 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.5))))
- `(org-level-3 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.25))))
- `(org-level-4 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.1))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit fixed-pitch))))
- '(org-table ((t (:inherit fixed-pitch))))
- '(org-todo ((t (:inherit fixed-pitch))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
- '(variable-pitch ((t  (:family "Alegreya")))))
 (blink-cursor-mode 1)
 (column-number-mode 1) ;; Show column number in modeline
 (defun highlight-todo-semicolon ()
   (font-lock-add-keywords nil
-			  '(("^;;+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
-(add-hook 'elisp-mode-hook 'highlight-todo)
+			  '(("^;;+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face prepend))))
+(add-hook 'emacs-lisp-mode-hook 'highlight-todo-semicolon)
 (defun highlight-todo-slash()
   (font-lock-add-keywords nil
 			  '(("^//+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
 (fset 'yes-or-no-p 'y-or-n-p) ;; Use 'y' or 'n' instead of 'yes' or 'no' in relevant prompts.
 (global-eldoc-mode -1) ;; Disable showing function arguments in echo area.
+(global-linum-mode)
 (global-undo-tree-mode) ;; Enable this to provide decent undo functionality for Evil.
 (menu-bar-mode -1) ;; Disable menu bar UI.
 (tool-bar-mode -1) ;; Disable tool bar UI.
@@ -433,15 +420,6 @@ Obligatory change =irc.freenode.net= to =irc.libera.chat=.
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
-* HL-Todo
-
-HL-Todo highlights to-do items in buffers where the mode is active.
-
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
-(require 'hl-todo)
-(add-hook 'prog-mode-hook 'hl-todo-mode)
-#+END_SRC
-  
 * Htmlize
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
@@ -657,6 +635,23 @@ OB-Restclient has been a joy to use. If it were up to me, I would never use Post
   (let (org-log-done org-log-states)    ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (define-prefix-command 'ring-map)
+(custom-theme-set-faces
+ 'user
+ '(fixed-pitch ((t (:family "Hack"))))
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit fixed-pitch))))
+ '(org-done ((t (:inherit fixed-pitch))))
+ '(org-drawer ((t (:foreground "#78808f" :inherit fixed-pitch))))
+ `(org-level-1 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.75))))
+ `(org-level-2 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.5))))
+ `(org-level-3 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.25))))
+ `(org-level-4 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.1))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit fixed-pitch))))
+ '(org-table ((t (:inherit fixed-pitch))))
+ '(org-todo ((t (:inherit fixed-pitch))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+ '(variable-pitch ((t  (:family "Alegreya")))))
 (setq org-capture-templates
       '(("e" "event" plain (function (lambda ()
 				       (let ((path (read-file-name "Select file:")))
