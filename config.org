@@ -724,7 +724,7 @@ My Org config is getting kind of big.
 	("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
 	 "* %a\n")
 	("p" "post" plain (file generate-post)
-	 "%(format \"#+options: toc:nil num:nil\n#+title: %s\n#+slug: %s\n#+date:\n#+filetags:\n#+description:\n\n\" post-title post-file-name)")
+	 "%(format \"#+title: %s\n#+date:\n#+filetags:\n#+slug: %s\n#+category: draft\n#+options: toc:nil num:nil\n#+description:\n\n\" post-title post-file-name)")
 	("r" "recipe" entry (file+headline "~/org/recipes.org" "Recipes")
 	 "%(format \"* %s\nSCHEDULED: %s\n\n|Quantity|Unit|Ingredient|Notes|\n|----%?\n\n\" (read-string \"Recipe name:\") (org-insert-timestamp (org-read-date nil t \"+1y\")))")
 	("s" "skill" plain (function (lambda ()
