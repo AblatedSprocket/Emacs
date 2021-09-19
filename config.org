@@ -1077,6 +1077,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'vterm)
+(setq vterm-timer-delay 0.01)
 #+END_SRC
 
 ** Vterm Dependencies
