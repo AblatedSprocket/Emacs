@@ -195,6 +195,12 @@ This section contains all of the configuration related to built-in packages.
       TeX-PDF-mode nil
       x-select-enable-clipboard t
       x-select-enable-primary t)
+
+(defun toggle-comment-on-line ()
+  "Comment or uncomment current line."
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+
 (setq-default cursor-type 'bar
 	      display-line-numbers-width-start t
 	      save-place t
