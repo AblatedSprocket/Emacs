@@ -52,6 +52,7 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (straight-use-package 'company)
 (straight-use-package 'company-box)
 (straight-use-package 'consult)
+(straight-use-package 'consult-flycheck)
 (straight-use-package 'doom-themes)
 (straight-use-package 'elcord)
 (straight-use-package 'evil)
@@ -59,6 +60,7 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (straight-use-package 'evil-leader)
 (straight-use-package 'flycheck)
 (straight-use-package 'flycheck-rust)
+(straight-use-package 'flyspell-correct)
 (straight-use-package 'hl-todo)
 (straight-use-package 'htmlize)
 (straight-use-package 'langtool)
@@ -254,9 +256,24 @@ Company Box provides a better tooltip for displaying completions.
 (add-hook 'company-mode-hook 'company-box-mode)
 #+END_SRC
 
+* Consult
+
+My preferred completion engine.
+
+#+BEGIN_SRC emacs-lisp
+(setq consult-project-root-function (lambda () (cdr (project-current))))
+#+END_SRC
+
+* Consult-Flycheck
+
+#+BEGIN_SRC emacs-lisp
+(require 'consult-flycheck)
+#+END_SRC
+
 * Discord
 
 Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elcord-mode=. If you're not on Discord and the mode's active, you'll keep getting notifications that Elcord is trying to connect. I'm not always on Discord, so this gets annoying.
+
 #+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'elcord)
 #+END_SRC
@@ -311,18 +328,25 @@ I'm working on a couple of programming projects outside of work, one with anothe
 Obligatory change =irc.freenode.net= to =irc.libera.chat=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'erc)
 (setq erc-default-server "irc.libera.chat")
 #+END_SRC
   
 * Evil
 
+Emacs pinky is real thing for me. Also my config was so heavily customized its bindings didn't translate. Vim bindings translate everywhere and are better supported.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (setq evil-want-keybinding nil) ;; This needs to be set before requiring evil when using evil-collection.
 (require 'evil)
+(require 'flyspell-correct)
 (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
 (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
 (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+(define-key evil-motion-state-map (kbd "[s") 'flyspell-correct-wrapper)
+(define-key evil-motion-state-map (kbd "[S") 'evil-prev-flyspell-error)
+(define-key evil-normal-state-map (kbd "z=") 'flyspell-correct-at-point)
 ;; (define-key evil-normal-state-map "gF" 'find-file-at-point)
 ;; (define-key evil-normal-state-map "z=" 'helm-flyspell-correct) ;
 (define-key evil-window-map "q" 'kill-current-buffer)
@@ -431,7 +455,15 @@ I want to see all of the errors!
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
+* Flyspell-Correct
+
+#+BEGIN_SRC emacs-lisp
+(require 'flyspell-correct)
+#+END_SRC
+
 * Htmlize
+
+Mostly for testing Org files exported to HTML.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'htmlize)
