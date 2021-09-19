@@ -68,6 +68,7 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (straight-use-package 'magit)
 (straight-use-package 'mw-thesaurus)
 (straight-use-package 'ob-restclient)
+(straight-use-package 'orderless)
 (straight-use-package 'org-contrib)
 (straight-use-package 'org-roam)
 (straight-use-package 'rainbow-delimiters)
@@ -86,6 +87,8 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 
 * Themes
 
+I'm a big fan of Doom's themes. When using Nord themes from their own repository, I had a hard time getting them to work properly when running Emacs as a daemon. I don't have that issue using Nord from Doom's repository. Maybe Nord fixed it upstream, not sure.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'doom-themes)
 (setq doom-themes-enable-bold t
@@ -98,13 +101,13 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 
 * General
 
-  This section contains all of the configuration related to built-in packages.
+This section contains all of the configuration related to built-in packages.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'remember)
 (defun apply-post-frame-config ()
   ;; (set-cursor-color "#ffff00")
-)
+  )
 (defun autopair-insert (arg)
   (interactive "P")
   (let (pair)
@@ -158,13 +161,15 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
     (replace-match "" nil nil)))
 (setq auto-save-default nil ;; don't autosave
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      completion-styles '(basic partial-completion flex) ;; Provide fuzzy search matching.
+      completion-styles '(orderless) ;; Provide fuzzy search matching.
+      completion-category-overrides '((file (styles basic partial-completion)))
       create-lockfiles nil
-      custom-file (expand-file-name "custom.el")
+      custom-file (expand-file-name "custom.el") ;; Keep custom outside of init, gets annoying in source control.
       dired-dwim-target t
       dired-listing-switches "-al --group-directories-first"
       inhibit-startup-message t
-      initial-major-mode 'org-mode
+      initial-major-mode 'org-mode ;; Major mode for scratch buffer
+      initial-scratch-message "* Scratch\n\nThis is an org-mode buffer for text that is not saved.\n\n"
       mode-line-modes
       (mapcar (lambda (elem)
 		(pcase elem
@@ -227,6 +232,8 @@ When you use fonts installed from the Linux repositories, they don't have the me
 #+END_SRC
 
 * Company
+
+I love Company and have it enabled everywhere.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'company)
@@ -335,6 +342,8 @@ Obligatory change =irc.freenode.net= to =irc.libera.chat=.
 
 * Evil Leader
  
+For those functions that don't quite fit in Evil's typical keymaps.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'evil-leader)
 (setq evil-leader/in-all-states t)
@@ -369,6 +378,8 @@ Obligatory change =irc.freenode.net= to =irc.libera.chat=.
 #+END_SRC
 
 * Flycheck
+
+I want to see all of the errors!
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'flycheck)
@@ -610,7 +621,15 @@ OB-Restclient has been a joy to use. If it were up to me, I would never use Post
 (org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
 #+END_SRC
 
+* Orderless
+
+#+BEGIN_SRC emacs-lisp
+(require 'orderless)
+#+END_SRC
+
 * Org
+
+My Org config is getting kind of big.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'org)
@@ -719,6 +738,8 @@ OB-Restclient has been a joy to use. If it were up to me, I would never use Post
 #+END_SRC
   
 * Org-Roam
+
+I'm still trying to figure out how to integrate Org-Roam into my workflow. It seems like it could be so helpful!
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (setq org-roam-v2-ack t)
@@ -864,6 +885,8 @@ I'm hoping to use Restclient as a stand-in for Postman. I found an integration w
 
 * Ripgrep
 
+All about Rust implementations of things.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'rg)
 #+END_SRC
@@ -938,7 +961,7 @@ Rust Flycheck provides syntax highlighting.
 
 * SimpleHTTPd
 
-I use Simple-HTTPd to host my website for local debugging.
+I use Simple-HTTPd to host my website locally for debugging.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'simple-httpd)
@@ -1000,13 +1023,15 @@ SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs a
 
 * Treemacs-Magit
 
-I haven't had the opportunity to use this extensively yet. It might not.
+I haven't had the opportunity to use this extensively yet.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'treemacs-magit)
 #+END_SRC
   
 * Vertico
+
+My preferred search utility. Might not use this with Emacs 28.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (vertico-mode)
@@ -1037,6 +1062,8 @@ I am slowly using YASnippet more, I'm considering adding an integration with Com
 #+END_SRC
 
 * Wrapping Up
+
+Nothing to see here, just finishing touches on the config file.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (provide 'config)
