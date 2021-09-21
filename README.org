@@ -107,6 +107,3 @@ On top of that, Papirus's icon pack has an icon for it if you have Gnome-Tweaks.
 #+END_SRC
 
 Apparently your mime database can be in different places. For Pop!_os it was in =/usr/share/mime= (I think, may also have been =/usr/lib/mime=, but this seems less likely). If you're not running Emacs as a daemon, then replace =emacsclient.desktop= with =emacs.desktop=. Also, the update command will only work if the XML file has been created.
-
-* Notes
-Anything in the =lisp= directory isn't mine. Org-Gantt is currently maintained [[https://gitlab.com/joukeHijlkema/org-gantt/][here]]. I just have some minor changes to make it render more nicely for me. Ejira is currently maintained [[https://github.com/nyyManni/ejira/blob/master/ejira-core.el][here]], waiting for it to get to MELPA.
