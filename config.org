@@ -764,6 +764,7 @@ My Org config is getting kind of big.
       org-hide-emphasis-markers t
       org-hide-leading-stars t
       org-highest-priority ?A
+      org-log-into-drawer "logbook"
       org-lowest-priority ?E)
 (org-load-modules-maybe t)
 (org-reload) ;; Noticed interactive org-export wasn't working properly unless calling this.
