@@ -354,8 +354,6 @@ Emacs pinky is real thing for me. Also my config was so heavily customized its b
 (define-key evil-motion-state-map (kbd "[s") 'flyspell-correct-wrapper)
 (define-key evil-motion-state-map (kbd "[S") 'evil-prev-flyspell-error)
 (define-key evil-normal-state-map (kbd "z=") 'flyspell-correct-at-point)
-;; (define-key evil-normal-state-map "gF" 'find-file-at-point)
-;; (define-key evil-normal-state-map "z=" 'helm-flyspell-correct) ;
 (define-key evil-window-map "q" 'kill-current-buffer)
 (setq-default evil-cross-lines t
 	      evil-respect-visual-line-mode t)
@@ -498,7 +496,7 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
 (require 'lsp-mode)
 (setq lsp-modeline-diagnostics-scope :project
       lsp-signature-doc-lines 1)
-;; TODO Remap these keys to evil-leader variants at some point.
+;; TODO: Remap these keys to evil-leader variants at some point.
 (define-key lsp-mode-map (kbd "C-c `") 'lsp-restart-workspace)
 (define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
 (define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
