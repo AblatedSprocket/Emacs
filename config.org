@@ -63,6 +63,7 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (straight-use-package 'flyspell-correct)
 (straight-use-package 'hl-todo)
 (straight-use-package 'htmlize)
+(straight-use-package 'ibuffer-vc)
 (straight-use-package 'langtool)
 (straight-use-package 'latex-preview-pane)
 (straight-use-package 'lsp-mode)
@@ -381,6 +382,7 @@ For those functions that don't quite fit in Evil's typical keymaps.
   ";" 'custom-toggle-comment
   "<tab>" 'toggle-truncate-lines
   "b" 'consult-buffer-other-window
+  "B" 'ibuffer
   "z" 'zap-to-char
   "cd" 'downcase-dwim
   "cc" 'capitalize-dwim
@@ -473,6 +475,13 @@ Mostly for testing Org files exported to HTML.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'htmlize)
+#+END_SRC
+
+* IBuffer-VC
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'ibuffer-vc)
+(add-hook 'ibuffer-mode-hook 'ibuffer-vc-set-filter-groups-by-vc-root)
 #+END_SRC
 
 * Langtool
