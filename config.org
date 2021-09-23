@@ -267,13 +267,13 @@ Company Box provides a better tooltip for displaying completions.
 
 My preferred completion engine.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (setq consult-project-root-function (lambda () (cdr (project-current))))
 #+END_SRC
 
 * Consult-Flycheck
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'consult-flycheck)
 #+END_SRC
 
@@ -289,7 +289,7 @@ Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elc
  
    First install Bitlbee:
 
-   #+BEGIN_SRC shell :padline no
+   #+BEGIN_SRC sh :padline no
    sudo apt install bitlbee-dev
    #+END_SRC
 
@@ -465,7 +465,7 @@ I want to see all of the errors!
 
 * Flyspell-Correct
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'flyspell-correct)
 #+END_SRC
 
@@ -533,19 +533,19 @@ With everything installed we need to perform an initial sync using the =mbsync= 
 
 My =.mbsyncrc= is set up to use Gnus Authinfo, so we need to set that up as well. It's not too bad, simply create a file named =~/.authinfo= and add this line:
 
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC sh :tangle no
 machine smtp.gmail.com login USERNAME password PASSWORD port 587
 #+END_SRC
 
 Now, encrypt the file with the following command:
 
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC sh :tangle no
 gpg2 --symmetric .authinfo
 #+END_SRC
 
 Emacs has support for reading these encrypted files built-in. Just open the file in a buffer. Should you need to decrypt, though, just enter the following:
 
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC sh :tangle no
 gpg2 --decrypt .authinfo.gpg
 #+END_SRC
 
@@ -557,7 +557,7 @@ Now, mail can be synced using the config file. First, create your mail directory
 
 The last step is to index the messages with mu:
 
-#+BEGIN_SRC shell :tangle no
+#+BEGIN_SRC sh :tangle no
 mu init --maildir=~/Mail=
 mu index
 #+END_SRC
@@ -655,7 +655,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 
 ** Mu4e Dependencies
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC sh :tangle yes :padline no
 sudo apt install mu4e isync html2text gnupg2
 #+END_SRC 
 
@@ -670,7 +670,7 @@ OB-Restclient has been a joy to use. If it were up to me, I would never use Post
 
 * Orderless
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'orderless)
 #+END_SRC
 
@@ -1097,7 +1097,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 
 ** Vterm Dependencies
 
-#+BEGIN_SRC shell :padline no
+#+BEGIN_SRC sh :tangle yes :padline no
 sudo apt install cmake libtool-bin
 #+END_SRC
 
