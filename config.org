@@ -110,6 +110,9 @@ This section contains all of the configuration related to built-in packages.
 (require 'remember)
 (defun apply-post-frame-config ()
   ;; (set-cursor-color "#ffff00")
+(set-face-attribute 'fixed-pitch nil :font "Hack")
+(set-face-attribute 'variable-pitch nil :font "Alegreya")
+(set-face-attribute 'default nil :font "Hack")
   )
 (defun autopair-insert (arg)
   (interactive "P")
@@ -207,7 +210,6 @@ This section contains all of the configuration related to built-in packages.
 	      save-place t
 	      truncate-lines nil
 	      word-wrap t)
-(add-to-list 'default-frame-alist '(font . "Hack"))
 (blink-cursor-mode 1)
 (column-number-mode 1) ;; Show column number in modeline
 (defun highlight-todo-semicolon ()
@@ -220,7 +222,6 @@ This section contains all of the configuration related to built-in packages.
 (fset 'yes-or-no-p 'y-or-n-p) ;; Use 'y' or 'n' instead of 'yes' or 'no' in relevant prompts.
 (global-eldoc-mode -1) ;; Disable showing function arguments in echo area.
 (global-linum-mode)
-(global-undo-tree-mode) ;; Enable this to provide decent undo functionality for Evil.
 (menu-bar-mode -1) ;; Disable menu bar UI.
 (tool-bar-mode -1) ;; Disable tool bar UI.
 (savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
@@ -347,6 +348,7 @@ Emacs pinky is real thing for me. Also my config was so heavily customized its b
 (setq evil-want-keybinding nil) ;; This needs to be set before requiring evil when using evil-collection.
 (require 'evil)
 (require 'flyspell-correct)
+(require 'undo-tree)
 (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
 (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
@@ -699,23 +701,20 @@ My Org config is getting kind of big.
   (let (org-log-done org-log-states)    ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (define-prefix-command 'ring-map)
-(custom-theme-set-faces
- 'user
- '(fixed-pitch ((t (:family "Hack"))))
- '(org-block ((t (:inherit fixed-pitch))))
- '(org-code ((t (:inherit fixed-pitch))))
- '(org-done ((t (:inherit fixed-pitch))))
- '(org-drawer ((t (:foreground "#78808f" :inherit fixed-pitch))))
- `(org-level-1 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.75))))
- `(org-level-2 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.5))))
- `(org-level-3 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.25))))
- `(org-level-4 ((t (:foreground ,(face-foreground 'default nil 'default) :height 1.1))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit fixed-pitch))))
- '(org-table ((t (:inherit fixed-pitch))))
- '(org-todo ((t (:inherit fixed-pitch))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
- '(variable-pitch ((t  (:family "Alegreya")))))
+(set-face-attribute 'org-code nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-done nil :inherit '(org-headline-done fixed-pitch))
+(set-face-attribute 'org-drawer nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-level-1 nil :height 2.0 :inherit 'default)
+(set-face-attribute 'org-level-2 nil :height 1.75 :inherit 'default)
+(set-face-attribute 'org-level-3 nil :height 1.5 :inherit 'default)
+(set-face-attribute 'org-level-4 nil :height 1.25 :inherit 'default)
+(set-face-attribute 'org-level-5 nil :height 1.1 :inherit 'default)
+(set-face-attribute 'org-tag nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-property-value nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-special-keyword nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-todo nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-verbatim nil :inherit 'fixed-pitch)
 (setq org-capture-templates
       '(("e" "event" plain (function (lambda ()
 				       (let ((path (read-file-name "Select file:")))
@@ -1075,6 +1074,12 @@ I haven't had the opportunity to use this extensively yet.
 (require 'treemacs-magit)
 #+END_SRC
   
+* Undo-Tree
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'undo-tree)
+(global-undo-tree-mode) ;; Enable this to provide decent undo functionality for Evil.
+#+END_SRC
 * Vertico
 
 My preferred search utility. Might not use this with Emacs 28.
