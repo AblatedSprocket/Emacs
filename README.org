@@ -26,13 +26,11 @@ Sometimes, =./configure= suggests more packages to install. I don't really know 
   sudo make && sudo make install
 #+END_SRC
 
-On first install, try running =package-refresh-contents= and =package-initialize= within Emacs if you encounter errors. This has fixed things for me in the past.
-
-With everything installed, I suggest moving to [[file:config.org][config.org]] for details on how everything is configured. Unless you want Emacs to run as a daemon on startup. In that case, keep reading!
+On first install, navigate to and open the file named [[file:config.org][config.org]] and run ~org-babel-tangle~. This file also has details on how everything is configured. Once the file is tangled, =config.el= will be generated. Restarting Emacs will install all of the packages and load my configuration.
 
 * Daemon
 
-When installing from source, it appears that the =emacs.service= file does not always get created properly, so starting an Emacs server (i.e. running Emacs as a daemon) by executing =systemctl --user enable emacs= does not work. You can check by running =systemctl status --user emacs=. The command will tell you where the service file is located. I created my own systemd entry in =~/.config/systemd/user/emacs.service= as described [https://www.emacswiki.org/emacs/EmacsAsDaemon][here]. If the service file exists, just make sure it looks like this:
+When installing from source, it appears that the =emacs.service= file does not always get created properly, so starting an Emacs server (i.e. running Emacs as a daemon) by executing =systemctl --user enable emacs= does not work. You can check by running =systemctl status --user emacs=. The command will tell you where the service file is located. I created my own systemd entry in =~/.config/systemd/user/emacs.service= as described [[https://www.emacswiki.org/emacs/EmacsAsDaemon][here]]. If the service file exists, just make sure it looks like this:
 
 #+BEGIN_EXAMPLE
 [Unit]
@@ -82,7 +80,7 @@ sudo mv ~/.config/emacs/emacs-client.png /usr/share/icons/custom/
 
 * Org as a MIME type
 
-As I use Org more and more, I find myself wishing Pop!_os knew to open Org files with Emacs. It turns out that this is possible! Just copy this to =/usr/share/mime/packages/org.xml=:
+As I use Org more and more, I find myself wishing Pop!_os knew to open Org files with Emacs. Thanks to [[https://github.com/tecosaurIt][Tecosaur]], I have learned that this is possible! Just copy this to =/usr/share/mime/packages/org.xml=:
 
 #+BEGIN_SRC xml :padline no
   <?xml version="1.0"
