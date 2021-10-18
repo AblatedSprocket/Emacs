@@ -1,5 +1,5 @@
 * Emacs Configuration
-  #+startup: overview
+#+startup: overview
 
 For my own sake, I've tabulated my Emacs dependencies and their purpose so I can remember what's going on:
 
@@ -44,7 +44,7 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 
 * Packages
 
-  All packages are installed up front to allow more flexibility with configuration organization.
+All packages are installed up front to allow more flexibility with configuration organization.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (straight-use-package 'all-the-icons)
@@ -53,14 +53,16 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (straight-use-package 'company-box)
 (straight-use-package 'consult)
 (straight-use-package 'consult-flycheck)
-(straight-use-package 'doom-themes)
 (straight-use-package 'elcord)
+(straight-use-package 'emms)
+(straight-use-package '(everforest-theme-emacs :host github :repo "ablatedsprocket/everforest-theme-emacs"))
 (straight-use-package 'evil)
 (straight-use-package 'evil-collection)
 (straight-use-package 'evil-leader)
 (straight-use-package 'flycheck)
 (straight-use-package 'flycheck-rust)
 (straight-use-package 'flyspell-correct)
+(straight-use-package 'gruvbox-theme)
 (straight-use-package 'hl-todo)
 (straight-use-package 'htmlize)
 (straight-use-package 'ibuffer-vc)
@@ -74,7 +76,9 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 (straight-use-package 'orderless)
 (straight-use-package 'org-contrib)
 (straight-use-package 'org-roam)
+(straight-use-package 'peep-dired)
 (straight-use-package 'rainbow-delimiters)
+(straight-use-package 'rainbow-mode)
 (straight-use-package 'restclient)
 (straight-use-package 'rg)
 (straight-use-package 'rust-mode)
@@ -93,13 +97,11 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 I'm a big fan of Doom's themes. When using Nord themes from their own repository, I had a hard time getting them to work properly when running Emacs as a daemon. I don't have that issue using Nord from Doom's repository. Maybe Nord fixed it upstream, not sure.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
-(require 'doom-themes)
-(setq doom-themes-enable-bold t
-      doom-themes-enable-italic t)
-(doom-themes-org-config)
+(require 'everforest)
+(require 'gruvbox)
 (if (daemonp)
-    (load-theme 'doom-nord t)
-(load-theme 'doom-nord-light t))
+    (load-theme 'everforest-dark-medium t)
+  (load-theme 'gruvbox-light-soft t))
 #+END_SRC
 
 * General
@@ -110,10 +112,10 @@ This section contains all of the configuration related to built-in packages.
 (require 'remember)
 (defun apply-post-frame-config ()
   ;; (set-cursor-color "#ffff00")
-(set-face-attribute 'fixed-pitch nil :font "Hack")
-(set-face-attribute 'variable-pitch nil :font "Alegreya")
-(set-face-attribute 'default nil :font "Hack")
-  )
+  (set-face-attribute 'fixed-pitch nil :font "Roboto Mono 14")
+  (set-face-attribute 'variable-pitch nil :font "Roboto 14")
+  (set-face-attribute 'default nil :font "Roboto Mono 14"))
+
 (defun autopair-insert (arg)
   (interactive "P")
   (let (pair)
@@ -152,13 +154,18 @@ This section contains all of the configuration related to built-in packages.
     (self-insert-command (prefix-numeric-value arg))
     (indent-according-to-mode))))
 (setq )
-
 (defun custom-toggle-comment ()
   "Toggle comment on region if region is active else toggle comment on line."
   (interactive)
   (if (use-region-p)
       (comment-or-uncomment-region (region-beginning) (region-end))
     (toggle-comment-on-line)))
+(defun dired-open-file ()
+  "In dired, open the selected file on this line."
+  (interactive)
+  (let* ((file (dired-get-filename nil t)))
+    (message "Opening %s..." file)
+    (call-process "xdg-open" nil 0 nil file)))
 (defun whack-whitespace (arg)
   "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
   (interactive "P")
@@ -228,7 +235,9 @@ This section contains all of the configuration related to built-in packages.
 (scroll-bar-mode -1) ;; Disable scroll bars.
 (show-paren-mode 1) ;; Highlight matching parens.
 (define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
-(add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
+  (apply-post-frame-config))
 #+END_SRC
 
 ** General Dependencies
@@ -288,13 +297,13 @@ Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elc
 
 ** Discord Dependencies
  
-   First install Bitlbee:
+First install Bitlbee:
 
-   #+BEGIN_SRC sh :padline no
-   sudo apt install bitlbee-dev
-   #+END_SRC
+#+BEGIN_SRC sh :padline no
+sudo apt install bitlbee-dev
+#+END_SRC
 
-   Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
+Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
 * Ejira
 
 I'm working on a couple of programming projects outside of work, one with another person. He wanted to use Jira, and I noticed that there are a couple of Jira integrations for Emacs, Org-Jira and Ejira. I chose Ejira because it takes advantage of Jira's REST API, as opposed to Org-Jira which is SOAP-based. It's much easier for me to debug JSON payloads as opposed to XML. Currently, the Ejira files are included with my config for two reasons: one is that Ejira is not on MELPA yet, and the second is that there's some deal-breaking functionality missing from the maintained branch, mostly mentioning users.
@@ -331,6 +340,24 @@ I'm working on a couple of programming projects outside of work, one with anothe
       org-id-track-globally t)
 #+END_SRC
 
+* EMMS
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'emms)
+(require 'emms-setup)
+(emms-all)
+(setq emms-info-functions '(emms-info-exiftool)
+      emms-player-list '(emms-player-vlc)
+      emms-source-file-default-directory (expand-file-name "~/Music")
+      emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
+#+END_SRC
+
+** EMMS Dependencies
+
+#+BEGIN_SRC sh :tangle yes :padline no
+sudo apt install exiftool vlc
+#+END_SRC
+
 * ERC
 
 Obligatory change =irc.freenode.net= to =irc.libera.chat=.
@@ -342,7 +369,7 @@ Obligatory change =irc.freenode.net= to =irc.libera.chat=.
   
 * Evil
 
-Emacs pinky is real thing for me. Also my config was so heavily customized its bindings didn't translate. Vim bindings translate everywhere and are better supported.
+Using Evil because Emacs pinky is real thing for me. My config was so heavily customized that even if I could find Emacs bindings for a different editor, the bindings didn't translate. Vim bindings are pretty good on their own and are supported in every editor I've used.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (setq evil-want-keybinding nil) ;; This needs to be set before requiring evil when using evil-collection.
@@ -366,9 +393,13 @@ Emacs pinky is real thing for me. Also my config was so heavily customized its b
 
 * Evil Collection
 
+This extends Evil keybindings to more modes.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'evil-collection)
 (evil-collection-init)
+(evil-collection-define-key 'normal 'dired-mode-map
+"G" 'dired-open-file)
 #+END_SRC
 
 * Evil Leader
@@ -487,8 +518,15 @@ Mostly for testing Org files exported to HTML.
 * Langtool
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
-(setq langtool-language-tool-server-jar "~/.local/lib/LanguageTool-5.1/languagetool-server.jar")
+;; (setq langtool-http-server-host "localhost"
+;; langtool-http-server-port 8081)
+(setq langtool-language-tool-jar "~/.local/lib/LanguageTool-5.5/languagetool-commandline.jar")
+(require 'langtool)
 #+END_SRC
+
+** Langtool Dependencies
+
+Download the files from Langtool's [[https://dev.languagetool.org/http-server.html][website]].
 
 * LSP
 
@@ -670,6 +708,8 @@ OB-Restclient has been a joy to use. If it were up to me, I would never use Post
 
 * Orderless
 
+Orderless provides a nice completion function option that I was missing from Helm.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'orderless)
 #+END_SRC
@@ -701,21 +741,25 @@ My Org config is getting kind of big.
   (let (org-log-done org-log-states)    ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (define-prefix-command 'ring-map)
-(set-face-attribute 'org-code nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-done nil :inherit '(org-headline-done fixed-pitch))
-(set-face-attribute 'org-drawer nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-level-1 nil :height 2.0 :inherit 'default)
-(set-face-attribute 'org-level-2 nil :height 1.75 :inherit 'default)
-(set-face-attribute 'org-level-3 nil :height 1.5 :inherit 'default)
-(set-face-attribute 'org-level-4 nil :height 1.25 :inherit 'default)
-(set-face-attribute 'org-level-5 nil :height 1.1 :inherit 'default)
-(set-face-attribute 'org-tag nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-property-value nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-special-keyword nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-todo nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-verbatim nil :inherit 'fixed-pitch)
-(setq org-capture-templates
+(defun apply-post-frame-org-config ()
+  (set-face-attribute 'org-block nil :background (face-background 'org-block-begin-line) :inherit 'fixed-pitch)
+  (set-face-attribute 'org-block-begin-line nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-done nil :inherit '(org-headline-done fixed-pitch))
+  (set-face-attribute 'org-drawer nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-1 nil :height 2.0 :inherit 'default)
+  (set-face-attribute 'org-level-2 nil :height 1.75 :inherit 'default)
+  (set-face-attribute 'org-level-3 nil :height 1.5 :inherit 'default)
+  (set-face-attribute 'org-level-4 nil :height 1.25 :inherit 'default)
+  (set-face-attribute 'org-level-5 nil :height 1.1 :inherit 'default)
+  (set-face-attribute 'org-tag nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-property-value nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-special-keyword nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-todo nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-verbatim nil :inherit 'fixed-pitch))
+(setq org-adapt-indentation nil
+      org-capture-templates
       '(("e" "event" plain (function (lambda ()
 				       (let ((path (read-file-name "Select file:")))
 					 (find-file path)
@@ -819,9 +863,9 @@ Org-Roam manages nodes in a SQLite database, so that needs to be installed:
 sudo apt install sqlite3
 #+END_SRC
 
-  Additionally, Org-Roam has nifty protocol support to enable external applications to send information to Emacs. Org has this support as well, but I wasn't able to get it working properly. Org-Roam seems to have gotten this down-pat because it worked straight away and was simpler to set up than Org based on the information I found. First, I created an application for other applications to use to send data to Emacs:
+Additionally, Org-Roam has nifty protocol support to enable external applications to send information to Emacs. Org has this support as well, but I wasn't able to get it working properly. Org-Roam seems to have gotten this down-pat because it worked straight away and was simpler to set up than Org based on the information I found. First, I created an application for other applications to use to send data to Emacs:
 
-  #+BEGIN_SRC :tangle no
+#+BEGIN_SRC :tangle no
 [Desktop Entry]
 Name=Org-Protocol
 Exec=emacsclient %u
@@ -830,15 +874,25 @@ Type=Application
 Terminal=false
 Categories=System;
 MimeType=x-scheme-handler/org-protocol;
-  #+END_SRC
+#+END_SRC
 
-  Now, other applications just need to be told to use this application. In a browser, for example, creating a bookmarklet lets me send information to Emacs using Roam-Ref:
+Now, other applications just need to be told to use this application. In a browser, for example, creating a bookmarklet lets me send information to Emacs using Roam-Ref:
 
-  #+BEGIN_SRC javascript :tangle no
-  javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)+'&body='+encodeURIComponent(window.getSelection())
-  #+END_SRC
+#+BEGIN_SRC javascript :tangle no
+javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)+'&body='+encodeURIComponent(window.getSelection())
+#+END_SRC
 
+* Peep-DIred
+
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'evil-collection)
+(evil-collection-define-key 'normal 'dired-mode-map
+"V" 'peep-dired)
+#+END_SRC
+#+END_SRC
 * Ox-SlimHTML
+
+I mostly use a derived Ox-Slimhtml backend to generate my website, but this configuration also comes in handy for one-off documents.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'ox-slimhtml)
@@ -930,7 +984,7 @@ I'm hoping to use Restclient as a stand-in for Postman. I found an integration w
 
 * Ripgrep
 
-All about Rust implementations of things.
+I'm all about Rust implementations of things.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'rg)
@@ -943,6 +997,8 @@ sudo apt install ripgrep
 #+END_SRC
 
 * Rust
+
+I only have a few programming languages I use regularly, Rust is one of them.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'rust-mode)
@@ -1076,10 +1132,13 @@ I haven't had the opportunity to use this extensively yet.
   
 * Undo-Tree
 
+Evil errors when trying to undo without an external package. There are a few options, I chose =undo-tree=.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'undo-tree)
 (global-undo-tree-mode) ;; Enable this to provide decent undo functionality for Evil.
 #+END_SRC
+
 * Vertico
 
 My preferred search utility. Might not use this with Emacs 28.
@@ -1105,7 +1164,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 sudo apt install cmake libtool-bin
 #+END_SRC
 
-* Yasnippet
+* YASnippet
 
 I am slowly using YASnippet more, I'm considering adding an integration with Company for snippet completion, but part of me thinks that at that point I have a bigger problem.
 
