@@ -47,49 +47,43 @@ sudo apt install autoconf gnupg2 libgif-dev libgnutls28-dev libgtk-3-dev libjpeg
 All packages are installed up front to allow more flexibility with configuration organization.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
-(straight-use-package 'all-the-icons)
-(straight-use-package 'auctex)
-(straight-use-package 'company)
-(straight-use-package 'company-box)
-(straight-use-package 'consult)
-(straight-use-package 'consult-flycheck)
-(straight-use-package 'elcord)
-(straight-use-package 'emms)
-(straight-use-package '(everforest-theme-emacs :host github :repo "ablatedsprocket/everforest-theme-emacs"))
-(straight-use-package 'evil)
-(straight-use-package 'evil-collection)
-(straight-use-package 'evil-leader)
-(straight-use-package 'flycheck)
-(straight-use-package 'flycheck-rust)
-(straight-use-package 'flyspell-correct)
-(straight-use-package 'gruvbox-theme)
-(straight-use-package 'hl-todo)
-(straight-use-package 'htmlize)
-(straight-use-package 'ibuffer-vc)
-(straight-use-package 'langtool)
-(straight-use-package 'latex-preview-pane)
-(straight-use-package 'lsp-mode)
-(straight-use-package 'lsp-treemacs)
-(straight-use-package 'magit)
-(straight-use-package 'mw-thesaurus)
-(straight-use-package 'ob-restclient)
-(straight-use-package 'orderless)
-(straight-use-package 'org-contrib)
-(straight-use-package 'org-roam)
-(straight-use-package 'peep-dired)
-(straight-use-package 'rainbow-delimiters)
-(straight-use-package 'rainbow-mode)
-(straight-use-package 'restclient)
-(straight-use-package 'rg)
-(straight-use-package 'rust-mode)
-(straight-use-package 'simple-httpd)
-(straight-use-package 'sqlup-mode)
-(straight-use-package 'treemacs-magit)
-(straight-use-package 'undo-tree)
-(straight-use-package 'vertico)
-(straight-use-package 'vterm)
-(straight-use-package 'yasnippet)
-(straight-use-package '(ox-slimhtml :host github :repo "ablatedsprocket/ox-slimhtml"))
+  (straight-use-package 'all-the-icons)
+  (straight-use-package 'auctex)
+  (straight-use-package 'company)
+  (straight-use-package 'company-box)
+  (straight-use-package 'consult)
+  (straight-use-package 'consult-flycheck)
+  (straight-use-package 'emms)
+  (straight-use-package '(everforest-theme-emacs :host github :repo "ablatedsprocket/everforest-theme-emacs"))
+  (straight-use-package 'evil)
+  (straight-use-package 'evil-collection)
+  (straight-use-package 'evil-leader)
+  (straight-use-package 'flycheck)
+  (straight-use-package 'flyspell-correct)
+  (straight-use-package 'gruvbox-theme)
+  (straight-use-package 'hl-todo)
+  (straight-use-package 'htmlize)
+  (straight-use-package 'ibuffer-vc)
+  (straight-use-package 'langtool)
+  (straight-use-package 'latex-preview-pane)
+  (straight-use-package 'magit)
+  (straight-use-package 'mw-thesaurus)
+  (straight-use-package 'ob-restclient)
+  (straight-use-package 'orderless)
+  (straight-use-package 'org-contrib)
+  (straight-use-package 'org-roam)
+  (straight-use-package 'peep-dired)
+  (straight-use-package 'rainbow-delimiters)
+  (straight-use-package 'rainbow-mode)
+  (straight-use-package 'restclient)
+  (straight-use-package 'rg)
+  (straight-use-package 'simple-httpd)
+;;  (straight-use-package 'sqlup-mode)	
+  (straight-use-package 'treemacs-magit)
+  (straight-use-package 'undo-tree)
+  (straight-use-package 'vertico)
+  (straight-use-package 'yasnippet)
+  (straight-use-package '(ox-slimhtml :host github :repo "ablatedsprocket/ox-slimhtml"))
 #+END_SRC
 
 * Themes
@@ -532,7 +526,7 @@ Download the files from Langtool's [[https://dev.languagetool.org/http-server.ht
 
 So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella. 
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'lsp-mode)
 (setq lsp-modeline-diagnostics-scope :project
       lsp-signature-doc-lines 1)
@@ -549,7 +543,7 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
 
 I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'lsp-treemacs)
 #+END_SRC
 
@@ -596,7 +590,7 @@ Now, mail can be synced using the config file. First, create your mail directory
 The last step is to index the messages with mu:
 
 #+BEGIN_SRC sh :tangle no
-mu init --maildir=~/Mail=
+mu init --maildir=~/mail=
 mu index
 #+END_SRC
 
@@ -619,7 +613,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
 (setq message-kill-buffer-on-exit t
-      mu4e-attachment-dir "~/Downloads"
+      mu4e-attachment-dir "~/downloads"
       mu4e-change-filenames-when-moving t ;; This is supposed to be better for mbsync
       mu4e-compose-context-policy 'always-ask ;; Ask which email address you want to send from
       mu4e-compose-dont-reply-to-self t
@@ -640,13 +634,13 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 			 msg '(:from :to :cc :bcc) "andrewwburch@gmail.com")))
 	:vars '((user-mail-address . "andrewwburch@gmail.com")
 		(user-full-name . "Andrew Burch")
-		(mu4e-sent-folder . "/Sent")
-		(mu4e-refile-folder . "/All")
-		(mu4e-drafts-folder . "/Drafts")
-		(mu4e-trash-folder . "/Trash")
+		(mu4e-sent-folder . "/sent")
+		(mu4e-refile-folder . "/all")
+		(mu4e-drafts-folder . "/drafts")
+		(mu4e-trash-folder . "/trash")
 		(mu4e-compose-signature . (concat "Cheers,\n Andrew"))
 		(mu4e-compose-format-flowed . t)
-		(smtpmail-queue-dir . "~/Mail/gmail/queue/cur")
+		(smtpmail-queue-dir . "~/mail/gmail/queue/cur")
 		(message-send-mail-function . smtpmail-send-it)
 		(smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
 		(smtpmail-debug-info . t)
@@ -659,8 +653,8 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 		(smtpmail-debug-verbose . t))))
       mu4e-headers-auto-update t
       mu4e-headers-date-format "%H:%M %d-%m-%Y"
-      mu4e-get-mail-command "mbsync -c ~/.config/emacs/mu4e/.mbsyncrc -a"
-      mu4e-maildir (expand-file-name "~/Mail")
+      mu4e-get-mail-command "mbsync -a"
+      mu4e-maildir (expand-file-name "~/mail")
       mu4e-sent-messages-behavior 'delete ;; Gmail puts messages in Sent so Mu4e doesn't have to.
       mu4e-update-interval 300
       mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum ;; Always prefer plaintext over HTML.
@@ -830,7 +824,7 @@ My Org config is getting kind of big.
 
 I'm still trying to figure out how to integrate Org-Roam into my workflow. It seems like it could be so helpful!
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (setq org-roam-v2-ack t)
 (require 'org)
 (require 'org-roam)
@@ -1000,7 +994,7 @@ sudo apt install ripgrep
 
 I only have a few programming languages I use regularly, Rust is one of them.
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'rust-mode)
 (require 'lsp-mode)
 (defun cargo-build (arg)
@@ -1054,7 +1048,7 @@ rustup component add rust-src
 
 Rust Flycheck provides syntax highlighting.
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'flycheck)
 (require 'flycheck-rust)
 (add-hook 'rust-mode-hook 'flycheck-rust-setup)
@@ -1073,7 +1067,7 @@ I use Simple-HTTPd to host my website locally for debugging.
 
 My configuration also provides some customization of Emacs' SQL mode. My workflow for SQL usually consists of two buffers: one of a SQL file and the other is the SQL interactive buffer. The SQL file is helpful because I can save and track my queries easily without thinking about it and the keeping the SQLi buffer separate is nice because I can disable font-lock so query results don't have silly distracting faces. The first function disables font-lock for SQL Interactive mode and the second sets up the SQL Interactive-mode buffer automatically when SQL mode is enabled (either by opening a SQL buffer or manually activating SQL mode). Here, I've set up a list of connections I use frequently. I was surprised by how much of a quality-of-life improvement this was. I made a couple of keybindings for sending region and the whole buffer to the SQL Interactive mode buffer. I believe there are existing bindings for this, but I wanted something more in keeping with the rest of my keybinding setup. 
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'sql)
 (defun my-sql-disable-font-lock (orig-fun &rest args)
   "Disable syntax highlighting for SQL output."
@@ -1116,7 +1110,7 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
 
 SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs as well.
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'sql)
 (add-hook 'sql-mode-hook 'sqlup-mode)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
@@ -1153,7 +1147,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 
 *NOTE:* Vterm has [[* Vterm Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'vterm)
 (setq vterm-timer-delay 0.01)
 #+END_SRC

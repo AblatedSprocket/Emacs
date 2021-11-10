@@ -12,40 +12,40 @@ IMAPStore gmail-remote
 Account gmail
 
 MaildirStore gmail-local
-Path ~/Mail/
-Inbox ~/Mail/Gmail
+Path ~/mail/
+Inbox ~/mail/gmail
 
 Channel gmail-inbox
 Master :gmail-remote:
-Slave :gmail-local:Inbox
+Slave :gmail-local:inbox
 Create Both
 Expunge Both
 SyncState *
 
 Channel gmail-drafts
 Master :gmail-remote:"[Gmail]/Drafts"
-Slave :gmail-local:Drafts
+Slave :gmail-local:drafts
 Create Slave
 Expunge Both
 SyncState *
 
 Channel gmail-sent
 Master :gmail-remote:"[Gmail]/Sent Mail"
-Slave :gmail-local:Sent
+Slave :gmail-local:sent
 Create Both
 Expunge Both
 SyncState *
 
 Channel gmail-all
 Master :gmail-remote:"[Gmail]/All Mail"
-Slave :gmail-local:All
+Slave :gmail-local:all
 Create Both
 Expunge Both
 SyncState *
 
 Channel gmail-trash
 Master :gmail-remote:"[Gmail]/Trash"
-Slave :gmail-local:Trash
+Slave :gmail-local:trash
 Create Slave
 Expunge Both
 SyncState *
