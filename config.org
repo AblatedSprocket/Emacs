@@ -55,6 +55,7 @@ All packages are installed up front to allow more flexibility with configuration
   (straight-use-package 'consult-flycheck)
   (straight-use-package 'emms)
   (straight-use-package '(everforest-theme-emacs :host github :repo "ablatedsprocket/everforest-theme-emacs"))
+  (straight-use-package '(ablated-sprocket-themes-emacs :host github :repo "ablatedsprocket/ablated-sprocket-emacs-themes"))
   (straight-use-package 'evil)
   (straight-use-package 'evil-collection)
   (straight-use-package 'evil-leader)
@@ -91,11 +92,10 @@ All packages are installed up front to allow more flexibility with configuration
 I'm a big fan of Doom's themes. When using Nord themes from their own repository, I had a hard time getting them to work properly when running Emacs as a daemon. I don't have that issue using Nord from Doom's repository. Maybe Nord fixed it upstream, not sure.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
-(require 'everforest)
 (require 'gruvbox)
 (if (daemonp)
-    (load-theme 'everforest-dark-medium t)
-  (load-theme 'gruvbox-light-soft t))
+    (load-theme 'everforest-dark t)
+  (load-theme 'everforest-dark t))
 #+END_SRC
 
 * General
@@ -735,23 +735,25 @@ My Org config is getting kind of big.
   (let (org-log-done org-log-states)    ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 (define-prefix-command 'ring-map)
-(defun apply-post-frame-org-config ()
-  (set-face-attribute 'org-block nil :background (face-background 'org-block-begin-line) :inherit 'fixed-pitch)
-  (set-face-attribute 'org-block-begin-line nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-done nil :inherit '(org-headline-done fixed-pitch))
-  (set-face-attribute 'org-drawer nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-level-1 nil :height 2.0 :inherit 'default)
-  (set-face-attribute 'org-level-2 nil :height 1.75 :inherit 'default)
-  (set-face-attribute 'org-level-3 nil :height 1.5 :inherit 'default)
-  (set-face-attribute 'org-level-4 nil :height 1.25 :inherit 'default)
-  (set-face-attribute 'org-level-5 nil :height 1.1 :inherit 'default)
-  (set-face-attribute 'org-tag nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-property-value nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-special-keyword nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-todo nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-verbatim nil :inherit 'fixed-pitch))
+
+(set-face-attribute 'org-block nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-block-begin-line nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-block-end-line nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-done nil :inherit '(org-headline-done fixed-pitch))
+(set-face-attribute 'org-drawer nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-level-1 nil :height 2.0 :inherit 'default)
+(set-face-attribute 'org-level-2 nil :height 1.75 :inherit 'default)
+(set-face-attribute 'org-level-3 nil :height 1.5 :inherit 'default)
+(set-face-attribute 'org-level-4 nil :height 1.25 :inherit 'default)
+(set-face-attribute 'org-level-5 nil :height 1.1 :inherit 'default)
+(set-face-attribute 'org-tag nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-property-value nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-special-keyword nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-todo nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-verbatim nil :inherit 'fixed-pitch)
+
 (setq org-adapt-indentation nil
       org-capture-templates
       '(("e" "event" plain (function (lambda ()
