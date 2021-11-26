@@ -220,7 +220,7 @@ This section contains all of the configuration related to built-in packages.
 			  '(("^//+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
 (fset 'yes-or-no-p 'y-or-n-p) ;; Use 'y' or 'n' instead of 'yes' or 'no' in relevant prompts.
 (global-eldoc-mode -1) ;; Disable showing function arguments in echo area.
-(global-linum-mode)
+(global-display-line-numbers-mode)
 (menu-bar-mode -1) ;; Disable menu bar UI.
 (tool-bar-mode -1) ;; Disable tool bar UI.
 (savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
@@ -230,9 +230,6 @@ This section contains all of the configuration related to built-in packages.
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
   (apply-post-frame-config))
-(add-hook 'doc-view-mode-hook 
-  (lambda ()
-    (linum-mode -1)))
 #+END_SRC
 
 ** General Dependencies
