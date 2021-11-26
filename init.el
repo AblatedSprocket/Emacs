@@ -5,7 +5,6 @@
 ;; You may delete these explanatory comments.
 
 ;;; Code:
-(require 'org)
 (setq package-enable-at-startup nil)
 (defvar bootstrap-version)
 (setq straight-process-buffer "*Messages*"
