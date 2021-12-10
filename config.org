@@ -31,7 +31,7 @@ For my own sake, I've tabulated my Emacs dependencies and their purpose so I can
 | sqlite3           | SQLite RDBMS                                                                  |
 | texinfo           | Suggested for doc support (I think) during the configure step, seemed legit   |
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
+#+BEGIN_SRC emacs-lisp :tangle yes :padline no
 ;;; config.el --- Summary
 ;;; Commentary:
 ;;; Don't edit this file, edit 'config.org' instead!
@@ -483,11 +483,17 @@ I want to see all of the errors!
 	    (message "No more miss-spelled word!")
 	    (setq arg 0))
 	(forward-word)))))
-(require 'flyspell)
 (add-hook 'org-mode-hook 'flyspell-mode)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
+** Flyspell dependencies
+
+Flyspell requires =aspell=:
+
+#+BEGIN_SRC sh
+sudo pacman -Syu aspell aspell-en
+#+END_SRC
 * Flyspell-Correct
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
