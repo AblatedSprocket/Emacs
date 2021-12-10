@@ -20,6 +20,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-(load-file (expand-file-name "config.el" user-emacs-directory))
+(require 'config (expand-file-name "config.el" user-emacs-directory))
 (provide 'init)
 ;;; init.el ends here

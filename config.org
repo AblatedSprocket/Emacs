@@ -444,6 +444,8 @@ I want to see all of the errors!
 * Flyspell
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'flyspell)
+(setq ispell-program-name "/usr/bin/aspell")
 (defun flyspell-goto-previous-error (arg)
   "Go to arg previous spelling error."
   (interactive "p")
@@ -510,6 +512,8 @@ Mostly for testing Org files exported to HTML.
 
 * IBuffer-VC
 
+IBuffer-VC organizes the list of open buffers by project, as defined by =project.el=. Pretty handy.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'ibuffer-vc)
 (add-hook 'ibuffer-mode-hook 'ibuffer-vc-set-filter-groups-by-vc-root)
@@ -517,7 +521,9 @@ Mostly for testing Org files exported to HTML.
 
 * Langtool
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
+Langtool provides grammar checking. Useful? Debatable!
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 ;; (setq langtool-http-server-host "localhost"
 ;; langtool-http-server-port 8081)
 (setq langtool-language-tool-jar "~/.local/lib/LanguageTool-5.5/languagetool-commandline.jar")
@@ -526,7 +532,7 @@ Mostly for testing Org files exported to HTML.
 
 ** Langtool Dependencies
 
-Download the files from Langtool's [[https://dev.languagetool.org/http-server.html][website]].
+A JRE must be installed. Download the files from Langtool's [[https://dev.languagetool.org/http-server.html][website]].
 
 * LSP
 
@@ -555,7 +561,7 @@ I have found LSP-Treemacs pretty useful. I like being able to see all of the sym
 
 * Magit
 
-I am not sure if Magit should be in this section or a more general configuration section. I'm seeing more and more places outside of code where source control would be useful.
+Magit or git command line. Those are the only options.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'magit)
@@ -699,7 +705,7 @@ sudo apt install mu4e isync html2text gnupg2
 
 * OB-Restclient
 
-OB-Restclient has been a joy to use. If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. I'm debating using Org-Babel to add literate programming to all of my source code and tangling it out for compiling and running. My only reservation with this is that this is not commonplace, meaning that 1) I would have to live without it on projects that I don't own and 2) anyone who might want to contribute to a project of mine would have to deal with org-babel-tangle.
+If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. Of course, this isn't viable in a setting where multiple people are involved in a project.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'restclient)
@@ -829,6 +835,11 @@ My Org config is getting kind of big.
 ;; (setq org-export-filter-final-output-functions '(org-export-latex-remove-labels))
 #+END_SRC
   
+** Org Dependencies
+
+#+BEGIN_SRC sh :tangle yes :padline no
+sudo pacman -Syu texlive-most
+#+END_SRC
 * Org-Roam
 
 I'm still trying to figure out how to integrate Org-Roam into my workflow. It seems like it could be so helpful!
@@ -887,12 +898,15 @@ javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComp
 
 * Peep-Dired
 
+Peep-Dired provides file previews.
+
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'evil-collection)
 (evil-collection-define-key 'normal 'dired-mode-map
 "V" 'peep-dired)
 #+END_SRC
 #+END_SRC
+
 * Ox-SlimHTML
 
 I mostly use a derived Ox-Slimhtml backend to generate my website, but this configuration also comes in handy for one-off documents.
