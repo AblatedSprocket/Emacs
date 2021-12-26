@@ -240,7 +240,7 @@ Cape provides completion-at-point functions that aren't available by default in 
 
 * Consult
 
-My preferred completion engine.
+Consult is my preferred completion engine. I'm overriding some global keybindings which works well with =meow='s leader function; for quicker access, I have a couple keybindings set up in [[*Meow][Meow's configuration]] as well.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'consult)
@@ -496,6 +496,8 @@ Magit or git command line. Those are the only options.
 * Meow
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'consult)
+(require 'meow)
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -585,7 +587,6 @@ Magit or git command line. Those are the only options.
    '("Z" . zap-to-char)
    '("'" . repeat)
    '("<escape>" . ignore)))
-(require 'meow)
 (meow-setup)
 (meow-global-mode 1)
 #+END_SRC
