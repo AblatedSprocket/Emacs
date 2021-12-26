@@ -35,8 +35,7 @@ All packages are installed up front to allow more flexibility with configuration
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (straight-use-package 'all-the-icons)
 (straight-use-package 'auctex)
-(straight-use-package 'company)
-(straight-use-package 'company-box)
+(straight-use-package 'cape)
 (straight-use-package 'consult)
 (straight-use-package 'consult-flycheck)
 (straight-use-package 'corfu)
@@ -89,14 +88,13 @@ I'm a big fan of Doom's themes. When using Nord themes from their own repository
 This section contains all of the configuration related to built-in packages.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'flycheck)
 (require 'remember)
 (defun apply-post-frame-config ()
   (set-cursor-color "#ffff00")
   (set-face-attribute 'fixed-pitch nil :font "Roboto Mono 14")
   (set-face-attribute 'variable-pitch nil :font "Roboto 14")
-  (set-face-attribute 'default nil :font "Roboto Mono 14")
-)
-
+  (set-face-attribute 'default nil :font "Roboto Mono 14"))
 (defun autopair-insert (arg)
   (interactive "P")
   (let (pair)
@@ -104,7 +102,7 @@ This section contains all of the configuration related to built-in packages.
      ((assq last-command-event skeleton-pair-alist)
       (autopair-open arg))
      (t
-      (autopair-close arg)))))
+	(autopair-close arg)))))
 (defun autopair-open (arg)
   (interactive "P")
   (let ((pair (assq last-command-event
@@ -164,6 +162,7 @@ This section contains all of the configuration related to built-in packages.
     (replace-match "" nil nil)))
 (setq auto-save-default nil ;; don't autosave
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+      completion-category-defaults nil
       completion-styles '(orderless) ;; Provide fuzzy search matching.
       completion-category-overrides '((file (styles basic partial-completion)))
       create-lockfiles nil
@@ -230,27 +229,17 @@ When you use fonts installed from the Linux repositories, they don't have the me
 (require 'all-the-icons)
 #+END_SRC
 
-* Company
+* Cape
 
-I love Company and have it enabled everywhere.
+Cape provides completion-at-point functions that aren't available by default in Corfu. Below are the functions I use and why:
 
-#+BEGIN_SRC emacs-lisp :tangle yes :padline no
-(require 'company)
-(setq company-idle-delay 0
-      company-minimum-prefix-length 2 ;; Keys required for completions to appear
-      company-selection-wrap-around nil ;; Disable completions wrapping to next line and making the tooltip look weird.
-      company-tooltip-align-annotations t) ;; Align annotations to right tooltip borer
-(add-hook 'after-init-hook 'global-company-mode)
-#+END_SRC
-
-* Company Box
-
-Company Box provides a better tooltip for displaying completions.
+| Function     | Reason                                       |
+|--------------+----------------------------------------------|
+| cape-dabbrev | Completions based on words in current buffer |
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
-(require 'company)
-(require 'company-box)
-(add-hook 'company-mode-hook 'company-box-mode)
+(require 'cape)
+(add-to-list 'completion-at-point-functions #'cape-dabbrev)
 #+END_SRC
 
 * Consult
@@ -270,13 +259,18 @@ My preferred completion engine.
 
 * Corfu
 
-My intention is to use Corfu as a replacement for Company whenever I can get it to work.
+It took a while, but I finally got Corfu where I wanted it once I realized I needed to install Cape to get the same buffer completions provided by Company. I moved to Corfu as part of my desire to move to packages that leverage built-in Emacs utilities. Also, Corfu supports orderless completions which are amazing in-buffer.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
 (require 'corfu)
-(setq tab-indent-always 'complete)
+(require 'orderless)
+(setq corfu-quit-no-match t
+      corfu-cycle t
+      corfu-auto t
+      tab-indent-always 'complete)
 (corfu-global-mode 1)
 #+END_SRC
+
 * Discord
 
 Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elcord-mode=. If you're not on Discord and the mode's active, you'll keep getting notifications that Elcord is trying to connect. I'm not always on Discord, so this gets annoying.
