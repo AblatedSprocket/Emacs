@@ -243,7 +243,12 @@ Cape provides completion-at-point functions that aren't available by default in 
 My preferred completion engine.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :padline no
+(require 'consult)
 (setq consult-project-root-function (lambda () (cdr (project-current))))
+(global-set-key (kbd "C-s") 'consult-line)
+(global-set-key (kbd "C-M-s") 'consult-imenu)
+(global-set-key (kbd "C-x b") 'consult-buffer-other-window)
+(global-set-key (kbd "C-x C-b") 'consult-buffer)
 #+END_SRC
 
 * Consult-Flycheck
@@ -555,14 +560,17 @@ Magit or git command line. Those are the only options.
    '("L" . meow-right-expand)
    '("m" . meow-join)
    '("n" . meow-next)
+   '("N" . meow-next-expand)
    '("o" . meow-block)
    '("O" . meow-to-block)
    '("p" . meow-prev)
+   '("P" . meow-prev-expand)
    '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
-   '("s" . isearch-forward)
+   '("s" . consult-line)
+   '("S" . consult-imenu)
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
