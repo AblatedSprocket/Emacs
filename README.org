@@ -122,6 +122,7 @@ All packages are installed up front to allow more flexibility with configuration
 (straight-use-package '(ablated-sprocket-themes-emacs :host github :repo "ablatedsprocket/ablated-sprocket-emacs-themes"))
 (straight-use-package 'flycheck)
 (straight-use-package 'flyspell-correct)
+(straight-use-package 'gnus-alias)
 (straight-use-package 'gruvbox-theme)
 (straight-use-package 'hl-todo)
 (straight-use-package 'htmlize)
@@ -131,19 +132,21 @@ All packages are installed up front to allow more flexibility with configuration
 (straight-use-package 'magit)
 (straight-use-package 'meow)
 (straight-use-package 'mw-thesaurus)
+(straight-use-package 'notmuch)
 (straight-use-package 'ob-restclient)
 (straight-use-package 'orderless)
 (straight-use-package 'org-contrib)
-;;(straight-use-package 'org-roam)
+;; (straight-use-package 'org-roam)
 (straight-use-package 'peep-dired)
 (straight-use-package 'rainbow-delimiters)
 (straight-use-package 'rainbow-mode)
 (straight-use-package 'restclient)
 (straight-use-package 'rg)
 (straight-use-package 'simple-httpd)
-;;(straight-use-package 'sqlup-mode)
-;;(straight-use-package 'treemacs-magit)
+;; (straight-use-package 'sqlup-mode)
+;; (straight-use-package 'treemacs-magit)
 (straight-use-package 'vertico)
+(straight-use-package 'vterm)
 (straight-use-package 'yasnippet)
 (straight-use-package '(ox-slimhtml :host github :repo "ablatedsprocket/ox-slimhtml"))
 #+END_SRC
@@ -287,12 +290,14 @@ This section contains all of the configuration related to built-in packages.
 (tool-bar-mode -1) ;; Disable tool bar UI.
 (savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
 (scroll-bar-mode -1) ;; Disable scroll bars.
+(setenv "SSH_AUTH_SOCK" (concat "/run/user/" (int-to-string (user-real-uid)) "/keyring/ssh")) ;; Give Emacs access to gnome-keyring
 (show-paren-mode 1) ;; Highlight matching parens.
 (define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
   (apply-post-frame-config))
 (global-set-key (kbd "C-x K") 'kill-buffer-and-window)
+(global-set-key (kbd "M-k") 'kill-word)
 #+END_SRC
 
 *** General Dependencies
@@ -484,16 +489,26 @@ aspell aspell-en \
 #+END_SRC
 ** Flyspell-Correct
 
+This package really just provides integration with completion-read and hence consult!
+
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'flyspell-correct)
 #+END_SRC
 
-** GPG-Agent
+** Gnus-Alias
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
-(defun pinentry-emacs (desc prompt ok error)
-  (let ((str (read-passwd (concat (replace-regexp-in-string "%22" "\"" (replace-regexp-in-string "%0A" "\n" desc)) prompt ": "))))
-    str))
+Using Gnus-Alias to add the ability to easily switch between email identities when writing emails using Notmuch. Message-mode has this built in to a degree, but my email addresses use different servers, so the =X-Message-SMTP-Method= header needs to be different for either address, and =message-mode= can't accommodate that out of the box.
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(require 'gnus-alias)
+(setq gnus-alias-identity-alist '(("gmail"
+				   nil
+				   "Andrew Burch <andrewwburch@gmail.com>"
+				   nil
+				   (("Fcc" . "sent/gmail")
+				    ("X-Message-SMTP-Method" . "smtp smtp.gmail.com 587"))
+				   nil
+				   "Cheers,\nAndrew")))
 #+END_SRC
 
 ** Htmlize
@@ -723,6 +738,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
    (concat "from:" (cdar (mu4e-message-field msg :from)))))
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
+(setq smtpmail-auth-credentials `(("smtp.gmail.com" 587 "andrewwburch" ,(shell-command-to-string "secret-tool lookup gmail password"))))
 (setq message-kill-buffer-on-exit t
       mu4e-attachment-dir "~/downloads"
       mu4e-change-filenames-when-moving t ;; This is supposed to be better for mbsync
@@ -754,13 +770,14 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 		(smtpmail-queue-dir . "~/mail/gmail/queue/cur")
 		(message-send-mail-function . smtpmail-send-it)
 		(smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
-		(smtpmail-debug-info . t)
+		;; (smtpmail-auth-credentials . `(("smtp.gmail.com" 587 "andrewwburch" ,(shell-command-to-string "secret-tool lookup gmail password"))))
+		(smtpmail-debug-info. t)
 		(smtpmail-default-smtp-server . "smtp.gmail.com")
 		(smtpmail-local-domain . "gmail.com")
 		(smtpmail-smtp-user . "andrewwburch")
 		(smtpmail-smtp-server . "smtp.gmail.com")
 		(smtpmail-smtp-service . 587)
-		(smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+
 		(smtpmail-debug-verbose . t))))
       mu4e-headers-auto-update t
       mu4e-headers-date-format "%H:%M %d-%m-%Y"
@@ -805,13 +822,75 @@ Mu4e itself needs to be installed from AUR. Its other dependencies can be instal
 isync html2text gnupg \
 #+END_SRC
 
+** Notmuch
+
+Dabbling with using notmuch as a mail client. For now, I'm sticking with Mu4e. If I searched through my email more, I would probably make the switch to notmuch. I also like that Notmuch is on Arch's community repositories and I don't have to go to the AUR, though...
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(require 'notmuch)
+(defun message-switch-identity ()
+  (interactive)
+  (message-remove-header "Fcc")
+  (message-remove-header "Organization")
+  (gnus-alias-select-identity)
+  (notmuch-fcc-header-setup))
+(defun notmuch-mail-act-on-tags ()
+  (interactive)
+  (shell-command "bash ~/.config/scripts/mail2.sh" nil)
+  (notmuch-refresh-this-buffer))
+(defun notmuch-mark-for-deletion ()
+  "Mark message for deletion"
+  (interactive)
+  (notmuch-search-tag '("+trash")))
+(defun notmuch-preview ()
+  (interactive)
+  (let* ((window (selected-window))
+	 (message-buf (window-buffer window))
+	 (preview-buf "*Notmuch Preview*"))
+    (notmuch-search-tag '("-unread"))
+    (notmuch-search-show-thread)
+    (when (get-buffer preview-buf)
+      (kill-buffer preview-buf))
+    (rename-buffer preview-buf)
+    (let* ((preview "*Notmuch Preview*"))
+      (switch-to-buffer message-buf)
+      (display-buffer preview))))
+(defun notmuch-preview-next ()
+  (interactive)
+  (next-line)
+  (notmuch-preview))
+(defun notmuch-preview-prev ()
+  (interactive)
+  (previous-line)
+  (notmuch-preview))
+(setq message-auto-save-directory "~/notmuch/auto-save/"
+      notmuch-hello-sections '(notmuch-hello-insert-header
+			       notmuch-hello-insert-saved-searches
+			       notmuch-hello-insert-recent-searches
+			       notmuch-hello-insert-alltags))
+
+(add-hook 'message-mode-hook (lambda () ;; Don't let message-mode add newlines.
+			       (use-hard-newlines -1)))
+(define-key message-mode-map (kbd "M-i") 'message-switch-identity)
+(define-key notmuch-search-mode-map (kbd "M-n") 'notmuch-preview-next)
+(define-key notmuch-search-mode-map (kbd "M-p") 'notmuch-preview-prev)
+(define-key notmuch-search-mode-map (kbd "d") 'notmuch-mark-for-deletion)
+(define-key notmuch-search-mode-map (kbd "x") 'notmuch-mail-act-on-tags)
+#+END_SRC
+
+*** Packages
+
+#+BEGIN_SRC sh :tangle no :padline no
+isync notmuch \
+#+END_SRC
+
 ** OB-Restclient
 
 If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. Of course, this isn't viable in a setting where multiple people are involved in a project.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'restclient)
-(org-babel-do-load-languages 'org-babel-load-languages '((restclient .t)))
+(org-babel-do-load-languages 'org-babel-load-languages '((restclient . t) (shell . t)))
 #+END_SRC
 
 ** Orderless
@@ -944,6 +1023,7 @@ To export to LaTeX, =texlive= is required:
 #+BEGIN_SRC sh :tangle (org-entry-get nil "DPDFILE" t) :padline no
 texlive-most \
 #+END_SRC
+
 ** Org-Roam
 
 I'm still trying to figure out how to integrate Org-Roam into my workflow. It seems like it could be so helpful!
