@@ -287,14 +287,12 @@ This section contains all of the configuration related to built-in packages.
 (tool-bar-mode -1) ;; Disable tool bar UI.
 (savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
 (scroll-bar-mode -1) ;; Disable scroll bars.
-(setenv "SSH_AUTH_SOCK" (concat "/run/user/" (int-to-string (user-real-uid)) "/keyring/ssh")) ;; Give Emacs access to gnome-keyring
 (show-paren-mode 1) ;; Highlight matching parens.
 (define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
   (apply-post-frame-config))
 (global-set-key (kbd "C-x K") 'kill-buffer-and-window)
-(global-set-key (kbd "M-k") 'kill-word)
 #+END_SRC
 
 *** General Dependencies
@@ -777,6 +775,8 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
       smtpmail-queue-mail nil)
 (add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
 (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+(define-key mu4e-view-mode-map (kbd "M-n") 'mu4e-view-headers-next)
+(define-key mu4e-view-mode-map (kbd "M-p") 'mu4e-view-headers-prev)
 (add-hook 'message-mode-hook (lambda () ;; Don't let Mu4e add newlines.
 			       (use-hard-newlines -1)))
 (add-hook 'mu4e-headers-mode-hook
@@ -832,7 +832,7 @@ My Org config is getting kind of big.
 (defun generate-post ()
   (setq post-title (read-string "Title: "))
   (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
-  (expand-file-name (format "%s.org" post-file-name) "~/nothingissimple/org/posts"))
+  (expand-file-name (format "%s.org" post-file-name) "~/git/nothingissimple/org/posts"))
 (defun generate-reference (title url body))
 (defun org-export-latex-remove-labels (s backend info)
   (when (org-export-derived-backend-p org-export-current-backend 'latex)
@@ -1267,7 +1267,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 
 *NOTE:* Vterm has [[* Vterm Dependencies][dependencies]].
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'vterm)
 (setq vterm-timer-delay 0.01)
 #+END_SRC
@@ -1275,7 +1275,7 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 *** Vterm Dependencies
 
 #+BEGIN_SRC sh :tangle no :padline no
-sudo apt install cmake libtool-bin
+sudo pacman cmake vterm
 #+END_SRC
 
 ** YASnippet
