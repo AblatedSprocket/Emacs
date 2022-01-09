@@ -65,17 +65,14 @@ As I use Org more and more, I find myself wishing Pop!_os knew to open Org files
 </mime-info>
 #+END_SRC
 
-On top of that, Papirus's icon pack has an icon for it if you have Gnome-Tweaks. I added the PPA to my system:
+On top of that, Papirus's icon pack has an icon for it. Papirus is on the AUR.
 
 #+BEGIN_SRC shell :padline no
-sudo add-apt-repository ppa:papirus/papirus
-sudo apt update
-sudo apt install papirus-icon-theme
 sudo update-mime-database /usr/share/mime
 xdg-mime default emacsclient.desktop text/org
 #+END_SRC
 
-Apparently your mime database can be in different places. For Pop!_os it was in =/usr/share/mime= (I think, may also have been =/usr/lib/mime=, but this seems less likely). If you're not running Emacs as a daemon, then replace =emacsclient.desktop= with =emacs.desktop=. Also, the update command will only work if the XML file has been created.
+Apparently your mime database can be in different places. For Arch, it was in =/usr/share/mime. If you're not running Emacs as a daemon, then replace =emacsclient.desktop= with =emacs.desktop=. Also, the update command will only work if the XML file has been created.
 
 * Emacs Configuration
 :PROPERTIES:
@@ -290,12 +287,14 @@ This section contains all of the configuration related to built-in packages.
 (tool-bar-mode -1) ;; Disable tool bar UI.
 (savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
 (scroll-bar-mode -1) ;; Disable scroll bars.
+(setenv "SSH_AUTH_SOCK" (concat "/run/user/" (int-to-string (user-real-uid)) "/keyring/ssh")) ;; Give Emacs access to gnome-keyring
 (show-paren-mode 1) ;; Highlight matching parens.
 (define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
   (apply-post-frame-config))
 (global-set-key (kbd "C-x K") 'kill-buffer-and-window)
+(global-set-key (kbd "M-k") 'kill-word)
 #+END_SRC
 
 *** General Dependencies
@@ -336,6 +335,9 @@ Consult is my preferred completion engine. I'm overriding some global keybinding
 
 ** Consult-Flycheck
 
+Unsurprisingly, consult integration with flycheck.
+
+[TODO: Look into this as programming picks back up]
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'consult-flycheck)
@@ -343,7 +345,7 @@ Consult is my preferred completion engine. I'm overriding some global keybinding
 
 ** Corfu
 
-It took a while, but I finally got Corfu where I wanted it once I realized I needed to install Cape to get the same buffer completions provided by Company. I moved to Corfu as part of my desire to move to packages that leverage built-in Emacs utilities. Also, Corfu supports orderless completions which are amazing in-buffer.
+It took a while, but I finally got Corfu where I wanted it once I realized I needed to install Cape to get the same buffer completions provided by Company in text mode and others. I moved to Corfu as part of my desire to move to packages that leverage built-in Emacs utilities. Also, Corfu supports orderless completions which are amazing in-buffer.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'corfu)
@@ -368,10 +370,11 @@ Let's make Emacs show up in Discord, mostly because we can. Enable with =M-x elc
 First install Bitlbee:
 
 #+BEGIN_SRC sh :padline no
-sudo apt install bitlbee-dev
+sudo pacman -S bitlbee
 #+END_SRC
 
-Then, Bitlbee-Discord needs to be installed from [[https://github.com/sm00th/bitlbee-discord][source]].
+Then, Bitlbee-Discord needs to be installed from the AUR.
+
 ** Ejira
 
 I'm working on a couple of programming projects outside of work, one with another person. He wanted to use Jira, and I noticed that there are a couple of Jira integrations for Emacs, Org-Jira and Ejira. I chose Ejira because it takes advantage of Jira's REST API, as opposed to Org-Jira which is SOAP-based. It's much easier for me to debug JSON payloads as opposed to XML. Currently, the Ejira files are included with my config for two reasons: one is that Ejira is not on MELPA yet, and the second is that there's some deal-breaking functionality missing from the maintained branch, mostly mentioning users.
@@ -408,24 +411,6 @@ I'm working on a couple of programming projects outside of work, one with anothe
       org-id-track-globally t)
 #+END_SRC
 
-** EMMS
-
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
-(require 'emms)
-(require 'emms-setup)
-(emms-all)
-(setq emms-info-functions '(emms-info-exiftool)
-      emms-player-list '(emms-player-vlc)
-      emms-source-file-default-directory (expand-file-name "~/Music")
-      emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
-#+END_SRC
-
-*** EMMS Dependencies
-
-#+BEGIN_SRC sh :tangle no :padline no
-sudo apt install exiftool vlc
-#+END_SRC
-
 ** ERC
 
 Obligatory change =irc.freenode.net= to =irc.libera.chat=.
@@ -445,6 +430,8 @@ I want to see all of the errors!
 #+END_SRC
 
 ** Flyspell
+
+Sometimes I misspell words and flyspell is there to help.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'flyspell)
@@ -578,6 +565,8 @@ Magit or git command line. Those are the only options.
 
 ** Meow
 
+I used Evil mode for a long time, but eventually decided to switch to Meow because it makes a good effort at synergizing with Emacs' built-in keybindings. Sure, Evil doesn't change keybindings it doesn't know about, but it's jarring to switch between modal editing and using control to execute commands, and I'm somewhat resistant to going into my config and remapping keys. Meow, on the other hand, has an agnostic way of accommodating keybindings from any mode (that I have used), provided said mode has configured its keybindings using typical conventions.
+
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'consult)
 (require 'meow)
@@ -603,8 +592,13 @@ Magit or git command line. Those are the only options.
    '("9" . meow-digit-argument)
    '("0" . meow-digit-argument)
    '("/" . meow-keypad-describe-key)
+   '(";" . custom-toggle-comment)
    '("?" . meow-cheatsheet)
-   '("s" . flyspell-correct-previous))
+   '("i" . mu4e)
+   '("k" . kill-sentence)
+   '("s" . flyspell-correct-previous)
+   '("t" . org-capture)
+   '("w" . whack-whitespace))
   (meow-normal-define-key
    '("0" . meow-expand-0)
    '("9" . meow-expand-9)
@@ -631,25 +625,24 @@ Magit or git command line. Those are the only options.
    '("D" . meow-backward-delete)
    '("e" . meow-next-word)
    '("E" . meow-next-symbol)
-   '("f" . meow-find)
+   '("f" . rg)
+   '("F" . consult-find)
    '("g" . meow-cancel-selection)
    '("G" . meow-grab)
    '("h" . meow-left)
    '("H" . meow-left-expand)
    '("i" . meow-insert)
    '("I" . meow-open-above)
-   '("j" . meow-next)
-   '("J" . meow-next-expand)
-   '("k" . meow-prev)
+   '("k" . kill-line)
    '("K" . meow-prev-expand)
    '("l" . meow-right)
    '("L" . meow-right-expand)
    '("m" . meow-join)
-   '("n" . meow-next)
+   '("n" . next-line)
    '("N" . meow-next-expand)
    '("o" . meow-block)
    '("O" . meow-to-block)
-   '("p" . meow-prev)
+   '("p" . previous-line)
    '("P" . meow-prev-expand)
    '("q" . meow-quit)
    '("Q" . meow-goto-line)
