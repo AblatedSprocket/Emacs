@@ -1100,9 +1100,7 @@ javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComp
 Peep-Dired provides file previews.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
-(require 'evil-collection)
-(evil-collection-define-key 'normal 'dired-mode-map
-			    "V" 'peep-dired)
+(require 'peep-dired)
 #+END_SRC
 
 ** Ox-SlimHTML
