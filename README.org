@@ -444,7 +444,7 @@ Obligatory change =irc.freenode.net= to =irc.libera.chat=.
 
 I want to see all of the errors!
 
-#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'flycheck)
 (add-hook 'after-init-hook 'global-flycheck-mode)
 #+END_SRC
@@ -504,6 +504,7 @@ Flyspell requires =aspell=:
 #+BEGIN_SRC sh :tangle (org-entry-get nil "DPDFILE" t) :padline no
 aspell aspell-en \
 #+END_SRC
+
 ** Flyspell-Correct
 
 This package really just provides integration with completion-read and hence consult!
@@ -1098,11 +1099,10 @@ javascript:location.href='org-protocol://roam-ref?template=f&ref='+encodeURIComp
 
 Peep-Dired provides file previews.
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'evil-collection)
 (evil-collection-define-key 'normal 'dired-mode-map
 			    "V" 'peep-dired)
-#+END_SRC
 #+END_SRC
 
 ** Ox-SlimHTML
