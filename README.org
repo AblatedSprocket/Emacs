@@ -163,7 +163,7 @@ I'm a big fan of Doom's themes. When using Nord themes from their own repository
 
 ** General
 
-This section contains all of the configuration related to built-in packages.
+This section contains all of the configuration related to built-in packages. I unset =C-x C-r= in part because I never open files in read-only mode, and because removing it makes it easier to set marks when using Meow.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'flycheck)
@@ -228,6 +228,15 @@ This section contains all of the configuration related to built-in packages.
   (font-lock-add-keywords nil '(("^;;+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face prepend))))
 (defun highlight-todo-slash ()
   (font-lock-add-keywords nil '(("^//+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
+(defun mode-line-render (left right)
+  "Render mode-line with filled white space between LEFT and RIGHT."
+  (let ((available-width (- (window-total-width)
+			    (+ (length (format-mode-line left))
+			       (length (format-mode-line right)))
+			    2)))
+    (append left
+	    (list (format (format "%%%ds" available-width) ""))
+	    right)))
 (defun toggle-comment-on-line ()
   "Comment or uncomment current line."
   (interactive)
@@ -275,6 +284,12 @@ This section contains all of the configuration related to built-in packages.
       x-select-enable-primary t)
 (setq-default cursor-type 'bar
 	      display-line-numbers-width-start t
+	      mode-line-format '((:eval
+				  (mode-line-render (list "%e %b %* [%l,%c] "
+							  mode-line-modes)
+						    (list '(vc-mode vc-mode)
+							  mode-line-misc-info
+							  mode-line-end-spaces))))
 	      save-place t
 	      truncate-lines nil
 	      word-wrap t)
@@ -285,7 +300,6 @@ This section contains all of the configuration related to built-in packages.
 (flycheck-add-mode 'proselint 'text-mode)
 (fset 'yes-or-no-p 'y-or-n-p) ;; Use 'y' or 'n' instead of 'yes' or 'no' in relevant prompts.
 (global-eldoc-mode -1) ;; Disable showing function arguments in echo area.
-(global-display-line-numbers-mode)
 (menu-bar-mode -1) ;; Disable menu bar UI.
 (tool-bar-mode -1) ;; Disable tool bar UI.
 (savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
@@ -298,6 +312,9 @@ This section contains all of the configuration related to built-in packages.
   (apply-post-frame-config))
 (global-set-key (kbd "C-x K") 'kill-buffer-and-window)
 (global-set-key (kbd "M-k") 'kill-word)
+(global-unset-key (kbd "C-x C-r"))
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
 #+END_SRC
 
 *** General Dependencies
@@ -499,7 +516,7 @@ This package really just provides integration with completion-read and hence con
 
 Using Gnus-Alias to add the ability to easily switch between email identities when writing emails using Notmuch. Message-mode has this built in to a degree, but my email addresses use different servers, so the =X-Message-SMTP-Method= header needs to be different for either address, and =message-mode= can't accommodate that out of the box.
 
-#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'gnus-alias)
 (setq gnus-alias-identity-alist '(("gmail"
 				   nil
@@ -804,9 +821,6 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 					(:from . 22)
 					(:thread-subject . ,(- (window-body-width) 70))
 					(:size . 7)))))
-(add-hook 'mu4e-headers-mode-hook
-	  (lambda ()
-	    (setq display-line-numbers nil)))
 (add-hook 'mu4e-view-mode-hook
 	  (lambda()
 	    (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
@@ -826,7 +840,7 @@ isync html2text gnupg \
 
 Dabbling with using notmuch as a mail client. For now, I'm sticking with Mu4e. If I searched through my email more, I would probably make the switch to notmuch. I also like that Notmuch is on Arch's community repositories and I don't have to go to the AUR, though...
 
-#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (require 'notmuch)
 (defun message-switch-identity ()
   (interactive)
@@ -836,7 +850,7 @@ Dabbling with using notmuch as a mail client. For now, I'm sticking with Mu4e. I
   (notmuch-fcc-header-setup))
 (defun notmuch-mail-act-on-tags ()
   (interactive)
-  (shell-command "bash ~/.config/scripts/mail2.sh" nil)
+  (shell-command "bash ~/.config/notmuch/apply_tags.sh" nil)
   (notmuch-refresh-this-buffer))
 (defun notmuch-mark-for-deletion ()
   "Mark message for deletion"
@@ -895,7 +909,7 @@ If it were up to me, I would never use Postman again. Incorporating literate pro
 
 ** Orderless
 
-Orderless provides a nice completion function option that I was missing from Helm.
+Orderless provides a nice completion function option that I was missing from Helm. This and Consult have been a great replacement for Helm.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'orderless)
@@ -903,7 +917,7 @@ Orderless provides a nice completion function option that I was missing from Hel
 
 ** Org
 
-My Org config is getting kind of big.
+I've set a bunch of face attributes to get Org documents looking "better". I've set =org-edit-src-content-indentiation= to =0= so everything stays left-aligned. I find the indentation more distracting than anything. The last thing here that future me might need a reminder of is that I set =org-log-into-drawer= to =logbook=, mostly for compatibility with Orgzly, which I use to interact with org files on mobile.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'org)
