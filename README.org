@@ -144,6 +144,8 @@ All packages are installed up front to allow more flexibility with configuration
 (straight-use-package 'rg)
 (straight-use-package 'simple-httpd)
 ;; (straight-use-package 'sqlup-mode)
+(straight-use-package 'treemacs)
+(straight-use-package 'treemacs-icons-dired)
 ;; (straight-use-package 'treemacs-magit)
 (straight-use-package 'vertico)
 (straight-use-package 'vterm)
@@ -1336,6 +1338,18 @@ SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs a
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
 #+END_SRC
 
+** Treemacs
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
+(require 'treemacs)
+#+END_SRC
+
+** Treemacs Icons Dired
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(require 'treemacs-icons-dired)
+(add-hook 'dired-mode-hook 'treemacs-icons-dired-mode)
+#+END_SRC
 ** Treemacs-Magit
 
 I haven't had the opportunity to use this extensively yet.
