@@ -155,7 +155,7 @@ All packages are installed up front to allow more flexibility with configuration
 
 ** Themes
 
-I'm a big fan of Doom's themes. When using Nord themes from their own repository, I had a hard time getting them to work properly when running Emacs as a daemon. I don't have that issue using Nord from Doom's repository. Maybe Nord fixed it upstream, not sure.
+After switching to Sway, I shamelessly stole the source files for [[https://github.com/greduan/emacs-theme-gruvbox][Emacs Gruvbox]] and repurposed its composability for the different themes that I like (including gruvbox). The themes I've made so far are Everforest and Scenery, which is a theme that needs a better name but I think looks pretty nice.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (if (daemonp)
@@ -168,13 +168,15 @@ I'm a big fan of Doom's themes. When using Nord themes from their own repository
 This section contains all of the configuration related to built-in packages. I unset =C-x C-r= in part because I never open files in read-only mode, and because removing it makes it easier to set marks when using Meow.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(require 'dired)
 (require 'flycheck)
 (require 'remember)
 (defun apply-post-frame-config ()
   (set-cursor-color "#ffff00")
   (set-face-attribute 'fixed-pitch nil :font "Roboto Mono 14")
   (set-face-attribute 'variable-pitch nil :font "Roboto 14")
-  (set-face-attribute 'default nil :font "Roboto Mono 14"))
+  (set-face-attribute 'default nil :font "Roboto Mono 14")
+  (set-fontset-font "fontset-default" '(#xF6C3 . #xF6C3) "Font Awesome 5 Free"))
 (defun autopair-insert (arg)
   (interactive "P")
   (let (pair)
@@ -308,6 +310,8 @@ This section contains all of the configuration related to built-in packages. I u
 (scroll-bar-mode -1) ;; Disable scroll bars.
 (setenv "SSH_AUTH_SOCK" (concat "/run/user/" (int-to-string (user-real-uid)) "/keyring/ssh")) ;; Give Emacs access to gnome-keyring
 (show-paren-mode 1) ;; Highlight matching parens.
+(define-key dired-mode-map (kbd "<RET>") 'dired-find-alternate-file)
+(define-key dired-mode-map (kbd "M-<RET>") 'dired-find-file)
 (define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
@@ -1103,6 +1107,10 @@ Peep-Dired provides file previews.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'peep-dired)
+(define-key dired-mode-map (kbd "M-k") 'peep-dired-kill-buffers-without-window)
+(define-key dired-mode-map (kbd "M-n") 'peep-dired-next-file)
+(define-key dired-mode-map (kbd "M-p") 'peep-dired-prev-file)
+
 #+END_SRC
 
 ** Ox-SlimHTML
@@ -1340,8 +1348,9 @@ SQLUp up-cases SQL keywords. I liked this in SSMS and enjoy having it in Emacs a
 
 ** Treemacs
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'treemacs)
+(global-set-key (kbd "C-x F") 'treemacs)
 #+END_SRC
 
 ** Treemacs Icons Dired
@@ -1380,8 +1389,8 @@ I've been tinkering in the command line and documenting things in Emacs lately, 
 
 *** Vterm Dependencies
 
-#+BEGIN_SRC sh :tangle no :padline no
-sudo pacman cmake vterm
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "DPDFILE" t) :padline no
+cmake vterm
 #+END_SRC
 
 ** YASnippet
