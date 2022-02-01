@@ -23,3 +23,4 @@
 (require 'config (expand-file-name "config.el" user-emacs-directory))
 (provide 'init)
 ;;; init.el ends here
+(put 'dired-find-alternate-file 'disabled nil)
