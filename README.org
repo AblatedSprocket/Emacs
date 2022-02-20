@@ -1,7 +1,9 @@
 #+startup: overview
 * Goals
 
-My primary goal with Emacs is to consolidate the software I use in my free time. At work, I rely completely on Microsoft's ecosystem and have done what I can to get away from that ecosystem at home. Originally, the intention for my Emacs configuration was to create one environment for all of the programming languages I use. As I have familiarized myself with Emacs and Org mode, I have begun using Emacs for more things. If you're curious about how I'm using emacs, I suggest looking at my =config.org= file. It's broken down by package. My =init.el= file installs =straight= if it doesn't already exist and loads the configuration file generated from my =config.org=. I have two primary reasons for organizing my configuration this way. The first is that, occasionally, when I want to add a new package into my configuration, the package doesn't work as advertised and sometimes it's because of a problem with my setup. Making packages toggle-able makes it easier to debug these issues. The second reason is that I get a strong satisfaction from cleaning out my setup every once in a while. If I want to know what my life would be like without a certain package, being able to toggle my configuration for that package makes this process much easier. 
+My primary goal with Emacs is to consolidate the software I use in my free time. At work, I rely completely on Microsoft's ecosystem and have done what I can to get away from that ecosystem at home. Originally, the intention for my Emacs configuration was to create one environment for all of the programming languages I use. As I have familiarized myself with Emacs and Org mode, I have begun using Emacs for more things. 
+
+My =init.el= file installs =straight= if it doesn't already exist and loads the configuration generated from tangling this file. This file isn't a great example of literate configuration because I don't explain anything particularly well and leave out a lot of details, but it is an example.
 
 * Installation
 
@@ -112,6 +114,7 @@ All packages are installed up front to allow more flexibility with configuration
 After switching to Sway, I shamelessly stole the source files for [[https://github.com/greduan/emacs-theme-gruvbox][Emacs Gruvbox]] and repurposed its composability for the different themes that I like (including gruvbox). The themes I've made so far are Everforest and Scenery, which is a theme that needs a better name but I think looks pretty nice.
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'autothemer)
 (straight-use-package '(ablated-sprocket-themes-emacs :host github :repo "ablatedsprocket/ablated-sprocket-emacs-themes"))
 (if (daemonp)
     (load-theme 'scenery t)
@@ -123,6 +126,255 @@ After switching to Sway, I shamelessly stole the source files for [[https://gith
   (set-face-attribute 'default nil :font "Roboto Mono 14")
   (set-fontset-font "fontset-default" '(#xF6C3 . #xF6C3) "Font Awesome 5 Free"))
 #+END_SRC
+
+** General
+
+In the past when using Word, I have run into trouble with backups. I don't typically keep documents synced with source control, so I decided to use Emacs to create per-session and per-save backups, as described in the documentation [[https://www.emacswiki.org/emacs/ForceBackups][here]]:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups/per-save"))))
+(defun force-backup-of-buffer ()
+  "Make a special per-session backup at the first save of each
+  emacs session."
+  (when (not buffer-backed-up)
+    (let ((backup-directory-alist `(("" . ,(concat user-emacs-directory "backup/per-session"))))
+	  (kept-new-versions 3))
+      (backup-buffer)))
+  (let ((buffer-backed-up nil))
+    (backup-buffer)))
+(add-hook 'before-save-hook  'force-backup-of-buffer)
+#+END_SRC
+
+I don't like that Custom clutters my init file, so I have it write to a separate file:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq custom-file (expand-file-name "custom.el"))
+#+END_SRC
+
+I want Emacs to open the Scratch buffer on startup and I want that buffer's default major mode to be Org:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq inhibit-startup-message t
+      initial-major-mode 'org-mode
+      initial-scratch-message nil)
+#+END_SRC
+
+I have a couple yank-related settings to make Emacs play a little more nicely with external programs:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq mouse-yank-at-point t
+      save-interprogram-paste-before-kill t
+      x-select-enable-clipboard t
+      x-select-enable-primary t)
+#+END_SRC
+
+Since I'm on Wayland now, I'm not exactly sure if the =x-select= variables have any effect.
+
+By default, Emacs forces the end of a sentence to have two spaces, but this isn't the nineties anymore:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq sentence-end "[\\.\\?\\!] +")
+#+END_SRC
+
+I use Recentf to keep track of Emacs history. Consult uses the history file to inform completions:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq recentf-save-file (concat user-emacs-directory ".recentf")
+      recentf-max-menu-items 40)
+#+END_SRC
+
+Places keeps track of where my cursor was at last time I visited a file:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq save-place-file (concat user-emacs-directory "places"))
+(setq-default save-place t)
+#+END_SRC
+
+I want words to wrap to succeeding lines like in most word processors (which, admittedly, Emacs is not):
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq-default display-line-numbers-width-start t
+	      truncate-lines nil
+	      word-wrap t)
+#+END_SRC
+
+I don't structure my Emacs sessions enough for lockfiles to make sense:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq create-lockfiles nil)
+#+END_SRC
+
+I set my cursor to blink so it's easier to find:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(blink-cursor-mode 1)
+#+END_SRC
+
+Use 'y' or 'n' instead of 'yes' or 'no' in prompts:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+I have trouble tracking parentheses, so highlight matches when possible:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(show-paren-mode 1)
+#+END_SRC
+
+I like saving minibuffer history so completions later on are more relevant:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(savehist-mode)
+#+END_SRC
+
+Set completions to be case-insensitive by default. A cool side-effect of this is that if I include capitalization, the search becomes case-sensitive to match:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq read-file-name-completion-ignore-case t)
+#+END_SRC
+
+I don't like Emacs to make sounds:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq ring-bell-function 'ignore)
+#+END_SRC
+
+I use Auctex to modify LaTeX files, and have found TeX-PDF mode to be a bit of a hindrance:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq TeX-PDF-mode nil)
+#+END_SRC
+
+Disable showing function arguments in echo area:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(global-eldoc-mode -1)
+#+END_SRC
+
+I jumped on the minimal UI bandwagon and disabled =menu-=, =tool-=, and =scroll-bar-mode=:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+#+END_SRC
+
+After switching to Arch, I've hooked SSH and GPG into Gnome-Keyring, so my default password store is unlocked on login. Emacs can also take advantage of this, as long as I point it to the properly unlocked SSH auth socket:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setenv "SSH_AUTH_SOCK" (concat "/run/user/" (int-to-string (user-real-uid)) "/keyring/ssh"))
+#+END_SRC
+
+I don't have many keybindings set up; I mostly unset =C-x C-r= to make register functions easier to get to in Meow mode:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(global-set-key (kbd "C-x K") 'kill-buffer-and-window)
+(global-unset-key (kbd "C-x C-r"))
+#+END_SRC
+
+This section contains all of the configuration related to built-in packages. Some of this configuration is used elsewhere,  I unset =C-x C-r= in part because I never open files in read-only mode, and because removing it makes it easier to set marks when using Meow.
+
+I'm a strong advocate for Org at this point, especially for its ability to use both variable- and fixed-pitch fonts in the same buffer. Since I'm running Emacs as a daemon, this configuration needs to be loaded each time a new window instance is created. There are some times when I start Emacs outside of the daemon, so my config only adds the hook if it detects daemon mode:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun apply-post-frame-config ()
+  (set-cursor-color "#ffff00")
+  (set-face-attribute 'fixed-pitch nil :font "Roboto Mono 14")
+  (set-face-attribute 'variable-pitch nil :font "Roboto 14")
+  (set-face-attribute 'default nil :font "Roboto Mono 14")
+  (set-fontset-font "fontset-default" '(#xF6C3 . #xF6C3) "Font Awesome 5 Free"))
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
+  (apply-post-frame-config))
+#+END_SRC
+
+When I code, I want to be able to easily toggle a line to be commented. This is the implementation that I understood:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun custom-toggle-comment ()
+  "Toggle comment on region if region is active else toggle comment on line."
+  (interactive)
+  (if (use-region-p)
+      (comment-or-uncomment-region (region-beginning) (region-end))
+    (toggle-comment-on-line)))
+(defun toggle-comment-on-line ()
+  "Comment or uncomment current line."
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+#+END_SRC
+
+I'm using [[* Meow][Meow]] mode, so the above code is bound in that section.
+
+One thing I missed from Visual Studio was the automatic highlighting of TODO items. I like the idea of being able to do that in any document, and decided for code, the regex i wanted to use was comment characters at the start of a line, followed by an arbitrary amount of whitespace and the text "TODO". I'm only building expressions around the languages I use (Elisp, Python, and Rust):
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun highlight-todo-semicolon ()
+  (font-lock-add-keywords nil '(("^;;+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face prepend))))
+(defun highlight-todo-slash ()
+  (font-lock-add-keywords nil '(("^//+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
+(add-hook 'emacs-lisp-mode-hook 'highlight-todo-semicolon)
+#+END_SRC
+
+I also thought this would be handy to have in a text mode, but since text mode doesn't really understand comments, I decided to remove the constraint of a TODO being on its own line, and instead just be wrapped in square brackets:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun highlight-todo-bracket ()
+  (font-lock-add-keywords nil '(("\\[TODO:.*\\]" 0 'font-lock-warning-face prepend))))
+(add-hook 'text-mode-hook 'highlight-todo-bracket)
+#+END_SRC
+
+I like my modeline pretty clean, and dislike having all of the minor modes listed for a given buffer, especially because there always seem to be quite a few:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq mode-line-modes (mapcar (lambda (elem)
+				(pcase elem
+				  (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
+				   "")
+				  (t elem)))
+			      mode-line-modes))
+#+END_SRC
+
+I also like certain things to be on the left side of the frame, and certain things to be on the right side. This code provides that functionality:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun mode-line-render (left right)
+  "Render mode-line with filled white space between LEFT and RIGHT."
+  (let ((available-width (- (window-total-width)
+			    (+ (length (format-mode-line left))
+			       (length (format-mode-line right)))
+			    2)))
+    (append left
+	    (list (format (format "%%%ds" available-width) ""))
+	    right)))
+(setq-default mode-line-format '((:eval
+				  (mode-line-render (list "%e %b %* [%l,%c] "
+							  mode-line-modes)
+						    (list '(vc-mode vc-mode)
+							  mode-line-misc-info
+							  mode-line-end-spaces)))))
+#+END_SRC
+
+I often find myself wanting to remove a bunch of whitespace in one stroke:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun whack-whitespace (arg)
+  "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
+  (interactive "P")
+  (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+    (re-search-forward regexp nil t)
+    (replace-match "" nil nil)))
+#+END_SRC
+
+I want a little bit of a border between the window border and the text:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(add-to-list 'default-frame-alist '(internal-border-width . 20))
+#+END_SRC
+
+*** General Dependencies
+
+When you use fonts installed from the Linux repositories, they don't have the metadata that allows Emacs to recognize italic and bold versions of a font, so they don't render. Instead, download the bold, italic, regular, and bolditalic versions of Alegreya and Hack and place the =.ttf= files in =/usr/local/share/fonts/= or just keep the fonts in source control.
 
 ** Skeleton
 
@@ -168,123 +420,21 @@ I know there are packages to automatically insert parentheses, but if I can avoi
     (indent-according-to-mode))))
 #+END_SRC
 
-** General
-
-This section contains all of the configuration related to built-in packages. I unset =C-x C-r= in part because I never open files in read-only mode, and because removing it makes it easier to set marks when using Meow.
+It also helps to define which characters get autopaired and how:
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
-(require 'remember)
-(defun apply-post-frame-config ()
-  (set-cursor-color "#ffff00")
-  (set-face-attribute 'fixed-pitch nil :font "Roboto Mono 14")
-  (set-face-attribute 'variable-pitch nil :font "Roboto 14")
-  (set-face-attribute 'default nil :font "Roboto Mono 14")
-  (set-fontset-font "fontset-default" '(#xF6C3 . #xF6C3) "Font Awesome 5 Free"))
-
-(defun custom-toggle-comment ()
-  "Toggle comment on region if region is active else toggle comment on line."
-  (interactive)
-  (if (use-region-p)
-      (comment-or-uncomment-region (region-beginning) (region-end))
-    (toggle-comment-on-line)))
-
-(defun highlight-todo-bracket ()
-  (font-lock-add-keywords nil '(("\\[TODO:.*\\]" 0 'font-lock-warning-face prepend))))
-(defun highlight-todo-semicolon ()
-  (font-lock-add-keywords nil '(("^;;+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face prepend))))
-(defun highlight-todo-slash ()
-  (font-lock-add-keywords nil '(("^//+\s*?\\(TODO:.*$\\)" 1 'font-lock-warning-face))))
-(defun mode-line-render (left right)
-  "Render mode-line with filled white space between LEFT and RIGHT."
-  (let ((available-width (- (window-total-width)
-			    (+ (length (format-mode-line left))
-			       (length (format-mode-line right)))
-			    2)))
-    (append left
-	    (list (format (format "%%%ds" available-width) ""))
-	    right)))
-(defun toggle-comment-on-line ()
-  "Comment or uncomment current line."
-  (interactive)
-  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
-(defun whack-whitespace (arg)
-  "Deletes all white space from point to the next word. With prefix ARG delete across newlines as well. The only danger in this is that you don't have to actually be at the end of a word to make it work. It skips over to the next whitespace and then whacks it all to the next word."
-  (interactive "P")
-  (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
-    (re-search-forward regexp nil t)
-    (replace-match "" nil nil)))
-(setq auto-save-default nil ;; don't autosave
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      completion-category-defaults nil
-      completion-styles '(orderless) ;; Provide fuzzy search matching.
-      completion-category-overrides '((file (styles basic partial-completion)))
-      create-lockfiles nil
-      custom-file (expand-file-name "custom.el") ;; Keep custom outside of init, gets annoying in source control.
-
-      inhibit-startup-message t
-      initial-major-mode 'org-mode ;; Major mode for scratch buffer
-      initial-scratch-message "* Scratch\n\nThis is an org-mode buffer for text that is not saved.\n\n"
-      mode-line-modes
-      (mapcar (lambda (elem)
-		(pcase elem
-		  (`(:propertize (,_ minor-mode-alist . ,_) . ,_)
-		   "")
-		  (t elem)))
-	      mode-line-modes)
-      mouse-yank-at-point t
-      read-file-name-completion-ignore-case t
-      recentf-save-file (concat user-emacs-directory ".recentf")
-      recentf-max-menu-items 40
-      ring-bell-function 'ignore
-      save-interprogram-paste-before-kill t
-      save-place-file (concat user-emacs-directory "places")
-      sentence-end "[\\.\\?\\!] +" ;; By default, Emacs recognizes a period (or question mark, exclamation mark, etc.) followed by two spaces as the end of a sentence. I only ever use one space.
-      skeleton-pair t
+(setq skeleton-pair t
       skeleton-pair-alist '((?\( _ ?\))
 			    (?\[  _ ?\])
 			    (?{  _ ?})
-			    (?\" _ ?\"))
-      TeX-PDF-mode nil
-      x-select-enable-clipboard t
-      x-select-enable-primary t)
-(setq-default cursor-type 'bar
-	      display-line-numbers-width-start t
-	      mode-line-format '((:eval
-				  (mode-line-render (list "%e %b %* [%l,%c] "
-							  mode-line-modes)
-						    (list '(vc-mode vc-mode)
-							  mode-line-misc-info
-							  mode-line-end-spaces))))
-	      save-place t
-	      truncate-lines nil
-	      word-wrap t)
-(blink-cursor-mode 1)
-(column-number-mode 1) ;; Show column number in modeline
-(add-hook 'emacs-lisp-mode-hook 'highlight-todo-semicolon)
-(add-hook 'text-mode-hook 'highlight-todo-bracket)
-(fset 'yes-or-no-p 'y-or-n-p) ;; Use 'y' or 'n' instead of 'yes' or 'no' in relevant prompts.
-(global-eldoc-mode -1) ;; Disable showing function arguments in echo area.
-(menu-bar-mode -1) ;; Disable menu bar UI.
-(tool-bar-mode -1) ;; Disable tool bar UI.
-(savehist-mode) ;; Enable saving history for more relevant minibuffer completions.
-(scroll-bar-mode -1) ;; Disable scroll bars.
-(setenv "SSH_AUTH_SOCK" (concat "/run/user/" (int-to-string (user-real-uid)) "/keyring/ssh")) ;; Give Emacs access to gnome-keyring
-(show-paren-mode 1) ;; Highlight matching parens.
-
-(define-key minibuffer-inactive-mode-map (kbd ")") nil) ;; Disable auto-pair of parentheses in minu-buffer.
-(if (daemonp)
-    (add-hook 'server-after-make-frame-hook 'apply-post-frame-config)
-  (apply-post-frame-config))
-(global-set-key (kbd "C-x K") 'kill-buffer-and-window)
-(global-set-key (kbd "M-k") 'kill-word)
-(global-unset-key (kbd "C-x C-r"))
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
+			    (?\" _ ?\")))
 #+END_SRC
 
-*** General Dependencies
-
-When you use fonts installed from the Linux repositories, they don't have the metadata that allows Emacs to recognize italic and bold versions of a font, so they don't render. Instead, download the bold, italic, regular, and bolditalic versions of Alegreya and Hack and place the =.ttf= files in =/usr/local/share/fonts/= or just keep the fonts in source control.
+Auto-pairing is great, but I don't usually find it helpful in the minibuffer so I disable that:
+[TODO: Figure out what this does]
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(define-key minibuffer-inactive-mode-map (kbd ")") nil)
+#+END_SRC
 
 ** All the Icons
 
@@ -311,7 +461,7 @@ When you use fonts installed from the Linux repositories, they don't have the me
 
 ** IBuffer-VC
 
-IBuffer-VC organizes the list of open buffers by project, as defined by =project.el=. Pretty handy.
+IBuffer-VC organizes the list of open buffers by project, as defined by =project.el=. Pretty handy:
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'ibuffer-vc)
@@ -321,7 +471,7 @@ IBuffer-VC organizes the list of open buffers by project, as defined by =project
 
 ** Peep-Dired
 
-Peep-Dired provides file previews.
+Peep-Dired provides file previews:
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'peep-dired)
@@ -329,7 +479,6 @@ Peep-Dired provides file previews.
 (define-key dired-mode-map (kbd "M-k") 'peep-dired-kill-buffers-without-window)
 (define-key dired-mode-map (kbd "M-n") 'peep-dired-next-file)
 (define-key dired-mode-map (kbd "M-p") 'peep-dired-prev-file)
-
 #+END_SRC
 
 ** Orderless
@@ -339,6 +488,9 @@ Orderless provides a nice completion function option that I was missing from Hel
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'orderless)
 (require 'orderless)
+(setq completion-category-defaults nil
+      completion-styles '(orderless)
+      completion-category-overrides '((file (styles basic partial-completion))))
 #+END_SRC
 
 ** Corfu
@@ -395,6 +547,16 @@ My preferred search utility. With Emacs 28, there's =fido-vertical-mode= built-i
 (vertico-mode)
 #+END_SRC
 
+** Marginalia
+
+Marginalia provides helpful context to completions in the minibuffer:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'marginalia)
+(require 'marginalia)
+(marginalia-mode)
+#+END_SRC
+
 ** ERC
 
 Obligatory change =irc.freenode.net= to =irc.libera.chat=.
@@ -406,11 +568,18 @@ Obligatory change =irc.freenode.net= to =irc.libera.chat=.
 
 ** Flyspell
 
-Sometimes I misspell words and flyspell is there to help.
+Flyspell has done a decent job with word corrections. For now, I'm using Aspell as my checker program in =text-mode=, =prog-mode=, and their derived modes:
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (require 'flyspell)
 (setq ispell-program-name "/usr/bin/aspell")
+(add-hook 'org-mode-hook 'flyspell-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+#+END_SRC
+
+This function isn't useful since I added Flyspell-Correct to my configuration, but I'm not ready to delete the function yet:
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (defun flyspell-goto-previous-error (arg)
   "Go to arg previous spelling error."
   (interactive "p")
@@ -421,13 +590,11 @@ Sometimes I misspell words and flyspell is there to help.
 	       (eq pos flyspell-old-pos-error))
 	  (progn
 	    (if (= flyspell-old-pos-error min)
-		;; goto beginning of buffer
 		(progn
 		  (message "Restarting from end of buffer")
 		  (goto-char (point-max)))
 	      (backward-word 1))
 	    (setq pos (point))))
-      ;; seek the next error
       (while (and (> pos min)
 		  (let ((ovs (overlays-at pos))
 			(r '()))
@@ -438,7 +605,6 @@ Sometimes I misspell words and flyspell is there to help.
 		    (not r)))
 	(backward-word 1)
 	(setq pos (point)))
-      ;; save the current location for next invocation
       (setq arg (1- arg))
       (setq flyspell-old-pos-error pos)
       (setq flyspell-old-buffer-error (current-buffer))
@@ -448,8 +614,6 @@ Sometimes I misspell words and flyspell is there to help.
 	    (message "No more miss-spelled word!")
 	    (setq arg 0))
 	(forward-word)))))
-(add-hook 'org-mode-hook 'flyspell-mode)
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
 #+END_SRC
 
 *** Flyspell dependencies
@@ -467,11 +631,13 @@ This package really just provides integration with completion-read and hence con
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'flyspell-correct)
 (require 'flyspell-correct)
+(define-key text-mode-map (kbd "M-g n") 'flyspell-correct-next)
+(define-key text-mode-map (kbd "M-g p") 'flyspell-correct-previous)
 #+END_SRC
 
 ** Htmlize
 
-Mostly for testing Org files exported to HTML.
+Htmlize comes into play when I'm exporting Org documents to HTML, especially if there are code blocks involved:
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'htmlize)
@@ -520,12 +686,11 @@ I haven't had the opportunity to use this yet, but I'm looking forward to experi
 
 So far, I use Python and Rust in Emacs, both of which have good LSP options. Because of this, I have a section for general, LSP-oriented configuration and separate sections for each language that is supported by the LSP mode umbrella.
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
-(straight-use-package 'lsp)
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'lsp-mode)
 (require 'lsp-mode)
 (setq lsp-modeline-diagnostics-scope :project
       lsp-signature-doc-lines 1)
-;; TODO: Remap these keys to evil-leader variants at some point.
 (define-key lsp-mode-map (kbd "C-c `") 'lsp-restart-workspace)
 (define-key lsp-mode-map (kbd "C-c a") 'lsp-execute-code-action)
 (define-key lsp-mode-map (kbd "C-c d") 'lsp-describe-thing-at-point)
@@ -534,18 +699,137 @@ So far, I use Python and Rust in Emacs, both of which have good LSP options. Bec
 (define-key lsp-mode-map (kbd "C-c S") 'lsp-treemacs-symbols)
 #+END_SRC
 
+LSP doesn't integrate well with Corfu, so we need to add some configuration to make things work:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq lsp-completion-provider :none)
+(defun corfu-lsp-setup ()
+  (setq-local completion-styles '(orderless)
+	      completion-category-defaults nil))
+(add-hook 'lsp-completion-mode-hook 'corfu-lsp-setup)
+#+END_SRC
+
 ** LSP-Treemacs
 
 I have found LSP-Treemacs pretty useful. I like being able to see all of the symbols in a project, similar to the Object Explorer in Visual Studio.
 
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'lsp-treemacs)
 (require 'lsp-treemacs)
 #+END_SRC
 
+** Consult-LSP
+
+I really like both Consult and LSP, so I figured this would be a good package to have. So far, I only really use =consult-lsp-diagnostics=, but I'm still figuring things out:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'consult-lsp)
+(require 'consult-lsp)
+(consult-lsp-marginalia-mode)
+#+END_SRC
+
+** Python
+
+Most languages I use are hooked up to LSP:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(require 'python)
+(add-hook 'python-mode-hook 'lsp)
+#+END_SRC
+
+My autopair settings for Python:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(define-key python-mode-map (kbd "(") 'autopair-insert)
+(define-key python-mode-map (kbd ")") 'autopair-insert)
+(define-key python-mode-map (kbd "[") 'autopair-insert)
+(define-key python-mode-map (kbd "]") 'autopair-insert)
+(define-key python-mode-map (kbd "{") 'autopair-insert)
+(define-key python-mode-map (kbd "}") 'autopair-insert)
+(define-key python-mode-map (kbd "\"") 'autopair-insert)
+(define-key python-mode-map (kbd "'") 'autopair-insert)
+#+END_SRC
+
+** LSP-Pyright
+
+I'm using LSP-Pyright for Python development, in spite of my tendency to steer clear of Microsoft packages:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'lsp-pyright)
+(require 'lsp-pyright)
+#+END_SRC
+
+I have seen issues with opencv where Pyright will not only not provide completions for cv2 functions, but flymake will show errors where these functions are used. I have found a way to address this, however:
+
+#+BEGIN_SRC sh
+cd <projectdir>
+python -m venv venv
+source venv/bin/activate
+pip install mypy
+cd venv/lib/python3.10/site-packages/cv2
+stubgen -m cv2 -o .
+mv cv2.pyi __init__.pyi
+#+END_SRC
+
+*** Dependencies
+
+For LSP-Pyright to work, it has to be installed through NPM:
+#+BEGIN_SRC sh :tangle (org-entry-get nil "DPDFILE" t) :padline no
+npm \
+#+END_SRC
+
+** Rust
+
+I only have a few programming languages I use regularly, Rust is one of them.
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'rust-mode)
+(require 'rust-mode)
+(add-to-list 'exec-path "~/.cargo/bin")
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setq lsp-rust-analyzer-server-display-inlay-hints t
+      lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
+      lsp-rust-server 'rust-analyzer)
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(add-hook 'rust-mode-hook 'lsp)
+(add-hook 'rust-mode-hook 'highlight-todo-slash)
+#+END_SRC
+
+Rustic mode is a good package, but it adds a lot that I don't really use and doesn't interface with the rust compiler how i would like. In the spirit of keeping my package footprint minimal, i decided to write my own build commands:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(defun cargo-build (arg)
+  "Build with input ARG."
+  (interactive "MCargo Build arguments: ")
+  (compile (concat "cargo build " arg)))
+(define-key rust-mode-map (kbd "C-c b") 'cargo-build)
+(define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
+(define-key rust-mode-map (kbd "C-c r")
+  (lambda ()
+    (interactive)
+    (compile "cargo run")))
+(define-key rust-mode-map (kbd "C-c k")
+  (lambda ()
+    (interactive)
+    (compile "cargo check")))
+(define-key rust-mode-map (kbd "C-c t")
+  (lambda ()
+    (interactive)
+    (compile "cargo test -- --nocapture")))
+(define-key rust-mode-map (kbd "C-c C-f") nil)
+#+END_SRC
+
+*** Rust Dependencies
+
+Rust and Rust-Analyzer are available in Arch's default repositories:
+
+#+BEGIN_SRC sh :tangle (org-entry-get nil "DPDFILE" t) :padline no
+rust rust-analyzer \
+#+END_SRC
+
 ** Rainbow Delimiters
 
-For me, Rainbow Delimiters has saved a lot of time tracking down parentheses and brackets in Rust and what Elisp I am willing to commit to.
+For me, Rainbow Delimiters has saved a lot of time tracking down parentheses and brackets in Rust and what Elisp I am willing to commit to:
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'rainbow-delimiters)
@@ -557,7 +841,8 @@ For me, Rainbow Delimiters has saved a lot of time tracking down parentheses and
 
 I used Evil mode for a long time, but eventually decided to switch to Meow because it makes a good effort at synergizing with Emacs' built-in keybindings. Sure, Evil doesn't change keybindings it doesn't know about, but it's jarring to switch between modal editing and using control to execute commands, and I'm somewhat resistant to going into my config and remapping keys. Meow, on the other hand, has an agnostic way of accommodating keybindings from any mode (that I have used), provided said mode has configured its keybindings using typical conventions.
 
-Note that Meow has dependencies on [[* Consult][Consult]]
+Note that Meow has dependencies on [[* Consult][Consult]]:
+
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'meow)
 (require 'meow)
@@ -568,10 +853,8 @@ Note that Meow has dependencies on [[* Consult][Consult]]
    '("p" . meow-prev)
    '("<escape>" . ignore))
   (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
    '("n" . "H-n")
    '("p" . "H-p")
-   ;; Use SPC (0-9) for digit arguments.
    '("1" . meow-digit-argument)
    '("2" . meow-digit-argument)
    '("3" . meow-digit-argument)
@@ -702,30 +985,30 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 
 *NOTE:* Mu4e has [[* Mu4e Dependencies][dependencies]].
 
+Since Mu4e isn't on MELPA or anything, I install it with Pacman and add the directories to Emacs' load path:
+
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/ox-rss/")
 (require 'mu4e)
-(require 'smtpmail)
-(require 'org-mu4e)
+#+END_SRC
+
+I want to be able to search for emails by sender, so I wrote a function for it:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (defun search-for-sender (msg)
   "Search for MSG messages sent by the sender of the message at point."
   (mu4e-headers-search
    (concat "from:" (cdar (mu4e-message-field msg :from)))))
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
-(setq smtpmail-auth-credentials `(("smtp.gmail.com" 587 "andrewwburch" ,(shell-command-to-string "secret-tool lookup gmail password"))))
-(setq message-kill-buffer-on-exit t
-      mu4e-attachment-dir "~/downloads"
-      mu4e-change-filenames-when-moving t ;; This is supposed to be better for mbsync
-      mu4e-compose-context-policy 'always-ask ;; Ask which email address you want to send from
-      mu4e-compose-dont-reply-to-self t
-      mu4e-compose-in-new-frame t
-      mu4e-compose-format-flowed t ;; Part of sending messages with long lines, I don't want Mu4e inserting linebreaks randomly.
-      mu4e-compose-signature-auto-include nil
-      mu4e-confirm-quit t
-      mu4e-context-policy 'pick-first ;; Pick first available context, change if I eventually add more email addresses.
-      mu4e-contexts
+(add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
+#+END_SRC
+
+Mu4e operates using contexts associated with different identities.
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(require 'smtpmail)
+(setq smtpmail-queue-mail nil)
+(setq       mu4e-contexts
       (list
        (make-mu4e-context
 	:name "general"
@@ -746,32 +1029,70 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 		(smtpmail-queue-dir . "~/mail/gmail/queue/cur")
 		(message-send-mail-function . smtpmail-send-it)
 		(smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
-		;; (smtpmail-auth-credentials . `(("smtp.gmail.com" 587 "andrewwburch" ,(shell-command-to-string "secret-tool lookup gmail password"))))
 		(smtpmail-debug-info. t)
 		(smtpmail-default-smtp-server . "smtp.gmail.com")
 		(smtpmail-local-domain . "gmail.com")
 		(smtpmail-smtp-user . "andrewwburch")
 		(smtpmail-smtp-server . "smtp.gmail.com")
 		(smtpmail-smtp-service . 587)
+		(smtpmail-debug-verbose . t)))))
+#+END_SRC
 
-		(smtpmail-debug-verbose . t))))
+Imagemagick can render images in plain text emails, but the configuration is a little obscure:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+(setq mu4e-view-show-images t)
+#+END_SRC
+
+Currently, I have Mu4e set to pick the first available context when it needs one. This will probably change when I finally add in another context:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq mu4e-context-policy 'pick-first)
+#+END_SRC
+
+Mu4e adds its own newlines for formatting, I ask it to not do this:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq mu4e-compose-format-flowed t)
+(add-hook 'message-mode-hook (lambda ()
+			       (use-hard-newlines -1)))
+#+END_SRC
+
+Moving messages in Mbsync has caused syncing issues which can be fixed by making sure moved messages get renamed:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq mu4e-change-filenames-when-moving t)
+#+END_SRC
+
+I have Mu4e set up to always prefer plain text mail over HTML, mostly because HTML mail viewing isn't great in Emacs yet:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
+(setq mu4e-view-prefer-html nil)
+#+END_SRC
+
+Hopefully, the rest of these settings are pretty self-explanatory:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq message-kill-buffer-on-exit t
+      mu4e-attachment-dir "~/downloads"
+      mu4e-compose-context-policy 'always-ask
+      mu4e-compose-dont-reply-to-self t
+      mu4e-compose-in-new-frame t
+      mu4e-compose-signature-auto-include nil
+      mu4e-confirm-quit t
       mu4e-headers-auto-update t
       mu4e-headers-date-format "%H:%M %d-%m-%Y"
       mu4e-get-mail-command "mbsync -a"
       mu4e-maildir (expand-file-name "~/mail")
       mu4e-sent-messages-behavior 'delete ;; Gmail puts messages in Sent so Mu4e doesn't have to.
       mu4e-update-interval 300
-      mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum ;; Always prefer plaintext over HTML.
-      mu4e-view-prefer-html nil ;; More dissuasion from using HTML.
-      mu4e-view-show-images t
-      mu4e-view-show-addresses t
-      smtpmail-queue-mail nil)
-(add-to-list 'mu4e-view-actions '("xsearch for sender" . search-for-sender) t)
+      mu4e-view-show-addresses t)
 (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 (define-key mu4e-view-mode-map (kbd "M-n") 'mu4e-view-headers-next)
 (define-key mu4e-view-mode-map (kbd "M-p") 'mu4e-view-headers-prev)
-(add-hook 'message-mode-hook (lambda () ;; Don't let Mu4e add newlines.
-			       (use-hard-newlines -1)))
 (add-hook 'mu4e-headers-mode-hook
 	  (defun mu4e-change-head()
 	    (interactive)
@@ -784,8 +1105,7 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 	  (lambda()
 	    (local-set-key (kbd "<RET>") 'mu4e-view-browse-url-from-binding)
 	    (local-set-key (kbd "<tab>") 'shr-next-link)
-	    (local-set-key (kbd "<backtab>") 'shr-previous-link)
-	    ))
+	    (local-set-key (kbd "<backtab>") 'shr-previous-link)))
 #+END_SRC
 
 *** Mu4e Dependencies
@@ -793,16 +1113,6 @@ I have a lot of customization for Mu4e. Admittedly, most of it was taken from ot
 Mu4e itself needs to be installed from AUR. Its other dependencies can be installed with =pacman=:
 #+BEGIN_SRC sh :tangle (org-entry-get nil "DPDFILE" t) :padline no
 isync html2text gnupg \
-#+END_SRC
-
-** OB-Restclient
-
-If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. Of course, this isn't viable in a setting where multiple people are involved in a project.
-
-#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
-(straight-use-package 'ob-restclient)
-(require 'restclient)
-(org-babel-do-load-languages 'org-babel-load-languages '((restclient . t) (shell . t)))
 #+END_SRC
 
 ** Org
@@ -817,9 +1127,34 @@ I've set a bunch of face attributes to get Org documents looking "better". I've 
   (setq post-file-name (replace-regexp-in-string ":" "" (replace-regexp-in-string " " "-" (downcase post-title))))
   (expand-file-name (format "%s.org" post-file-name) "~/git/nothingissimple/org/posts"))
 (defun generate-reference (title url body))
+#+END_SRC
+
+I wrote this function in an attempt to clean up exported LaTeX files, but I quickly realized that it broke links. Maybe someday I will get around to fixing it:
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
 (defun org-export-latex-remove-labels (s backend info)
   (when (org-export-derived-backend-p org-export-current-backend 'latex)
     (replace-regexp-in-string "\\\\label{sec:org[a-z0-9]+}\n" "" s)))
+(setq org-export-filter-final-output-functions '(org-export-latex-remove-labels))
+#+END_SRC
+
+I try to hide as much markup as possible to keep the document looking clean:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq org-edit-src-content-indentation 0
+      org-hide-emphasis-markers t
+      org-hide-leading-stars t)
+#+END_SRC
+
+Since I've started using Variable-Pitch mode, the indentation scheme Org uses doesn't quite line up headings with their text and it bugs me so I just disabled Org's indentation altogether:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq org-adapt-indentation nil)
+#+END_SRC
+
+I keep emphasis markers hidden to make documents look nicer, but every once in a while I get confused and need to toggle them on to fix the markup:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (defun org-toggle-emphasis-markers ()
   "Toggle hiding/showing of org emphasis markers."
   (interactive)
@@ -827,12 +1162,27 @@ I've set a bunch of face attributes to get Org documents looking "better". I've 
       (set-variable 'org-hide-emphasis-markers nil)
     (set-variable 'org-hide-emphasis-markers t))
   (org-mode-restart))
+#+END_SRC
+
+If all of a task's subtasks are marked as =DONE=, the parent task should be as well:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (defun org-summary-todo (n-done n-not-done)
   "Switch entry to DONE when all subentries are done, to TODO otherwise."
   (let (org-log-done org-log-states)    ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-(define-prefix-command 'ring-map)
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+#+END_SRC
 
+[TODO: Figure out why I added this]
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(define-prefix-command 'ring-map)
+#+END_SRC
+
+I've modified faces quite a bit to make Org mode documents look what I would describe as "better", or at least a little closer to a WYSIWYG processor. At some point I will try to merge these changes into my theme:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (add-to-list 'font-lock-extra-managed-props 'invisible)
 (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
 (set-face-attribute 'org-block-begin-line nil :inherit 'fixed-pitch)
@@ -851,9 +1201,13 @@ I've set a bunch of face attributes to get Org documents looking "better". I've 
 (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
 (set-face-attribute 'org-todo nil :inherit 'fixed-pitch)
 (set-face-attribute 'org-verbatim nil :inherit 'fixed-pitch)
+(font-lock-add-keywords 'org-mode '(("^\\*+ " (0 '(face nil invisible t)))))
+#+END_SRC
 
-(setq org-adapt-indentation nil
-      org-capture-templates
+I've added a few templates:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq org-capture-templates
       '(("e" "event" plain (function (lambda ()
 				       (let ((path (read-file-name "Select file:")))
 					 (find-file path)
@@ -869,7 +1223,7 @@ I've set a bunch of face attributes to get Org documents looking "better". I've 
 					     (newline))
 					   ))))
 	 "\n** %^{Title}\nSCHEDULED: %(org-insert-timestamp (org-read-date nil t \"+1y\"))\n:PROPERTIES:\n:REF: %l\n:STYLE: habit\n:END:\n\n%(unless (string= (string-trim \"%i\") \"\")(format \"#+begin_quote\n%s\n#+end_quote\" \"%i\"))\n")
-	("j" "journal" plain (file+datetree "~/org/journal.org")
+z	("j" "journal" plain (file+datetree "~/org/journal.org")
 	 "")
 	("l" "link" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
 	 "* %a\n")
@@ -892,18 +1246,40 @@ I've set a bunch of face attributes to get Org documents looking "better". I've 
 					     (newline))))))
 	 "\n** %^{Title}\n:PROPERTIES:\n:REF: %l\n:STYLE: habit\n:END:\n\n%(unless (string= (string-trim \"%i\") \"\")(format \"#+begin_quote\n%s\n#+end_quote\" \"%i\"))\n")
 	("t" "todo" entry (file+headline "~/org/tasks/Todo.org" "Tasks")
-	 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n"))
-      org-edit-src-content-indentation 0
-      org-directory "~/org"
+	 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n:PROPERTIES:\n:CATEGORY: Todo\n:END:\n")))
+#+END_SRC
+
+I have Org log into a =logbook= drawer. At first it was for compatibility with the Orgzly app, but now I just like it better:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq org-log-into-drawer "logbook")
+#+END_SRC
+
+Noticed interactive org-export wasn't working properly unless org was reloaded in my config:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(org-reload)
+#+END_SRC
+
+Figuring out if I need this..
+
+#+BEGIN_SRC emacs-lisp :tangle no :padline no
+(define-key org-mode-map (kbd "<M-return>") nil)
+#+END_SRC
+
+Hopefully, these changes are self-explanatory:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(setq org-directory "~/org"
       org-export-allow-bind-keywords t
-      org-hide-emphasis-markers t
-      org-hide-leading-stars t
       org-highest-priority ?A
-      org-log-into-drawer "logbook"
       org-lowest-priority ?E)
 (org-load-modules-maybe t)
-(org-reload) ;; Noticed interactive org-export wasn't working properly unless calling this.
-(define-key org-mode-map (kbd "<M-return>") nil)
+#+END_SRC
+
+Auto-pairing isn't useful in all text-oriented modes, but it sure has come in handy in Org-mode:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (define-key org-mode-map (kbd "(") 'autopair-insert)
 (define-key org-mode-map (kbd ")") 'autopair-insert)
 (define-key org-mode-map (kbd "[") 'autopair-insert)
@@ -911,13 +1287,15 @@ I've set a bunch of face attributes to get Org documents looking "better". I've 
 (define-key org-mode-map (kbd "{") 'autopair-insert)
 (define-key org-mode-map (kbd "}") 'autopair-insert)
 (define-key org-mode-map (kbd "\"") 'autopair-insert)
-(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+#+END_SRC
+
+Variable-Pitch mode does a lot for making Org files more pleasant to work with:
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (add-hook 'org-mode-hook (lambda ()
 			   (electric-indent-local-mode -1)
 			   (variable-pitch-mode)
 			   (setq truncate-lines nil)))
-(font-lock-add-keywords 'org-mode '(("^\\*+ " (0 '(face nil invisible t)))))
-;; (setq org-export-filter-final-output-functions '(org-export-latex-remove-labels))
 #+END_SRC
 
 *** Org Dependencies
@@ -1068,8 +1446,8 @@ I use Simple-HTTPd to host my website locally for debugging.
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'simple-httpd)
 (require 'simple-httpd)
-(when (file-exists-p "~/nothingissimple/site")
-  (setq httpd-root "~/nothingissimple/site"))
+(when (file-exists-p "~/git/nothingissimple/site")
+  (setq httpd-root "~/git/nothingissimple/site"))
 #+END_SRC
 
 ** Restclient
@@ -1079,6 +1457,15 @@ I'm hoping to use Restclient as a stand-in for Postman. I found an integration w
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (straight-use-package 'restclient)
 (require 'restclient)
+#+END_SRC
+
+** OB-Restclient
+
+If it were up to me, I would never use Postman again. Incorporating literate programming into test suites is amazing, especially when you can mix Restclient with your programming langauge of choice. Of course, this isn't viable in a setting where multiple people are involved in a project.
+
+#+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
+(straight-use-package 'ob-restclient)
+(org-babel-do-load-languages 'org-babel-load-languages '((restclient . t) (shell . t) (python . t)))
 #+END_SRC
 
 ** Ripgrep
@@ -1094,60 +1481,6 @@ I'm all about Rust implementations of things.
 
 #+BEGIN_SRC sh :tangle (org-entry-get nil "DPDFILE" t) :padline no
 ripgrep \
-#+END_SRC
-
-** Rust
-
-I only have a few programming languages I use regularly, Rust is one of them.
-
-#+BEGIN_SRC emacs-lisp :tangle no :padline no
-(require 'rust-mode)
-(require 'lsp-mode)
-(defun cargo-build (arg)
-  "Build with input ARG."
-  (interactive "MCargo Build arguments: ")
-  (compile (concat "cargo build " arg)))
-(add-to-list 'exec-path "~/.cargo/bin")
-(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
-(setq lsp-rust-analyzer-server-display-inlay-hints t
-      lsp-rust-analyzer-server-command '("~/.local/bin/rust-analyzer")
-      lsp-rust-server 'rust-analyzer)
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-(define-key rust-mode-map (kbd "C-c b") 'cargo-build)
-(define-key rust-mode-map (kbd "C-c f") 'rust-format-buffer)
-(define-key rust-mode-map (kbd "C-c r")
-  (lambda ()
-    (interactive)
-    (compile "cargo run")))
-(define-key rust-mode-map (kbd "C-c k")
-  (lambda ()
-    (interactive)
-    (compile "cargo check")))
-(define-key rust-mode-map (kbd "C-c t")
-  (lambda ()
-    (interactive)
-    (compile "cargo test -- --nocapture")))
-(define-key rust-mode-map (kbd "C-c C-f") nil)
-(add-hook 'rust-mode-hook 'lsp)
-(add-hook 'rust-mode-hook 'highlight-todo)
-#+END_SRC
-
-*** Rust Dependencies
-
-To use Rust, it must first be [[https://www.rust-lang.org/tools/install][installed]]. Once that's done, install Rust-Analyzer by cloning the repository:
-
-#+BEGIN_SRC sh :tangle no
-git clone https://github.com/rust-analyzer/rust-analyzer.git
-cd rust-analyzer
-cargo xtask install --server
-#+END_SRC
-
-The =rust-analyzer= binary should now be visible under =~/.cargo/bin/=. Ensure Emacs knows about the path by adding the proper paths to the =add-to-list= and =setenv= configuration items in [[* Rust][Rust]] config.
-
-To enable various IDE features, =rust-src= is required:
-
-#+BEGIN_SRC sh :tangle no
-rustup component add rust-src
 #+END_SRC
 
 ** SQL
@@ -1190,7 +1523,7 @@ My configuration also provides some customization of Emacs' SQL mode. My workflo
 (add-hook 'sql-mode-hook '(lambda ()
 			    (setq truncate-lines t
 				  word-wrap nil)))
-;; (add-hook 'sql-login-hook 'my-sql-login-hook)
+(add-hook 'sql-login-hook 'my-sql-login-hook)
 #+END_SRC
 
 ** SQLUp
