@@ -1,0 +1,5 @@
+;;; -*- lisp-data -*-
+(("~/kernelcon/vtm/")
+ ("~/git/nothingissimple/")
+ ("~/code/python/recipemerger/")
+ ("~/.emacs.d/"))

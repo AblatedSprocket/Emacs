@@ -8,6 +8,7 @@
 (setq package-enable-at-startup nil)
 (defvar bootstrap-version)
 (setq straight-process-buffer "*Messages*"
+      straight-check-for-modifications nil
       straight-vc-git-default-clone-depth 1)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
