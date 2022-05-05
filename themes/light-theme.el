@@ -383,7 +383,7 @@
    `(org-scheduled-today ((,class (:foreground ,green))))
    `(org-special-keyword ((,class (:foreground ,comment :inherit fixed-pitch))))
    `(org-tag ((,class (:inherit fixed-pitch))))
-   `(org-table ((,class (:foreground ,green))))
+   `(org-table ((,class (:foreground ,green :inherit fixed-pitch))))
    `(org-todo ((,class (:bold t :foreground ,red))))
    `(org-upcoming-deadline ((,class (:foreground ,orange))))
    `(org-verbatim ((,class (:inherit fixed-pitch))))

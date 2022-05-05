@@ -128,6 +128,7 @@ In the past when using Word, I have run into trouble with backups. I don't typic
 
 #+BEGIN_SRC emacs-lisp :tangle (org-entry-get nil "CFGFILE" t) :padline no
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups/per-save"))))
+(setq-default tab-width 4)
 (defun force-backup-of-buffer ()
   "Make a special per-session backup at the first save of each
   emacs session."
